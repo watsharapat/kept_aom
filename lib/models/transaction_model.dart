@@ -39,7 +39,7 @@ class Transaction {
     return {
       'user_id': userId,
       'date': date.toIso8601String(),
-      'amount': amount,
+      'amount': typeId == 1 ? -amount.abs() : amount.abs(),
       'via': via,
       'type_id': typeId,
       'title': title,

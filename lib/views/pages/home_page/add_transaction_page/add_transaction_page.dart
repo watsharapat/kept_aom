@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kept_aom/models/transaction_model.dart';
-import 'package:kept_aom/viewmodels/home_provider.dart';
-import 'package:kept_aom/views/widgets/date_picker.dart';
-import 'package:kept_aom/views/widgets/toggle_button.dart';
+import 'package:kept_aom/viewmodels/quick_title_provider.dart';
+import 'package:kept_aom/viewmodels/transaction_provider.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/date_picker.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/emoji_picker.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/quick_title_button.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   const AddTransactionPage({super.key});
@@ -15,16 +19,35 @@ class AddTransactionPage extends ConsumerStatefulWidget {
 }
 
 class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
+  final TextEditingController _titleController = TextEditingController();
   String _via = 'Cash';
   DateTime _date = DateTime.now();
   int _typeId = 1;
   String _title = '';
   String _description = '';
   double _amount = 0.0;
+  String _emoji = "😊"; // อีโมจิเริ่มต้น
+
+  @override
+  void initState() {
+    super.initState();
+    // เพิ่ม Listener เพื่อตรวจจับการเปลี่ยนแปลงของข้อความ
+    _titleController.addListener(() {
+      setState(() {
+        _title = _titleController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(homeProvider);
+    final provider = ref.watch(transactionProvider);
 
     return Scaffold(
         backgroundColor: Colors.grey.shade200,
@@ -113,13 +136,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 onPressed: () {
                   provider.addTransaction(
                     Transaction(
-                      //id: 0,
                       userId: Supabase.instance.client.auth.currentUser!.id,
                       date: _date,
                       amount: _amount,
                       via: _via,
                       typeId: _typeId,
-                      title: _title,
+                      title: "$_emoji $_title",
                       description: _description,
                     ),
                   );
@@ -255,11 +277,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                             setState(() {
                               try {
                                 double doubleValue = double.parse(value);
-                                if (_typeId == 1) {
-                                  _amount = -(doubleValue.abs());
-                                } else {
-                                  _amount = doubleValue.abs();
-                                }
+
+                                _amount = doubleValue;
                               } catch (e) {
                                 debugPrint("Invalid input: $value");
                               }
@@ -282,27 +301,23 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 height: 60,
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        height: 60,
-                        color: Colors.black12,
-                        // child: IconPickerWidget(
-                        //   onIconPicked: (icon) {
-                        //     setState(() {
-                        //       _title = icon;
-                        //     });
-                        //   },
-                        // ),
-                      ),
+                    Container(
+                      height: 60,
+                      width: 60,
+                      //color: Colors.black12,
+                      child: EmojiPickerButton(
+                          selectedEmoji: _emoji,
+                          onEmojiSelected: (String value) {
+                            _emoji = value;
+                            debugPrint(_title);
+                          }),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 16),
                     Expanded(
-                      flex: 7,
                       child: Container(
                           height: 60,
-                          color: Colors.black26,
                           child: TextField(
+                            controller: _titleController,
                             keyboardType: TextInputType.text,
                             decoration: const InputDecoration(
                               focusedBorder: OutlineInputBorder(
@@ -316,27 +331,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(16))),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _title = value;
-                              });
-                            },
                           )),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        height: 60,
-                        color: Colors.black38,
-                        // child: QuickTitleDropdownWidget(
-                        //   onTitleSelected: (title) {
-                        //     setState(() {
-                        //       _title = title;
-                        //     });
-                        //   },
-                        // ),
-                      ),
+                    Container(
+                      height: 60,
+                      width: 40,
+                      child: QuickTitleButton(),
                     ),
                   ],
                 ),

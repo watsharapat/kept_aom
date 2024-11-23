@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:kept_aom/viewmodels/home_provider.dart';
-import 'package:kept_aom/views/pages/add_transaction_page.dart';
+import 'package:kept_aom/viewmodels/transaction_provider.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
-import 'package:kept_aom/views/widgets/toggle_button.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kept_aom/models/transaction_model.dart';
@@ -15,9 +15,8 @@ class TransactionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(homeProvider);
+    final provider = ref.watch(transactionProvider);
     final user = Supabase.instance.client.auth.currentUser;
-    final profileImageUrl = user?.userMetadata?['avatar_url'];
     final fullName = user?.userMetadata?['full_name'];
     final firstName = fullName.split(' ')[0];
 
@@ -189,6 +188,7 @@ class TransactionListView extends StatelessWidget {
                 ),
               ),
               ListView.builder(
+                reverse: true,
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4),
                 shrinkWrap: true,
@@ -218,7 +218,7 @@ class TransactionListView extends StatelessWidget {
                     ),
                     title: Text(title),
                     subtitle: Text(
-                      DateFormat('h:mm a').format(transaction.date),
+                      DateFormat('EEE, M/d/y').format(transaction.date),
                       style: TextStyle(fontSize: 12),
                     ),
                     trailing: Container(
@@ -227,9 +227,7 @@ class TransactionListView extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          transaction.typeId == 1
-                              ? '-${transaction.amount.toString()}'
-                              : transaction.amount.toString(),
+                          transaction.amount.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,

@@ -4,13 +4,13 @@ import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/services/supabase_provider.dart';
 import 'package:supabase/supabase.dart';
 
-final homeProvider = ChangeNotifierProvider(
-    (ref) => HomeProvider(ref.read(supabaseClientProvider)));
+final transactionProvider = ChangeNotifierProvider(
+    (ref) => TransactionProvider(ref.read(supabaseClientProvider)));
 
-class HomeProvider extends ChangeNotifier {
+class TransactionProvider extends ChangeNotifier {
   final SupabaseClient _supabase;
 
-  HomeProvider(this._supabase) {
+  TransactionProvider(this._supabase) {
     fetchTransactions();
   }
 
@@ -46,8 +46,7 @@ class HomeProvider extends ChangeNotifier {
           .from('transactions')
           .insert(transaction.toJson())
           .single();
-      final insertedTransaction =
-          Transaction.fromJson(response as Map<String, dynamic>);
+      final insertedTransaction = Transaction.fromJson(response);
 
       _transactions.insert(0, insertedTransaction);
       notifyListeners();

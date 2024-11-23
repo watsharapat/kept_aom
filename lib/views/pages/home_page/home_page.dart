@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kept_aom/viewmodels/home_provider.dart';
-import 'package:kept_aom/views/pages/add_transaction_page.dart';
+import 'package:kept_aom/viewmodels/transaction_provider.dart';
+import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
+import 'package:kept_aom/views/pages/home_page/today_transaction.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase/supabase.dart';
@@ -12,11 +13,16 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(homeProvider);
+    final provider = ref.watch(transactionProvider);
     final user = Supabase.instance.client.auth.currentUser;
     final profileImageUrl = user?.userMetadata?['avatar_url'];
     final fullName = user?.userMetadata?['full_name'];
     final firstName = fullName.split(' ')[0];
+
+    final balance = provider.transactions.fold<double>(
+      0,
+      (sum, transaction) => sum + transaction.amount,
+    );
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -47,7 +53,7 @@ class HomePage extends ConsumerWidget {
             children: [
               // แยกส่วนปุ่มรูปโปรไฟล์
               Padding(
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                   child: Material(
                     color: Colors.transparent,
                     shape: const CircleBorder(),
@@ -67,12 +73,15 @@ class HomePage extends ConsumerWidget {
                       },
                       child: (profileImageUrl != null)
                           ? ClipOval(
-                              child: Ink.image(
-                              image: NetworkImage(profileImageUrl),
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover,
-                            ))
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Image.network(
+                                  profileImageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
                           : const Icon(
                               Icons.account_circle,
                               size: 40,
@@ -112,7 +121,7 @@ class HomePage extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [],
+        children: [accountCard(balance), const TodayTransactions()],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -121,6 +130,77 @@ class HomePage extends ConsumerWidget {
           );
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget accountCard(double balance) {
+    String balanceString = balance.toString();
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      width: double.infinity,
+      height: 200,
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          center: Alignment.bottomRight,
+          radius: 3,
+          colors: [
+            Colors.indigo,
+            Colors.black87,
+          ],
+        ),
+
+        //color: Colors.indigo,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                'Current Account',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
+              )
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  'Balance',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                ),
+                Text(
+                  balanceString,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w500),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

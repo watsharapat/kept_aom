@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kept_aom/views/pages/home_page.dart';
-import 'package:kept_aom/views/pages/transactions_page.dart';
+import 'package:kept_aom/views/pages/home_page/home_page.dart';
+import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
