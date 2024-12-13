@@ -156,14 +156,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           ],
         ),
         body: Container(
-            // decoration: const BoxDecoration(
-            //   gradient: LinearGradient(
-            //     begin: Alignment.topCenter,
-            //     end: Alignment.bottomCenter,
-            //     colors: [Colors.indigo, Colors.indigoAccent],
-            //   ),
-            // ),
-            child: Container(
           decoration: BoxDecoration(boxShadow: const [
             BoxShadow(
               color: Colors.black12, // สีของเงา
@@ -380,6 +372,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   ))
             ],
           ),
-        )));
+        ));
   }
 }

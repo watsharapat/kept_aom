@@ -96,15 +96,7 @@ class LoginPage extends ConsumerWidget {
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black87,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
+        style: Theme.of(context).elevatedButtonTheme.style,
         onPressed: () async {
           final success =
               await ref.read(loginProvider.notifier).signInWithGoogle();
@@ -126,7 +118,7 @@ class LoginPage extends ConsumerWidget {
             const SizedBox(width: 12),
             Text(
               'Continue with Google',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
             ),
@@ -175,14 +167,7 @@ class LoginPage extends ConsumerWidget {
         const SizedBox(height: 24),
         ElevatedButton.icon(
           onPressed: () => ref.invalidate(loginProvider),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Theme.of(context).primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-          ),
+          style: Theme.of(context).elevatedButtonTheme.style,
           icon: const Icon(Icons.refresh),
           label: const Text('Try again'),
         ),

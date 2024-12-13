@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/today_transaction.dart';
@@ -14,6 +15,8 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(transactionProvider);
+    final themeNotifier = ref.read(themeProvider.notifier);
+    final themeMode = ref.watch(themeProvider);
     final user = Supabase.instance.client.auth.currentUser;
     final profileImageUrl = user?.userMetadata?['avatar_url'];
     final fullName = user?.userMetadata?['full_name'];
@@ -104,6 +107,14 @@ class HomePage extends ConsumerWidget {
           ),
         ),
         actions: [
+          IconButton(
+            icon: Icon(themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              themeNotifier.toggleTheme();
+            },
+          ),
           Container(
             height: 50,
             width: 50,
@@ -114,7 +125,7 @@ class HomePage extends ConsumerWidget {
               },
               icon: const Icon(Icons.replay_outlined),
             ),
-          )
+          ),
         ],
       ),
       body: Column(
