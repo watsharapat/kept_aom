@@ -43,7 +43,7 @@ class TodayTransactions extends ConsumerWidget {
       width: double.infinity,
       height: 300,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
@@ -64,25 +64,21 @@ class TodayTransactions extends ConsumerWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.only(
                         top: 16, bottom: 4, left: 16, right: 16),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Today Transactions',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ],
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
                         'No transactions for today',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   )
@@ -101,11 +97,7 @@ class TodayTransactions extends ConsumerWidget {
                     children: [
                       Text(
                         'Today Transactions (${todaySum.toStringAsFixed(2)})',
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       IconButton(
                         icon: Icon(

@@ -35,11 +35,11 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         toolbarHeight: 80,
-        leadingWidth: 250,
+        leadingWidth: 280,
         leading: Container(
           height: 60,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(99),
             boxShadow: const [
               BoxShadow(
@@ -96,11 +96,7 @@ class HomePage extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Hey! $firstName',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               )
             ],

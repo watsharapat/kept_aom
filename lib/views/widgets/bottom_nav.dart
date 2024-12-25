@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends ConsumerWidget {
   final int currentIndex;
 
   const BottomNavBar({
@@ -38,11 +40,13 @@ class BottomNavBar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeNotifier = ref.read(themeProvider.notifier);
+    final themeMode = ref.watch(themeProvider);
     return Container(
-      margin: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
@@ -60,9 +64,9 @@ class BottomNavBar extends StatelessWidget {
           currentIndex: currentIndex,
           onTap: (index) => _onItemTapped(context, index),
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.indigo,
-          unselectedItemColor: Colors.grey,
-          backgroundColor: Colors.white,
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Theme.of(context).disabledColor,
+          backgroundColor: Theme.of(context).cardTheme.color,
           iconSize: 30,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

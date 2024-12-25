@@ -3,31 +3,44 @@ import 'package:flutter/material.dart';
 final lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.indigo,
-  scaffoldBackgroundColor: Colors.white,
+  cardColor: Colors.white,
+  scaffoldBackgroundColor: const Color.fromARGB(255, 247, 247, 247),
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.indigo,
+    backgroundColor: Colors.white,
     titleTextStyle: TextStyle(
-      color: Colors.white,
+      color: Colors.black87,
       fontSize: 20,
       fontWeight: FontWeight.bold,
     ),
-    iconTheme: IconThemeData(color: Colors.white),
+    iconTheme: IconThemeData(color: Colors.black87),
   ),
+
+  //Text Theme
   textTheme: TextTheme(
     displayLarge: TextStyle(
-        fontSize: 32, fontWeight: FontWeight.bold, color: Colors.indigo),
+        fontSize: 20, fontWeight: FontWeight.bold, color: Colors.indigo),
     displayMedium: TextStyle(
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: FontWeight.w600,
         color: Colors.indigo.shade700),
+    displaySmall: TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[800]),
     bodyLarge: TextStyle(fontSize: 16, color: Colors.grey[800]),
-    bodyMedium: TextStyle(fontSize: 14, color: Colors.grey[600]),
+    bodyMedium: TextStyle(fontSize: 14, color: Colors.grey[800]),
+    bodySmall: TextStyle(fontSize: 12, color: Colors.grey[800]),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.indigo,
       backgroundColor: Colors.white,
       textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+  ),
+  iconButtonTheme: IconButtonThemeData(
+    style: IconButton.styleFrom(
+      foregroundColor: Colors.indigo,
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
@@ -46,14 +59,26 @@ final lightTheme = ThemeData(
     backgroundColor: Colors.indigo,
     foregroundColor: Colors.white,
   ),
+  cardTheme: CardTheme(
+    color: Colors.white,
+    elevation: 4,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(
+        color: Colors.indigo.shade100, // เส้นขอบ
+        width: 1,
+      ),
+    ),
+  ),
 );
 
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: Colors.indigo,
-  scaffoldBackgroundColor: Colors.grey[900],
+  cardColor: Colors.grey[850],
+  scaffoldBackgroundColor: Colors.black87,
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.indigo.shade700,
+    backgroundColor: Colors.grey[850],
     titleTextStyle: TextStyle(
       color: Colors.white,
       fontSize: 20,
@@ -62,20 +87,29 @@ final darkTheme = ThemeData(
     iconTheme: IconThemeData(color: Colors.white),
   ),
   textTheme: TextTheme(
-    displayLarge: TextStyle(
-        fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-    displayMedium: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: Colors.indigo.shade100),
-    bodyLarge: TextStyle(fontSize: 16, color: Colors.white70),
-    bodyMedium: TextStyle(fontSize: 14, color: Colors.white54),
-  ),
+      displayLarge: TextStyle(
+          fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+      displayMedium: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: Colors.indigo.shade100),
+      displaySmall: TextStyle(
+          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
+      bodySmall: TextStyle(fontSize: 12, color: Colors.white)),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.indigo.shade400,
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Colors.grey[850],
       textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+  ),
+  iconButtonTheme: IconButtonThemeData(
+    style: IconButton.styleFrom(
+      foregroundColor: Colors.indigo.shade400,
+      backgroundColor: Colors.grey[850],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
@@ -93,5 +127,16 @@ final darkTheme = ThemeData(
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: Colors.indigo.shade400,
     foregroundColor: Colors.white,
+  ),
+  cardTheme: CardTheme(
+    color: Colors.grey[850],
+    elevation: 4,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(
+        color: Colors.indigo.shade700, // เส้นขอบ
+        width: 1,
+      ),
+    ),
   ),
 );
