@@ -42,17 +42,27 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<void> addTransaction(Transaction transaction) async {
     try {
+      // ตรวจสอบข้อมูลที่จำเป็น (เช่น amount หรือ description)
+      if (transaction.amount.isNaN) {
+        throw Exception('Transaction amount must be double.');
+      }
+      if (transaction.title.length < 2) {
+        throw Exception('Transaction title text cannot be empty.');
+      }
+
+      // หากข้อมูลผ่านการตรวจสอบแล้ว ดำเนินการส่งข้อมูล
       final response = await _supabase
           .from('transactions')
           .insert(transaction.toJson())
           .single();
+
       final insertedTransaction = Transaction.fromJson(response);
 
       _transactions.insert(0, insertedTransaction);
       notifyListeners();
     } catch (error) {
       print('Error adding transaction: $error');
-      // You may want to add a UI notification for the user here
+      // เพิ่มการแจ้งเตือนผู้ใช้ (UI notification) ในกรณีที่เกิดข้อผิดพลาด
     }
   }
 }

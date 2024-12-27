@@ -18,11 +18,9 @@ final lightTheme = ThemeData(
   //Text Theme
   textTheme: TextTheme(
     displayLarge: TextStyle(
-        fontSize: 20, fontWeight: FontWeight.bold, color: Colors.indigo),
+        fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
     displayMedium: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: Colors.indigo.shade700),
+        fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
     displaySmall: TextStyle(
         fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[800]),
     bodyLarge: TextStyle(fontSize: 16, color: Colors.grey[800]),
@@ -46,11 +44,12 @@ final lightTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: Colors.indigo),
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.black12),
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.indigo, width: 2),
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.black45),
     ),
     labelStyle: TextStyle(color: Colors.indigo),
     hintStyle: TextStyle(color: Colors.grey),
@@ -88,11 +87,9 @@ final darkTheme = ThemeData(
   ),
   textTheme: TextTheme(
       displayLarge: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
       displayMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.indigo.shade100),
+          fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
       displaySmall: TextStyle(
           fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
       bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
@@ -115,11 +112,12 @@ final darkTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: Colors.indigo.shade400),
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.white38),
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.indigo.shade300, width: 2),
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.white),
     ),
     labelStyle: TextStyle(color: Colors.indigo.shade300),
     hintStyle: TextStyle(color: Colors.grey.shade500),

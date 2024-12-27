@@ -5,7 +5,6 @@ import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
-import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kept_aom/models/transaction_model.dart';

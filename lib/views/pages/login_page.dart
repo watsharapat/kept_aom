@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/viewmodels/login_provider.dart';
 
@@ -18,8 +19,8 @@ class LoginPage extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).primaryColor.withOpacity(1),
-              Theme.of(context).primaryColor.withOpacity(0.4),
+              Theme.of(context).primaryColor.withValues(alpha: 1),
+              Theme.of(context).primaryColor.withValues(alpha: 0.4),
             ],
           ),
         ),
@@ -32,40 +33,43 @@ class LoginPage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Logo or App Icon
-                    DropShadow(
-                      child: Image.asset(
-                        'lib/assets/images/coin.png',
-                        width: 200,
-                        height: 200,
-                      ),
+                    // DropShadow(
+                    //     child:
+                    //     Image.asset(
+                    //       'lib/assets/images/coin.png',
+                    //       width: 200,
+                    //       height: 200,
+                    //     ),
+                    //     ),
+                    SvgPicture.asset(
+                      'lib/assets/images/piggy.svg',
+                      width: 180,
+                      height: 180,
                     ),
                     //const SizedBox(height: 32),
 
-                    // Welcome Text
-                    const SizedBox(
-                      height: 120,
-                      width: 180,
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Text(
-                          'KEPTAOM',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 16),
-                        ),
-                      ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'KEPTAOM',
+                      style: Theme.of(context).textTheme.displayLarge,
                     ),
+                    const SizedBox(height: 16),
 
-                    const SizedBox(height: 12),
+                    Text(
+                      'The personal saving app',
+                      style: Theme.of(context)
+                          .textTheme
+                          .displayMedium
+                          ?.copyWith(fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: 48),
                     Text(
                       'Please sign in to continue.',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 12),
 
                     // Login State Handler
                     loginState.when(
@@ -118,7 +122,7 @@ class LoginPage extends ConsumerWidget {
             const SizedBox(width: 12),
             Text(
               'Continue with Google',
-              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
             ),

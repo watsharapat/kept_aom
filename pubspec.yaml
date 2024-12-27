@@ -45,6 +45,8 @@ dependencies:
   emoji_picker_flutter: ^3.1.0
   cached_network_image: ^3.4.1
   shared_preferences: ^2.3.3
+  animated_toggle_switch: ^0.8.4
+  flutter_svg: ^2.0.16
 
 dev_dependencies:
   flutter_test:

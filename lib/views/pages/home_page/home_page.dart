@@ -62,9 +62,9 @@ class HomePage extends ConsumerWidget {
                     shape: const CircleBorder(),
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                      splashColor: Colors.black.withOpacity(0.1), // สีตอนกดค้าง
-                      highlightColor:
-                          Colors.black.withOpacity(0.1), // สีตอนกดแล้วปล่อย
+                      splashColor:
+                          Colors.black.withValues(alpha: 0.1), // สีตอนกดค้าง
+                      highlightColor: Colors.black.withValues(alpha: 0.1),
                       onTap: () async {
                         await Supabase.instance.client.auth.signOut();
                         if (context.mounted) {

@@ -50,7 +50,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     final provider = ref.watch(transactionProvider);
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade200,
+        //backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         extendBodyBehindAppBar: false,
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -59,7 +59,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           leading: Container(
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(99),
               boxShadow: const [
                 BoxShadow(
@@ -81,10 +81,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       shape: const CircleBorder(),
                       clipBehavior: Clip.hardEdge,
                       child: InkWell(
-                          splashColor:
-                              Colors.black.withOpacity(0.1), // สีตอนกดค้าง
-                          highlightColor:
-                              Colors.black.withOpacity(0.1), // สีตอนกดแล้วปล่อย
+                          splashColor: Colors.black
+                              .withValues(alpha: 0.1), // สีตอนกดค้าง
+                          highlightColor: Colors.black
+                              .withValues(alpha: 0.1), // สีตอนกดแล้วปล่อย
                           onTap: () {
                             if (context.mounted) {
                               Navigator.of(context).pop();
@@ -130,9 +130,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               margin: const EdgeInsets.only(
                   left: 16, right: 16, top: 4, bottom: 16),
               child: IconButton.filledTonal(
-                style: const ButtonStyle(
-                    iconColor: WidgetStatePropertyAll(Colors.green),
-                    backgroundColor: WidgetStatePropertyAll(Colors.white)),
+                style: Theme.of(context).iconButtonTheme.style,
+                //TO DO ดักการใส่ข้อมูลเปล่า
                 onPressed: () {
                   provider.addTransaction(
                     Transaction(
@@ -149,20 +148,24 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 },
                 icon: const Icon(
                   Icons.done_rounded,
-                  weight: 32,
+                  weight: 128,
+                  color: Colors.green,
                 ),
               ),
             )
           ],
         ),
         body: Container(
-          decoration: BoxDecoration(boxShadow: const [
-            BoxShadow(
-              color: Colors.black12, // สีของเงา
-              blurRadius: 10, // ระดับการเบลอของเงา
-              offset: Offset(0, 4), // ตำแหน่งของเงา
-            ),
-          ], color: Colors.white, borderRadius: BorderRadius.circular(32)),
+          decoration: BoxDecoration(
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12, // สีของเงา
+                  blurRadius: 10, // ระดับการเบลอของเงา
+                  offset: Offset(0, 4), // ตำแหน่งของเงา
+                ),
+              ],
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(32)),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
           child: Column(
@@ -173,9 +176,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               Container(
                 padding: const EdgeInsets.only(left: 8),
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'via',
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
               Row(
@@ -218,9 +221,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               Container(
                 padding: const EdgeInsets.only(left: 8),
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'type',
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
               Row(
@@ -251,19 +254,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         height: 60,
                         child: TextField(
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.indigo, width: 1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16))),
-                            suffixIcon: Icon(Icons.attach_money_rounded),
-                            border: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.black26, width: 1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16))),
-                          ),
+                          decoration: InputDecoration(
+                              focusedBorder: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .focusedBorder,
+                              border: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .border),
                           onChanged: (value) {
                             //TO DO move to abs to Function add transaction to avoid using temporary value of _typeId
                             setState(() {
@@ -284,9 +281,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               Container(
                 padding: const EdgeInsets.only(left: 8),
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'title',
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
               Container(
@@ -307,23 +304,19 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: Container(
-                          height: 60,
-                          child: TextField(
-                            controller: _titleController,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.indigo, width: 1),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.black26, width: 1),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16))),
-                            ),
-                          )),
+                        height: 60,
+                        child: TextField(
+                          controller: _titleController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              focusedBorder: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .focusedBorder,
+                              border: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .border),
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -350,18 +343,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     child: Container(
                       child: TextField(
                         keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 1),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16))),
-                          border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.black26, width: 1),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16))),
-                        ),
+                        decoration: InputDecoration(
+                            focusedBorder: Theme.of(context)
+                                .inputDecorationTheme
+                                .focusedBorder,
+                            border:
+                                Theme.of(context).inputDecorationTheme.border),
                         onChanged: (value) {
                           setState(() {
                             _description = value;
