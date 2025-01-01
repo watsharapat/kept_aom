@@ -1,4 +1,3 @@
-import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -138,9 +137,9 @@ class LoginPage extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.red.withOpacity(0.3)),
+            border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
           ),
           child: Column(
             children: [
@@ -162,7 +161,7 @@ class LoginPage extends ConsumerWidget {
                 error.toString(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.red.withOpacity(0.8),
+                      color: Colors.red.withValues(alpha: 0.8),
                     ),
               ),
             ],

@@ -15,17 +15,23 @@ class LoginNotifier extends StateNotifier<AsyncValue<void>> {
   final SupabaseClient _supabaseClient;
   static const String _webClientId =
       '548737429195-f7pk5bvg9r8m5001hsi3l9jgqf3d6p4c.apps.googleusercontent.com';
-
   Future<bool> signInWithGoogle() async {
     try {
       state = const AsyncValue.loading();
 
+      // กำหนดค่า GoogleSignIn
       final GoogleSignIn googleSignIn = GoogleSignIn(
         serverClientId: _webClientId,
+        scopes: ['email'],
       );
+
+      // บังคับให้ผู้ใช้ Sign Out เพื่อรีเซ็ตสถานะ
+      await googleSignIn.signOut();
+
+      // เรียก Sign In ใหม่
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        state = const AsyncValue.data(null);
+        state = const AsyncValue.data(null); // ผู้ใช้ยกเลิกการเลือกบัญชี
         return false;
       }
 
@@ -37,6 +43,7 @@ class LoginNotifier extends StateNotifier<AsyncValue<void>> {
         throw 'ไม่พบ Access Token หรือ ID Token';
       }
 
+      // ใช้ idToken และ accessToken สำหรับเซสชันใหม่
       final response = await _supabaseClient.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
@@ -44,7 +51,7 @@ class LoginNotifier extends StateNotifier<AsyncValue<void>> {
       );
 
       if (response.session != null) {
-        state = const AsyncValue.data(null);
+        state = const AsyncValue.data(null); // การลงชื่อเข้าใช้สำเร็จ
         return true;
       }
 

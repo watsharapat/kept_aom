@@ -31,7 +31,15 @@ final lightTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.indigo,
       backgroundColor: Colors.white,
-      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: Colors.indigo,
+      backgroundColor: Colors.white,
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
@@ -43,13 +51,15 @@ final lightTheme = ThemeData(
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
+    fillColor: Colors.grey[50],
+    filled: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.black12),
+      borderSide: BorderSide(color: Colors.grey[200]!),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.black45),
+      borderSide: BorderSide(color: Colors.grey[300]!),
     ),
     labelStyle: TextStyle(color: Colors.indigo),
     hintStyle: TextStyle(color: Colors.grey),

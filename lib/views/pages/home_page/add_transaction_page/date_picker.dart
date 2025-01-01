@@ -26,25 +26,25 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-        textStyle: const TextStyle(fontSize: 14),
-        side: const BorderSide(width: 1, color: Colors.black26),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-      onPressed: () async {
-        final DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-        );
-        if (pickedDate != null && pickedDate != _selectedDate) {
-          _handleDateChanged(pickedDate);
-        }
-      },
-      child: Text(DateFormat('yyyy-MM-dd').format(_selectedDate)),
-    );
+        style: Theme.of(context).outlinedButtonTheme.style,
+        onPressed: () async {
+          final DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: _selectedDate,
+            firstDate: DateTime(1900),
+            lastDate: DateTime(2100),
+          );
+          if (pickedDate != null && pickedDate != _selectedDate) {
+            _handleDateChanged(pickedDate);
+          }
+        },
+        child: Text(
+          DateFormat('yyyy-MM-dd').format(_selectedDate),
+          //       style: Theme.of(context)
+          //           .textTheme
+          //           .bodyMedium
+          //           ?.copyWith(fontWeight: FontWeight.w600)),
+          // );
+        ));
   }
 }

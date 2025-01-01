@@ -5,6 +5,7 @@ import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/utils/theme.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -36,7 +37,14 @@ class MyApp extends ConsumerWidget {
         home: Consumer(
           builder: (context, ref, child) {
             if (loginState is AsyncLoading) {
-              return CircularProgressIndicator();
+              return Scaffold(
+                body: Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.blue,
+                    size: 200,
+                  ),
+                ),
+              );
             } else {
               final user = Supabase.instance.client.auth.currentUser;
               if (user != null) {

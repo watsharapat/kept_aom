@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
@@ -167,7 +168,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(32)),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           child: Column(
             //mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,15 +191,15 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       height: 60,
                       width: 120,
                       child: CustomToggleButton(
-                        colors: const [Color(0xff4A73FA)],
+                        colors: [Theme.of(context).primaryColor],
                         onSelectionChanged: (int value) {
                           setState(() {
                             _via = value == 0 ? 'Cash' : 'Credit Card';
                           });
                         },
                         icons: const [
-                          Icon(Icons.attach_money),
-                          Icon(Icons.credit_card_rounded)
+                          FaIcon(FontAwesomeIcons.moneyBill, size: 16),
+                          Icon(Icons.credit_card_rounded, size: 24)
                         ],
                       ),
                     ),
@@ -208,16 +209,16 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       child: SizedBox(
                         height: 60,
                         child: DatepickerWidget(
-                          onDateChange: (DateTime) {
+                          onDateChange: (dateTime) {
                             setState(() {
-                              _date = DateTime;
+                              _date = dateTime;
                             });
                           },
                         ),
                       ))
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.only(left: 8),
                 alignment: Alignment.centerLeft,
@@ -235,7 +236,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       height: 60,
                       width: 120,
                       child: CustomToggleButton(
-                        colors: const [Color(0xff4A73FA)],
+                        colors: [Theme.of(context).primaryColor],
                         onSelectionChanged: (int value) {
                           setState(() {
                             _typeId = value == 0 ? 1 : 2;
@@ -255,12 +256,11 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         child: TextField(
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                              border:
+                                  Theme.of(context).inputDecorationTheme.border,
                               focusedBorder: Theme.of(context)
                                   .inputDecorationTheme
-                                  .focusedBorder,
-                              border: Theme.of(context)
-                                  .inputDecorationTheme
-                                  .border),
+                                  .focusedBorder),
                           onChanged: (value) {
                             //TO DO move to abs to Function add transaction to avoid using temporary value of _typeId
                             setState(() {
