@@ -1,39 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kept_aom/viewmodels/theme_provider.dart';
-import 'package:kept_aom/views/pages/home_page/home_page.dart';
-import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
+import 'package:go_router/go_router.dart';
+
+// Provider สำหรับเก็บ index ของ bottom nav
+final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
 class BottomNavBar extends ConsumerWidget {
-  final int currentIndex;
+  const BottomNavBar({super.key});
 
-  const BottomNavBar({
-    super.key,
-    required this.currentIndex,
-  });
-
-  void _onItemTapped(BuildContext context, int index) {
+  void _onItemTapped(BuildContext context, WidgetRef ref, int index) {
+    final currentIndex = ref.read(bottomNavIndexProvider);
     if (index == currentIndex) return;
+
+    ref.read(bottomNavIndexProvider.notifier).state = index;
 
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        context.go('/home');
         break;
       case 1:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const TransactionsPage()),
-        );
+        context.go('/transactions');
         break;
-      case 2:
-        //screen = const DashboardScreen();
-        break;
-      case 3:
-        //screen = const SettingsScreen();
-        break;
+      // case 2:
+      //   context.go('/dashboard');
+      //   break;
+      // case 3:
+      //   context.go('/settings');
+      //   break;
       default:
         return;
     }
@@ -41,13 +34,11 @@ class BottomNavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.read(themeProvider.notifier);
-    final themeMode = ref.watch(themeProvider);
+    final currentIndex = ref.watch(bottomNavIndexProvider);
+
     return Container(
-      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -56,28 +47,24 @@ class BottomNavBar extends ConsumerWidget {
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: currentIndex,
-          onTap: (index) => _onItemTapped(context, index),
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Theme.of(context).primaryColor,
-          unselectedItemColor: Theme.of(context).disabledColor,
-          backgroundColor: Theme.of(context).cardTheme.color,
-          iconSize: 30,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long), label: 'Transaction'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard), label: 'Dashboard'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Setting'),
-          ],
-        ),
+      child: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        currentIndex: currentIndex,
+        onTap: (index) => _onItemTapped(context, ref, index),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).disabledColor,
+        backgroundColor: Theme.of(context).cardTheme.color,
+        iconSize: 30,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long), label: 'Transaction'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
+        ],
       ),
     );
   }

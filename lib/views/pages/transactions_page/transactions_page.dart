@@ -24,9 +24,6 @@ class TransactionsPage extends ConsumerWidget {
         length: 2,
         child: Scaffold(
             extendBodyBehindAppBar: false,
-            bottomNavigationBar: const BottomNavBar(
-              currentIndex: 1,
-            ),
             appBar: AppBar(
               forceMaterialTransparency: true,
               toolbarHeight: 80,
@@ -152,7 +149,10 @@ class TransactionListView extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -161,7 +161,7 @@ class TransactionListView extends StatelessWidget {
           ),
         ],
       ),
-      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      margin: const EdgeInsets.only(left: 16, right: 16),
       child: ListView.builder(
         itemCount: transactionsByDate.length,
         itemBuilder: (context, index) {

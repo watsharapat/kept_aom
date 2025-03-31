@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/viewmodels/login_provider.dart';
 
@@ -104,9 +105,7 @@ class LoginPage extends ConsumerWidget {
           final success =
               await ref.read(loginProvider.notifier).signInWithGoogle();
           if (success && context.mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+            context.pushReplacement('/home');
           }
         },
         child: Row(

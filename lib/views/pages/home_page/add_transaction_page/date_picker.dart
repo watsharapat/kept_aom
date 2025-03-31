@@ -15,36 +15,49 @@ class DatepickerWidget extends StatefulWidget {
 
 class _DatepickerWidgetState extends State<DatepickerWidget> {
   DateTime _selectedDate = DateTime.now();
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: DateFormat('yMMMEd').format(_selectedDate),
+    );
+  }
 
   void _handleDateChanged(DateTime newDate) {
     setState(() {
       _selectedDate = newDate;
+      _controller.text = DateFormat('yMMMEd').format(newDate);
     });
     widget.onDateChange(newDate);
   }
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-        style: Theme.of(context).outlinedButtonTheme.style,
-        onPressed: () async {
-          final DateTime? pickedDate = await showDatePicker(
-            context: context,
-            initialDate: _selectedDate,
-            firstDate: DateTime(1900),
-            lastDate: DateTime(2100),
-          );
-          if (pickedDate != null && pickedDate != _selectedDate) {
-            _handleDateChanged(pickedDate);
-          }
-        },
-        child: Text(
-          DateFormat('yyyy-MM-dd').format(_selectedDate),
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .bodyMedium
-          //           ?.copyWith(fontWeight: FontWeight.w600)),
-          // );
-        ));
+    return TextField(
+      controller: _controller,
+      readOnly: true,
+      onTap: () async {
+        final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: _selectedDate,
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2100),
+        );
+        if (pickedDate != null && pickedDate != _selectedDate) {
+          _handleDateChanged(pickedDate);
+        }
+      },
+      decoration: InputDecoration(
+          labelText: 'Select Date',
+          border: Theme.of(context).inputDecorationTheme.border,
+          focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
+      style: Theme.of(context)
+          .textTheme
+          .bodyMedium
+          ?.copyWith(fontWeight: FontWeight.w600),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
@@ -29,9 +30,6 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: false,
-      bottomNavigationBar: const BottomNavBar(
-        currentIndex: 0,
-      ),
       appBar: AppBar(
         forceMaterialTransparency: true,
         toolbarHeight: 80,
@@ -132,9 +130,7 @@ class HomePage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddTransactionPage()),
-          );
+          context.push('/addTransaction');
         },
         child: const Icon(Icons.add),
       ),
@@ -152,7 +148,7 @@ class HomePage extends ConsumerWidget {
           center: Alignment.bottomRight,
           radius: 3,
           colors: [
-            Colors.indigo,
+            Color(0xFF3F51B5),
             Colors.black87,
           ],
         ),

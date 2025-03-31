@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kept_aom/router/router.dart';
 import 'package:kept_aom/viewmodels/login_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
@@ -24,36 +25,17 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final loginState = ref.watch(loginProvider);
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'KeptAom',
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: themeMode,
-        // theme: ThemeData(
-        //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        //   useMaterial3: true,
-        // ),
-        home: Consumer(
-          builder: (context, ref, child) {
-            if (loginState is AsyncLoading) {
-              return Scaffold(
-                body: Center(
-                  child: LoadingAnimationWidget.staggeredDotsWave(
-                    color: Colors.blue,
-                    size: 200,
-                  ),
-                ),
-              );
-            } else {
-              final user = Supabase.instance.client.auth.currentUser;
-              if (user != null) {
-                return HomePage(); // ผู้ใช้ล็อกอินแล้ว
-              } else {
-                return LoginPage(); // ผู้ใช้ยังไม่ได้ล็อกอิน
-              }
-            }
-          },
-        ));
+    return MaterialApp.router(
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+      title: 'KeptAom',
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeMode,
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+      //   useMaterial3: true,
+      // ),
+    );
   }
 }

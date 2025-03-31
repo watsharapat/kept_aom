@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
+import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/date_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/emoji_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/quick_title_button.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -33,6 +36,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   void initState() {
     super.initState();
     // เพิ่ม Listener เพื่อตรวจจับการเปลี่ยนแปลงของข้อความ
+    // ref.watch(themeProvider);
     _titleController.addListener(() {
       setState(() {
         _title = _titleController.text;
@@ -49,6 +53,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   @override
   Widget build(BuildContext context) {
     final provider = ref.watch(transactionProvider);
+    //final theme = ref.watch(themeProvider);
 
     return Scaffold(
         //backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -62,11 +67,11 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(99),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
-                  color: Colors.black12,
+                  color: AppColors.netural.withValues(alpha: 0.1),
                   blurRadius: 10,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -75,33 +80,24 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
             child: Row(
               children: [
-                Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Material(
-                      color: Colors.transparent,
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.hardEdge,
-                      child: InkWell(
-                          splashColor: Colors.black
-                              .withValues(alpha: 0.1), // สีตอนกดค้าง
-                          highlightColor: Colors.black
-                              .withValues(alpha: 0.1), // สีตอนกดแล้วปล่อย
-                          onTap: () {
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            child: const Icon(
-                              Icons.close_rounded,
-                              size: 24,
-                            ),
-                          )),
-                    )),
+                Container(
+                  width: 36,
+                  height: 36,
+                  child: IconButton(
+                    style: Theme.of(context).iconButtonTheme.style?.copyWith(
+                          backgroundColor:
+                              WidgetStateProperty.all(AppColors.danger),
+                          foregroundColor:
+                              WidgetStateProperty.all(AppColors.lightSurface),
+                        ),
+                    onPressed: () {
+                      context.pop();
+                    },
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ),
                 // ส่วนแสดงข้อความ
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
                 const Expanded(
                   child: Text(
                     'Add transaction',
@@ -117,10 +113,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           ),
           actions: [
             Container(
-              height: 50,
-              width: 50,
-              decoration: const BoxDecoration(
-                boxShadow: [
+              height: 60,
+              width: 60,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(99),
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12, // สีของเงา
                     blurRadius: 10, // ระดับการเบลอของเงา
@@ -128,29 +127,33 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   ),
                 ],
               ),
-              margin: const EdgeInsets.only(
-                  left: 16, right: 16, top: 4, bottom: 16),
-              child: IconButton.filledTonal(
-                style: Theme.of(context).iconButtonTheme.style,
-                //TO DO ดักการใส่ข้อมูลเปล่า
-                onPressed: () {
-                  provider.addTransaction(
-                    Transaction(
-                      userId: Supabase.instance.client.auth.currentUser!.id,
-                      date: _date,
-                      amount: _amount,
-                      via: _via,
-                      typeId: _typeId,
-                      title: "$_emoji $_title",
-                      description: _description,
-                    ),
-                  );
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(
-                  Icons.done_rounded,
-                  weight: 128,
-                  color: Colors.green,
+              margin: const EdgeInsets.only(right: 16, top: 4, bottom: 16),
+              child: Container(
+                width: 36,
+                height: 36,
+                child: IconButton(
+                  style: Theme.of(context).iconButtonTheme.style?.copyWith(
+                        backgroundColor:
+                            WidgetStateProperty.all(AppColors.success),
+                        foregroundColor:
+                            WidgetStateProperty.all(AppColors.lightSurface),
+                      ),
+                  onPressed: () {
+                    provider.addTransaction(
+                      Transaction(
+                        userId: Supabase.instance.client.auth.currentUser!.id,
+                        date: _date,
+                        amount: _amount,
+                        via: _via,
+                        typeId: _typeId,
+                        title: "$_emoji $_title",
+                        description: _description,
+                      ),
+                    );
+
+                    context.pop();
+                  },
+                  icon: const Icon(Icons.done_rounded),
                 ),
               ),
             )
@@ -158,14 +161,14 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
         ),
         body: Container(
           decoration: BoxDecoration(
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12, // สีของเงา
-                  blurRadius: 10, // ระดับการเบลอของเงา
-                  offset: Offset(0, 4), // ตำแหน่งของเงา
-                ),
-              ],
-              color: Theme.of(context).cardColor,
+              // boxShadow: const [
+              //   BoxShadow(
+              //     color: Colors.black12, // สีของเงา
+              //     blurRadius: 10, // ระดับการเบลอของเงา
+              //     offset: Offset(0, 4), // ตำแหน่งของเงา
+              //   ),
+              // ],
+              //color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(32)),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),

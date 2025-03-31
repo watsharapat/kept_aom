@@ -1,150 +1,238 @@
 import 'package:flutter/material.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 
 final lightTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Colors.indigo,
-  cardColor: Colors.white,
-  scaffoldBackgroundColor: const Color.fromARGB(255, 247, 247, 247),
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.white,
-    titleTextStyle: TextStyle(
-      color: Colors.black87,
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-    ),
-    iconTheme: IconThemeData(color: Colors.black87),
+  primaryColor: AppColors.primary,
+  cardColor: AppColors.lightSurface,
+  scaffoldBackgroundColor: AppColors.lightBackground,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: AppColors.lightBackground,
+    titleTextStyle: AppTextStyle.subtitleOnLight,
+    iconTheme: IconThemeData(color: AppColors.textPrimary),
   ),
 
   //Text Theme
-  textTheme: TextTheme(
+  textTheme: const TextTheme(
     displayLarge: TextStyle(
-        fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimaryOnDark),
     displayMedium: TextStyle(
-        fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimaryOnDark),
     displaySmall: TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[800]),
-    bodyLarge: TextStyle(fontSize: 16, color: Colors.grey[800]),
-    bodyMedium: TextStyle(fontSize: 14, color: Colors.grey[800]),
-    bodySmall: TextStyle(fontSize: 12, color: Colors.grey[800]),
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary),
+    bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+    bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+    bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimary),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      foregroundColor: Colors.indigo,
-      backgroundColor: Colors.white,
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.lightSurface,
+      textStyle: AppTextStyle.subtitleOnDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      foregroundColor: Colors.indigo,
-      backgroundColor: Colors.white,
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.lightSurface,
+      textStyle: AppTextStyle.subtitleOnDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
   iconButtonTheme: IconButtonThemeData(
     style: IconButton.styleFrom(
-      foregroundColor: Colors.indigo,
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      iconSize: 20,
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.lightSurface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
-    fillColor: Colors.grey[50],
+    fillColor: AppColors.lightSurface,
     filled: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey[200]!),
+      borderSide: const BorderSide(color: AppColors.border),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey[300]!),
+      borderSide: const BorderSide(color: AppColors.primary),
     ),
-    labelStyle: TextStyle(color: Colors.indigo),
-    hintStyle: TextStyle(color: Colors.grey),
+    labelStyle: AppTextStyle.subtitleOnLight,
+    hintStyle: AppTextStyle.subtitleOnLight,
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.indigo,
-    foregroundColor: Colors.white,
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: AppColors.primary,
+    foregroundColor: AppColors.lightSurface,
   ),
   cardTheme: CardTheme(
-    color: Colors.white,
+    color: AppColors.lightSurface,
     elevation: 4,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
-      side: BorderSide(
-        color: Colors.indigo.shade100, // เส้นขอบ
-        width: 1,
-      ),
+      side: const BorderSide(color: AppColors.border, width: 1),
     ),
+  ),
+  datePickerTheme: DatePickerThemeData(
+    backgroundColor: AppColors.lightSurface,
+    headerBackgroundColor: AppColors.primary,
+    headerForegroundColor: AppColors.textPrimaryOnDark,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.primary; // สีพื้นหลังของวันที่เลือก
+        }
+        return AppColors.lightSurface; // สีพื้นหลังของวันที่ปกติ
+      },
+    ),
+    dayForegroundColor: WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.textPrimaryOnDark; // สีตัวอักษรของวันที่เลือก
+        }
+        return AppColors.textPrimary; // สีตัวอักษรของวันที่ปกติ
+      },
+    ),
+    todayBackgroundColor:
+        WidgetStateProperty.all(AppColors.primary.withAlpha(2)),
+    todayForegroundColor: WidgetStateProperty.all(AppColors.primary),
+    cancelButtonStyle: TextButton.styleFrom(
+      textStyle: AppTextStyle.bodyOnLight,
+      foregroundColor: AppColors.textSecondary,
+    ),
+    confirmButtonStyle: TextButton.styleFrom(
+      foregroundColor: AppColors.primary,
+      textStyle: AppTextStyle.bodyOnLight.copyWith(fontWeight: FontWeight.bold),
+    ),
+    rangePickerHeaderBackgroundColor: AppColors.primary,
+    rangePickerBackgroundColor: AppColors.primary,
   ),
 );
 
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
-  primaryColor: Colors.indigo,
-  cardColor: Colors.grey[850],
-  scaffoldBackgroundColor: Colors.black87,
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.grey[850],
-    titleTextStyle: TextStyle(
-      color: Colors.white,
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-    ),
-    iconTheme: IconThemeData(color: Colors.white),
+  primaryColor: AppColors.primary,
+  cardColor: AppColors.darkSurface,
+  scaffoldBackgroundColor: AppColors.darkBackground,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: AppColors.darkBackground,
+    titleTextStyle: AppTextStyle.subtitleOnDark,
+    iconTheme: IconThemeData(color: AppColors.textPrimaryOnDark),
   ),
-  textTheme: TextTheme(
-      displayLarge: TextStyle(
-          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-      displayMedium: TextStyle(
-          fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
-      displaySmall: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
-      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
-      bodySmall: TextStyle(fontSize: 12, color: Colors.white)),
+
+  //Text Theme
+  textTheme: const TextTheme(
+    displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimaryOnDark),
+    displayMedium: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimaryOnDark),
+    displaySmall: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimaryOnDark),
+    bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimaryOnDark),
+    bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimaryOnDark),
+    bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimaryOnDark),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      foregroundColor: Colors.indigo.shade400,
-      backgroundColor: Colors.grey[850],
-      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.darkSurface,
+      textStyle: AppTextStyle.subtitleOnDark,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.darkSurface,
+      textStyle: AppTextStyle.subtitleOnDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
   iconButtonTheme: IconButtonThemeData(
     style: IconButton.styleFrom(
-      foregroundColor: Colors.indigo.shade400,
-      backgroundColor: Colors.grey[850],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      iconSize: 20,
+      foregroundColor: AppColors.primary,
+      backgroundColor: AppColors.darkSurface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
+    fillColor: AppColors.textPrimaryOnDark,
+    filled: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white38),
+      borderSide: const BorderSide(color: AppColors.border),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white),
+      borderSide: const BorderSide(color: AppColors.primary),
     ),
-    labelStyle: TextStyle(color: Colors.indigo.shade300),
-    hintStyle: TextStyle(color: Colors.grey.shade500),
+    labelStyle: AppTextStyle.subtitleOnDark,
+    hintStyle: AppTextStyle.subtitleOnDark,
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.indigo.shade400,
-    foregroundColor: Colors.white,
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: AppColors.primary,
+    foregroundColor: AppColors.textPrimaryOnDark,
   ),
   cardTheme: CardTheme(
-    color: Colors.grey[850],
+    color: AppColors.darkSurface,
     elevation: 4,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
-      side: BorderSide(
-        color: Colors.indigo.shade700, // เส้นขอบ
-        width: 1,
-      ),
+      side: const BorderSide(color: AppColors.border, width: 1),
     ),
+  ),
+  datePickerTheme: DatePickerThemeData(
+    backgroundColor: AppColors.darkSurface,
+    headerBackgroundColor: AppColors.primary,
+    headerForegroundColor: AppColors.textPrimaryOnDark,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.primary; // สีพื้นหลังของวันที่เลือก
+        }
+        return AppColors.darkSurface; // สีพื้นหลังของวันที่ปกติ
+      },
+    ),
+    dayForegroundColor: WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.textPrimaryOnDark; // สีตัวอักษรของวันที่เลือก
+        }
+        return AppColors.textPrimary; // สีตัวอักษรของวันที่ปกติ
+      },
+    ),
+    todayBackgroundColor:
+        WidgetStateProperty.all(AppColors.primary.withAlpha(2)),
+    todayForegroundColor: WidgetStateProperty.all(AppColors.primary),
+    cancelButtonStyle: TextButton.styleFrom(
+      textStyle: AppTextStyle.bodyOnDark,
+      foregroundColor: AppColors.textSecondaryOnDark,
+    ),
+    confirmButtonStyle: TextButton.styleFrom(
+      foregroundColor: AppColors.primary,
+      textStyle: AppTextStyle.bodyOnDark.copyWith(fontWeight: FontWeight.bold),
+    ),
+    rangePickerHeaderBackgroundColor: AppColors.primary,
+    rangePickerBackgroundColor: AppColors.primary,
   ),
 );
