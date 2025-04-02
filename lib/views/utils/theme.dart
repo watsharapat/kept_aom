@@ -30,6 +30,7 @@ final lightTheme = ThemeData(
     bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
     bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimary),
   ),
+
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: AppColors.primary,
@@ -74,10 +75,9 @@ final lightTheme = ThemeData(
   ),
   cardTheme: CardTheme(
     color: AppColors.lightSurface,
-    elevation: 4,
+    shadowColor: AppColors.netural.withAlpha(50),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-      side: const BorderSide(color: AppColors.border, width: 1),
+      borderRadius: BorderRadius.circular(16),
     ),
   ),
   datePickerTheme: DatePickerThemeData(
@@ -194,8 +194,8 @@ final darkTheme = ThemeData(
     color: AppColors.darkSurface,
     elevation: 4,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-      side: const BorderSide(color: AppColors.border, width: 1),
+      borderRadius: BorderRadius.circular(16),
+      // side: const BorderSide(color: AppColors.border, width: 1),
     ),
   ),
   datePickerTheme: DatePickerThemeData(

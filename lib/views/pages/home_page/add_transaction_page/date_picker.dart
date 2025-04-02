@@ -36,6 +36,16 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      decoration: InputDecoration(
+        fillColor: Theme.of(context).cardColor,
+        labelStyle: Theme.of(context).textTheme.bodyMedium,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16), // Custom border radius
+          borderSide:
+              const BorderSide(color: Colors.red), // Custom border color
+        ),
+      ),
+      textAlign: TextAlign.center,
       controller: _controller,
       readOnly: true,
       onTap: () async {
@@ -50,14 +60,6 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
           _handleDateChanged(pickedDate);
         }
       },
-      decoration: InputDecoration(
-          labelText: 'Select Date',
-          border: Theme.of(context).inputDecorationTheme.border,
-          focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
-      style: Theme.of(context)
-          .textTheme
-          .bodyMedium
-          ?.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }

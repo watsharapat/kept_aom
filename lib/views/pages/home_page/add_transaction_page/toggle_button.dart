@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 
 class CustomToggleButton extends StatefulWidget {
   final ValueChanged<int> onSelectionChanged;
@@ -33,10 +34,10 @@ class _CustomToggleButtonState extends State<CustomToggleButton> {
         widget.onSelectionChanged(selectedValue);
       },
       isSelected: [selectedValue == 0, selectedValue == 1],
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       fillColor: widget.colors[0],
       selectedColor: Colors.white,
-      color: Colors.black45,
+      color: AppColors.disabledWidget,
       children: widget.icons,
     );
   }
