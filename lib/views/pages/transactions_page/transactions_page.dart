@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -31,7 +32,7 @@ class TransactionsPage extends ConsumerWidget {
               leading: Container(
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(99),
                   boxShadow: const [
                     BoxShadow(
@@ -43,21 +44,20 @@ class TransactionsPage extends ConsumerWidget {
                 ),
                 margin: const EdgeInsets.only(
                     left: 16, right: 16, top: 4, bottom: 16),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                 child: Row(
                   children: [
                     Padding(
                         padding: const EdgeInsets.all(4),
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Colors.indigo.shade50,
+                              color: AppColors.primary,
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(99))),
                           height: 40,
                           width: 40,
                           child: Icon(
-                            color: Colors.indigo.shade600,
+                            color: AppColors.lightBackground,
                             Icons.receipt_long_rounded,
                             size: 24,
                           ),
@@ -82,7 +82,7 @@ class TransactionsPage extends ConsumerWidget {
                     height: 60,
                     width: 150,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(99),
                       boxShadow: const [
                         BoxShadow(
@@ -97,8 +97,8 @@ class TransactionsPage extends ConsumerWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                     child: const TabBar(
-                      labelColor: Colors.indigo,
-                      unselectedLabelColor: Colors.grey,
+                      labelColor: AppColors.primary,
+                      unselectedLabelColor: AppColors.textSecondary,
                       indicator: BoxDecoration(),
                       dividerHeight: 0,
                       dividerColor: Colors.transparent,
@@ -148,8 +148,8 @@ class TransactionListView extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
@@ -172,18 +172,34 @@ class TransactionListView extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                color: Colors.indigo,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Center(
-                  child: Text(
-                    dateStr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                //color: AppColors.primary,
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: [
+                    const Expanded(
+                      flex: 1,
+                      child: Divider(
+                        color: AppColors.border,
+                        thickness: 2,
+                      ),
                     ),
-                  ),
+                    Text(
+                      " $dateStr",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    const SizedBox(
+                        width: 8), // Add spacing between the text and the line
+                    const Expanded(
+                      flex: 8,
+                      child: Divider(
+                        color: AppColors.border,
+                        thickness: 2,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               ListView.builder(
@@ -231,8 +247,8 @@ class TransactionListView extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               color: transaction.typeId == 1
-                                  ? Colors.red[600]
-                                  : Colors.green[600]),
+                                  ? AppColors.danger
+                                  : AppColors.success),
                         ),
                       ),
                     ),

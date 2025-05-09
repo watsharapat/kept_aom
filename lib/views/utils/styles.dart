@@ -13,6 +13,7 @@ class AppColors {
   // Neutral Colors
   static const Color netural = Color(0xFF131416);
   //static const Color stroke = Color(0xFF8B91A0);
+  //static const Color border = Color.fromARGB(255, 231, 231, 231);
   static const Color border = Color(0xFFb8b9ba);
   //static const Color borderOnDark = Color(0xFFD9D9D9);
 

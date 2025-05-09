@@ -58,6 +58,11 @@ final lightTheme = ThemeData(
   inputDecorationTheme: InputDecorationTheme(
     fillColor: AppColors.lightSurface,
     filled: true,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.border),
+    ),
+    outlineBorder: const BorderSide(color: AppColors.border),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: const BorderSide(color: AppColors.border),
@@ -173,7 +178,7 @@ final darkTheme = ThemeData(
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
-    fillColor: AppColors.textPrimaryOnDark,
+    fillColor: AppColors.darkSurface,
     filled: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -218,7 +223,7 @@ final darkTheme = ThemeData(
         if (states.contains(WidgetState.selected)) {
           return AppColors.textPrimaryOnDark; // สีตัวอักษรของวันที่เลือก
         }
-        return AppColors.textPrimary; // สีตัวอักษรของวันที่ปกติ
+        return AppColors.textSecondaryOnDark; // สีตัวอักษรของวันที่ปกติ
       },
     ),
     todayBackgroundColor:

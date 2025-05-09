@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 
 class DatepickerWidget extends StatefulWidget {
   final Function(DateTime) onDateChange;
@@ -35,31 +36,40 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        fillColor: Theme.of(context).cardColor,
-        labelStyle: Theme.of(context).textTheme.bodyMedium,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16), // Custom border radius
-          borderSide:
-              const BorderSide(color: Colors.red), // Custom border color
+    return Material(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () async {
+          final DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: _selectedDate,
+            initialEntryMode: DatePickerEntryMode.calendarOnly,
+            firstDate: DateTime(1900),
+            lastDate: DateTime(2100),
+          );
+          if (pickedDate != null && pickedDate != _selectedDate) {
+            _handleDateChanged(pickedDate);
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            //color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Text(
+              DateFormat('yMMMEd').format(_selectedDate),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
-      textAlign: TextAlign.center,
-      controller: _controller,
-      readOnly: true,
-      onTap: () async {
-        final DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          initialEntryMode: DatePickerEntryMode.calendarOnly,
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-        );
-        if (pickedDate != null && pickedDate != _selectedDate) {
-          _handleDateChanged(pickedDate);
-        }
-      },
     );
   }
 }

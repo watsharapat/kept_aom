@@ -59,6 +59,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isFormValid = _amount > 0 && _title.isNotEmpty && _date != null;
     final provider = ref.watch(transactionProvider);
     //final theme = ref.watch(themeProvider);
 
@@ -97,9 +98,61 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         foregroundColor:
                             WidgetStateProperty.all(AppColors.lightSurface),
                       ),
-                  onPressed: () {
-                    context.pop();
-                  },
+                  onPressed: _amount > 0 ||
+                          _title.isNotEmpty ||
+                          _description.isNotEmpty
+                      ? () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                titleTextStyle: TextTheme.of(context)
+                                    .bodyLarge
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                                contentTextStyle:
+                                    TextTheme.of(context).bodyMedium,
+                                backgroundColor: Theme.of(context).cardColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: const Text('Unsaved transaction'),
+                                content: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  child: const Text(
+                                      'Are you sure you want to discard this transaction?'),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancel',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .color,
+                                        )),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      context.pop();
+                                    },
+                                    child: const Text('Discard',
+                                        style: TextStyle(
+                                          color: AppColors.danger,
+                                        )),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      : () {
+                          context.pop();
+                        },
                   icon: const Icon(Icons.close_rounded),
                 ),
               ),
@@ -140,25 +193,33 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               height: 36,
               child: IconButton(
                 style: Theme.of(context).iconButtonTheme.style?.copyWith(
-                      backgroundColor:
-                          WidgetStateProperty.all(AppColors.success),
+                      backgroundColor: WidgetStateProperty.all(
+                        isFormValid
+                            ? AppColors.success
+                            : AppColors.disabledWidget,
+                      ),
                       foregroundColor:
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
                 onPressed: () {
-                  provider.addTransaction(
-                    Transaction(
-                      userId: Supabase.instance.client.auth.currentUser!.id,
-                      date: _date,
-                      amount: _amount,
-                      via: _via,
-                      typeId: _typeId,
-                      title: "$_emoji $_title",
-                      description: _description,
-                    ),
-                  );
-
-                  context.pop();
+                  isFormValid
+                      ? () {
+                          provider.addTransaction(
+                            Transaction(
+                              userId:
+                                  Supabase.instance.client.auth.currentUser!.id,
+                              date: _date,
+                              amount: _amount,
+                              via: _via,
+                              typeId: _typeId,
+                              title: "$_emoji $_title",
+                              description: _description,
+                            ),
+                          );
+                          context.pop();
+                          provider.fetchTransactions();
+                        }
+                      : null;
                 },
                 icon: const Icon(Icons.done_rounded),
               ),
@@ -175,14 +236,26 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: themeMode == ThemeMode.light
+                      ? [
+                          BoxShadow(
+                            color: AppColors.netural.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ]
+                      : []),
               height: 60,
-              child: Expanded(child: DatepickerWidget(
+              child: DatepickerWidget(
                 onDateChange: (dateTime) {
                   setState(() {
                     _date = dateTime;
                   });
                 },
-              )),
+              ),
             ),
             const SizedBox(height: 24),
             Container(
@@ -208,11 +281,11 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                             : []),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
+                      // mainAxisSize: MainAxisSize.max,
                       children: [
-                        SizedBox(
-                          height: 48,
-                          width: 100,
+                        Flexible(
+                          // height: 48,
+                          // width: 100,
                           child: CustomToggleButton(
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
@@ -227,9 +300,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        SizedBox(
-                          height: 48,
-                          width: 100,
+                        Flexible(
+                          // height: 48,
+                          // width: 100,
                           child: CustomToggleButton(
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
@@ -247,30 +320,44 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      expands: true,
-                      maxLines: null,
-                      minLines: null,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 120,
+                    width: 240,
+                    child: Container(
+                      height: 120,
+                      alignment: Alignment.center,
+                      child: TextField(
+                        maxLines: 1,
+                        minLines: 1,
+                        textAlign: TextAlign.right,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                        decoration: InputDecoration(
+                          labelStyle:
+                              Theme.of(context).inputDecorationTheme.labelStyle,
                           border: Theme.of(context).inputDecorationTheme.border,
                           focusedBorder: Theme.of(context)
                               .inputDecorationTheme
-                              .focusedBorder),
-                      onChanged: (value) {
-                        //TO DO move to abs to Function add transaction to avoid using temporary value of _typeId
-                        setState(() {
-                          try {
-                            double doubleValue = double.parse(value);
-
-                            _amount = doubleValue;
-                          } catch (e) {
-                            debugPrint("Invalid input: $value");
-                          }
-                        });
-                      },
+                              .focusedBorder,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 32, horizontal: 8), // Adjust padding
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            try {
+                              double doubleValue = double.parse(value);
+                              _amount = doubleValue;
+                            } catch (e) {
+                              debugPrint("Invalid input: $value");
+                            }
+                          });
+                        },
+                      ),
                     ),
                   )
                 ],
@@ -290,7 +377,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           )
                         ]
                       : []),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding:
+                  const EdgeInsets.only(left: 12, bottom: 4, top: 4, right: 8),
               height: 80,
               child: Row(
                 children: [
@@ -304,7 +392,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           debugPrint(_title);
                         }),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Container(
                       height: 60,
@@ -324,45 +412,54 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   Container(
                     height: 60,
                     width: 40,
-                    child: QuickTitleButton(),
+                    child: QuickTitleButton(
+                      onTitleSelected: (selectedTitle) {
+                        String emojiFromTitle = selectedTitle.split(' ')[0];
+                        String titleWithoutEmoji =
+                            selectedTitle.split(' ').sublist(1).join(' ');
+                        setState(() {
+                          _titleController.text = titleWithoutEmoji;
+                          _title = titleWithoutEmoji;
+                          _emoji = emojiFromTitle;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
             Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                height: 84,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: themeMode == ThemeMode.light
-                        ? [
-                            BoxShadow(
-                              color: AppColors.netural.withValues(alpha: 0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            )
-                          ]
-                        : []),
-                child: Expanded(
-                  child: TextField(
-                    expands: true,
-                    minLines: null,
-                    maxLines: null,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                        focusedBorder: Theme.of(context)
-                            .inputDecorationTheme
-                            .focusedBorder,
-                        border: Theme.of(context).inputDecorationTheme.border),
-                    onChanged: (value) {
-                      setState(() {
-                        _description = value;
-                      });
-                    },
-                  ),
-                ))
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              height: 84,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: themeMode == ThemeMode.light
+                      ? [
+                          BoxShadow(
+                            color: AppColors.netural.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ]
+                      : []),
+              child: TextField(
+                expands: true,
+                minLines: null,
+                maxLines: null,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                    focusedBorder:
+                        Theme.of(context).inputDecorationTheme.focusedBorder,
+                    border: Theme.of(context).inputDecorationTheme.border),
+                onChanged: (value) {
+                  setState(() {
+                    _description = value;
+                  });
+                },
+              ),
+            )
           ],
         ),
       ),

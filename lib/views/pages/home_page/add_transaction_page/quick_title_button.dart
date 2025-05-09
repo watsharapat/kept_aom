@@ -3,11 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 
 class QuickTitleButton extends ConsumerWidget {
-  const QuickTitleButton({super.key});
+  final ValueChanged<String> onTitleSelected; // Callback for selected title
+
+  const QuickTitleButton({
+    super.key,
+    required this.onTitleSelected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       onPressed: () => _showQuickTitleSheet(context, ref),
       icon: const Icon(Icons.arrow_drop_down_circle_rounded),
     );
@@ -24,18 +30,31 @@ class QuickTitleButton extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        return Padding(
+        return Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+          ),
+          height: MediaQuery.of(context).size.height * 0.4,
           child: ListView.builder(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
             itemCount: provider.quickTitle.length,
             itemBuilder: (context, index) {
-              final title = provider.quickTitle[index].title ?? 'Untitled';
+              final title = provider.quickTitle[index].title ?? '💸 Untitled';
               return ListTile(
-                title: Text(title),
+                visualDensity: const VisualDensity(vertical: -2),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                leading: Text(title.split(' ')[0],
+                    style: const TextStyle(fontSize: 24)),
+                title: Text(
+                  title.split(' ').sublist(1).join(' '),
+                  style: TextTheme.of(context).bodyMedium,
+                ),
                 onTap: () {
-                  Navigator.pop(context, title); // Return selected title
+                  Navigator.pop(context); // Close the bottom sheet
+                  onTitleSelected(title); // Trigger the callback
                 },
               );
             },
