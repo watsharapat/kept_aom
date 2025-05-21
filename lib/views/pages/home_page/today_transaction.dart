@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 
 final ascendingProvider = StateProvider<bool>((ref) => false);
 
@@ -95,9 +96,22 @@ class TodayTransactions extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Today Transactions (${todaySum.toStringAsFixed(2)})',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      Row(
+                        children: [
+                          Text(
+                            'Today Transactions ',
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          Text(
+                            '(${todaySum.toStringAsFixed(2)})',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall
+                                ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w400),
+                          ),
+                        ],
                       ),
                       IconButton(
                         icon: Icon(

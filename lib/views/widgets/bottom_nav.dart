@@ -24,9 +24,9 @@ class BottomNavBar extends ConsumerWidget {
       // case 2:
       //   context.go('/dashboard');
       //   break;
-      // case 3:
-      //   context.go('/settings');
-      //   break;
+      case 3:
+        context.go('/settings');
+        break;
       default:
         return;
     }

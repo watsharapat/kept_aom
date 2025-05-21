@@ -201,26 +201,24 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       foregroundColor:
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
-                onPressed: () {
-                  isFormValid
-                      ? () {
-                          provider.addTransaction(
-                            Transaction(
-                              userId:
-                                  Supabase.instance.client.auth.currentUser!.id,
-                              date: _date,
-                              amount: _amount,
-                              via: _via,
-                              typeId: _typeId,
-                              title: "$_emoji $_title",
-                              description: _description,
-                            ),
-                          );
-                          context.pop();
-                          provider.fetchTransactions();
-                        }
-                      : null;
-                },
+                onPressed: isFormValid
+                    ? () {
+                        provider.addTransaction(
+                          Transaction(
+                            userId:
+                                Supabase.instance.client.auth.currentUser!.id,
+                            date: _date,
+                            amount: _amount,
+                            via: _via,
+                            typeId: _typeId,
+                            title: "$_emoji $_title",
+                            description: _description,
+                          ),
+                        );
+                        context.pop();
+                        provider.fetchTransactions();
+                      }
+                    : null,
                 icon: const Icon(Icons.done_rounded),
               ),
             ),
@@ -287,6 +285,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           // height: 48,
                           // width: 100,
                           child: CustomToggleButton(
+                            selectedIndex: _via == "Cash" ? 0 : 1,
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
                               setState(() {
@@ -304,6 +303,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           // height: 48,
                           // width: 100,
                           child: CustomToggleButton(
+                            selectedIndex: _typeId == 1 ? 0 : 1,
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
                               setState(() {
@@ -414,13 +414,15 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     width: 40,
                     child: QuickTitleButton(
                       onTitleSelected: (selectedTitle) {
-                        String emojiFromTitle = selectedTitle.split(' ')[0];
+                        final title = selectedTitle.title;
+                        String emojiFromTitle = title.split(' ')[0];
                         String titleWithoutEmoji =
-                            selectedTitle.split(' ').sublist(1).join(' ');
+                            title.split(' ').sublist(1).join(' ');
                         setState(() {
                           _titleController.text = titleWithoutEmoji;
                           _title = titleWithoutEmoji;
                           _emoji = emojiFromTitle;
+                          _typeId = selectedTitle.typeId;
                         });
                       },
                     ),

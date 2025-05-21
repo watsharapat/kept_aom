@@ -4,6 +4,7 @@ import 'package:kept_aom/views/utils/styles.dart';
 class CustomToggleButton extends StatefulWidget {
   final ValueChanged<int> onSelectionChanged;
   final List<Widget> icons;
+  final int selectedIndex;
 
   final List<Color> colors;
 
@@ -11,7 +12,8 @@ class CustomToggleButton extends StatefulWidget {
       {super.key,
       required this.onSelectionChanged,
       required this.icons,
-      required this.colors});
+      required this.colors,
+      required this.selectedIndex});
 
   @override
   _CustomToggleButtonState createState() => _CustomToggleButtonState();
@@ -19,6 +21,22 @@ class CustomToggleButton extends StatefulWidget {
 
 class _CustomToggleButtonState extends State<CustomToggleButton> {
   int selectedValue = 0;
+  @override
+  void initState() {
+    super.initState();
+    selectedValue = widget.selectedIndex; // Initialize with the passed value
+  }
+
+  @override
+  void didUpdateWidget(CustomToggleButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedIndex != oldWidget.selectedIndex) {
+      setState(() {
+        selectedValue =
+            widget.selectedIndex; // Update state when parent changes
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kept_aom/models/quick_title_model.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 
 class QuickTitleButton extends ConsumerWidget {
-  final ValueChanged<String> onTitleSelected; // Callback for selected title
+  final ValueChanged<QuickTitle> onTitleSelected; // Callback for selected title
 
   const QuickTitleButton({
     super.key,
@@ -34,6 +35,7 @@ class QuickTitleButton extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           height: MediaQuery.of(context).size.height * 0.4,
           child: ListView.builder(
@@ -42,6 +44,7 @@ class QuickTitleButton extends ConsumerWidget {
             itemCount: provider.quickTitle.length,
             itemBuilder: (context, index) {
               final title = provider.quickTitle[index].title ?? '💸 Untitled';
+              final quickTitle = provider.quickTitle[index];
               return ListTile(
                 visualDensity: const VisualDensity(vertical: -2),
                 contentPadding:
@@ -52,9 +55,17 @@ class QuickTitleButton extends ConsumerWidget {
                   title.split(' ').sublist(1).join(' '),
                   style: TextTheme.of(context).bodyMedium,
                 ),
+                trailing: Text(
+                  quickTitle.typeId == 2
+                      ? 'Income'
+                      : quickTitle.typeId == 1
+                          ? 'Expense'
+                          : 'Transfer',
+                  style: TextTheme.of(context).bodyMedium,
+                ),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
-                  onTitleSelected(title); // Trigger the callback
+                  onTitleSelected(quickTitle); // Trigger the callback
                 },
               );
             },

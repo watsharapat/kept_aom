@@ -9,6 +9,7 @@ import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kept_aom/models/transaction_model.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class TransactionsPage extends ConsumerWidget {
   const TransactionsPage({super.key});
@@ -28,7 +29,7 @@ class TransactionsPage extends ConsumerWidget {
             appBar: AppBar(
               forceMaterialTransparency: true,
               toolbarHeight: 80,
-              leadingWidth: 250,
+              leadingWidth: 200,
               leading: Container(
                 height: 60,
                 decoration: BoxDecoration(
@@ -44,34 +45,31 @@ class TransactionsPage extends ConsumerWidget {
                 ),
                 margin: const EdgeInsets.only(
                     left: 16, right: 16, top: 4, bottom: 16),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
                 child: Row(
                   children: [
-                    Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(99))),
-                          height: 40,
-                          width: 40,
-                          child: Icon(
-                            color: AppColors.lightBackground,
-                            Icons.receipt_long_rounded,
-                            size: 24,
-                          ),
-                        )),
-                    // ส่วนแสดงข้อความ
+                    // Padding(
+                    //     padding: const EdgeInsets.all(4),
+                    //     child: Container(
+                    //       decoration: BoxDecoration(
+                    //           color: AppColors.primary,
+                    //           borderRadius:
+                    //               const BorderRadius.all(Radius.circular(99))),
+                    //       height: 40,
+                    //       width: 40,
+                    //       child: Icon(
+                    //         color: AppColors.lightBackground,
+                    //         Icons.receipt_long_rounded,
+                    //         size: 24,
+                    //       ),
+                    //     )),
+                    // // ส่วนแสดงข้อความ
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Transactions',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
                     )
                   ],
@@ -263,14 +261,147 @@ class TransactionListView extends StatelessWidget {
   }
 }
 
-class TransactionCalendarView extends StatelessWidget {
+class TransactionCalendarView extends StatefulWidget {
   final List<Transaction> transactions;
+
   const TransactionCalendarView({super.key, required this.transactions});
 
   @override
+  _TransactionCalendarViewState createState() =>
+      _TransactionCalendarViewState();
+}
+
+class _TransactionCalendarViewState extends State<TransactionCalendarView> {
+  late Map<DateTime, List<Transaction>> _groupedTransactions;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _groupedTransactions = _groupTransactions(widget.transactions);
+  }
+
+  Map<DateTime, List<Transaction>> _groupTransactions(
+      List<Transaction> transactions) {
+    Map<DateTime, List<Transaction>> groupedTransactions = {};
+    for (var transaction in transactions) {
+      final date = DateTime(
+        transaction.date.year,
+        transaction.date.month,
+        transaction.date.day,
+      ); // Normalize to remove time
+      if (groupedTransactions.containsKey(date)) {
+        groupedTransactions[date]!.add(transaction);
+      } else {
+        groupedTransactions[date] = [transaction];
+      }
+    }
+    return groupedTransactions;
+  }
+
+  List<Transaction> _getTransactionsForDay(DateTime day) {
+    final normalizedDay = DateTime(day.year, day.month, day.day);
+    return _groupedTransactions[normalizedDay] ?? [];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Calendar here soon'),
+    return Column(
+      children: [
+        TableCalendar(
+          firstDay: DateTime.utc(2000, 1, 1),
+          lastDay: DateTime.utc(2100, 12, 31),
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          calendarFormat: CalendarFormat.month,
+          eventLoader: _getTransactionsForDay,
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay; // Update focused day
+            });
+          },
+          calendarStyle: CalendarStyle(
+            markerDecoration: BoxDecoration(
+              color: TextTheme.of(context).bodyMedium?.color,
+              shape: BoxShape.circle,
+            ),
+            todayDecoration: BoxDecoration(
+              border: Border.all(
+                color: AppColors.primary,
+                width: 1,
+              ),
+              shape: BoxShape.circle,
+            ),
+            selectedDecoration: BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+          ),
+          headerStyle: const HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: _buildTransactionList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionList() {
+    final transactions = _getTransactionsForDay(_selectedDay ?? _focusedDay);
+
+    if (transactions.isEmpty) {
+      return const Center(
+        child: Text('No transactions for this day'),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: transactions.length,
+      itemBuilder: (context, index) {
+        final transaction = transactions[index];
+        final fullTitle = transaction.title.split(' ');
+        final emoji = fullTitle[0];
+        final title = fullTitle.sublist(1).join(' ');
+
+        return ListTile(
+          leading: Container(
+            decoration: BoxDecoration(
+              color: Colors.indigo[100],
+              borderRadius: BorderRadius.circular(30),
+            ),
+            clipBehavior: Clip.antiAlias,
+            height: 40,
+            width: 40,
+            child: Center(
+              child: Text(
+                emoji,
+                style: const TextStyle(fontFamily: 'NotoEmoji', fontSize: 20),
+              ),
+            ),
+          ),
+          title: Text(title),
+          subtitle: Text(
+            DateFormat('EEE, M/d/y').format(transaction.date),
+            style: const TextStyle(fontSize: 12),
+          ),
+          trailing: Text(
+            transaction.amount.toString(),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: transaction.typeId == 1
+                  ? AppColors.danger
+                  : AppColors.success,
+            ),
+          ),
+        );
+      },
     );
   }
 }

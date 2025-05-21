@@ -101,23 +101,30 @@ class HomePage extends ConsumerWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(themeMode == ThemeMode.light
-                ? Icons.dark_mode
-                : Icons.light_mode),
-            onPressed: () {
-              themeNotifier.toggleTheme();
-            },
-          ),
-          Container(
-            height: 50,
-            width: 50,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: IconButton.filledTonal(
-              onPressed: () {
-                provider.fetchTransactions();
-              },
-              icon: const Icon(Icons.replay_outlined),
+          Center(
+            child: Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(99),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12, // สีของเงา
+                    blurRadius: 10, // ระดับการเบลอของเงา
+                    offset: Offset(0, 4), // ตำแหน่งของเงา
+                  ),
+                ],
+              ),
+              margin: const EdgeInsets.only(right: 12, bottom: 8),
+              child: Center(
+                child: IconButton.filledTonal(
+                  onPressed: () {
+                    provider.fetchTransactions();
+                  },
+                  icon: const Icon(Icons.replay_outlined),
+                ),
+              ),
             ),
           ),
         ],

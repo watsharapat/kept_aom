@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kept_aom/viewmodels/theme_provider.dart';
+import 'package:kept_aom/views/pages/quick_titles_page.dart';
+import 'package:kept_aom/views/utils/styles.dart';
+
+class SettingPage extends ConsumerWidget {
+  const SettingPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    final themeNotifier = ref.read(themeProvider.notifier);
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        toolbarHeight: 80,
+        leadingWidth: 160,
+        leading: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(99),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          margin:
+              const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+          child: Row(
+            children: [
+              // Padding(
+              //     padding: const EdgeInsets.all(4),
+              //     child: Container(
+              //       decoration: BoxDecoration(
+              //           color: AppColors.primary,
+              //           borderRadius:
+              //               const BorderRadius.all(Radius.circular(99))),
+              //       height: 40,
+              //       width: 40,
+              //       child: Icon(
+              //         color: AppColors.lightBackground,
+              //         Icons.settings,
+              //         size: 24,
+              //       ),
+              //     )),
+              // ส่วนแสดงข้อความ
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Settings',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      body: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(16),
+          child: GridView.count(
+            crossAxisCount: 2, // 2x2 grid
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              // Theme Toggle Button
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: const EdgeInsets.all(8),
+                  iconSize: 80,
+                  color: AppColors.caution,
+                  icon: Icon(themeMode == ThemeMode.light
+                      ? Icons.light_mode
+                      : Icons.dark_mode),
+                  onPressed: () {
+                    themeNotifier.toggleTheme();
+                  },
+                ),
+              ),
+
+              // Quick Title Button
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: const EdgeInsets.all(8),
+                  iconSize: 80,
+                  color: AppColors.primary,
+                  icon: const Icon(Icons.title),
+                  onPressed: () {
+                    context.push('/quick_titles');
+                  },
+                ),
+              ),
+
+              // Placeholder for additional buttons
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'Button 3',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'Button 4',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+}

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kept_aom/models/quick_title_model.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
+import 'package:kept_aom/views/pages/quick_titles_page.dart';
+import 'package:kept_aom/views/pages/setting_page.dart';
 import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,6 +32,10 @@ final router = GoRouter(
           child: AddTransactionPage(),
           transitionsBuilder: _slideDownTransition),
     ),
+    GoRoute(
+      path: '/quick_titles',
+      builder: (context, state) => const QuickTitlePage(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithBottomNavBar(child: child);
@@ -42,6 +49,11 @@ final router = GoRouter(
           path: '/transactions',
           builder: (context, state) => const TransactionsPage(),
         ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingPage(),
+        ),
+
         // Add other routes here
       ],
     ),
