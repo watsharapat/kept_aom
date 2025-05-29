@@ -66,11 +66,10 @@ class SettingPage extends ConsumerWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.all(16),
           child: GridView.count(
-            crossAxisCount: 2, // 2x2 grid
+            crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             children: [
-              // Theme Toggle Button
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
@@ -87,9 +86,20 @@ class SettingPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(8),
                   iconSize: 80,
                   color: AppColors.caution,
-                  icon: Icon(themeMode == ThemeMode.light
-                      ? Icons.light_mode
-                      : Icons.dark_mode),
+                  icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(themeMode == ThemeMode.light
+                          ? Icons.light_mode
+                          : Icons.dark_mode),
+                      const SizedBox(height: 8),
+                      Text(
+                          themeMode == ThemeMode.light
+                              ? 'Light mode'
+                              : 'Dark mode',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  ),
                   onPressed: () {
                     themeNotifier.toggleTheme();
                   },
@@ -113,10 +123,16 @@ class SettingPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(8),
                   iconSize: 80,
                   color: AppColors.primary,
-                  icon: const Icon(Icons.title),
-                  onPressed: () {
-                    context.push('/quick_titles');
-                  },
+                  icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.language_rounded),
+                      const SizedBox(height: 8),
+                      Text('English',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  ),
+                  onPressed: () {},
                 ),
               ),
 
@@ -133,11 +149,22 @@ class SettingPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Text(
-                    'Button 3',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                child: IconButton(
+                  padding: const EdgeInsets.all(8),
+                  iconSize: 80,
+                  color: Colors.cyan,
+                  icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.quickreply_rounded),
+                      const SizedBox(height: 8),
+                      Text('Quick Titles',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
+                  onPressed: () {
+                    context.push('/quick_titles');
+                  },
                 ),
               ),
 
@@ -153,11 +180,22 @@ class SettingPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Text(
-                    'Button 4',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                child: IconButton(
+                  padding: const EdgeInsets.all(8),
+                  iconSize: 80,
+                  color: Colors.redAccent,
+                  icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.savings_rounded),
+                      const SizedBox(height: 8),
+                      Text('Saving Goals',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
+                  onPressed: () {
+                    //context.push('/quick_titles');
+                  },
                 ),
               ),
             ],

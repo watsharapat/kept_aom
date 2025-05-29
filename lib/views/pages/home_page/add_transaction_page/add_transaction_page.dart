@@ -25,6 +25,8 @@ class AddTransactionPage extends ConsumerStatefulWidget {
 class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   final TextEditingController _titleController = TextEditingController();
   late ThemeMode themeMode;
+  bool _amountInvalid = false;
+  bool _titleInvalid = false;
   String _via = 'Cash';
   DateTime _date = DateTime.now();
   int _typeId = 1;
@@ -38,6 +40,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     super.initState();
     // เพิ่ม Listener เพื่อตรวจจับการเปลี่ยนแปลงของข้อความ
     // ref.watch(themeProvider);
+
     _titleController.addListener(() {
       setState(() {
         _title = _titleController.text;
@@ -59,7 +62,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isFormValid = _amount > 0 && _title.isNotEmpty && _date != null;
     final provider = ref.watch(transactionProvider);
     //final theme = ref.watch(themeProvider);
 
@@ -193,32 +195,33 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               height: 36,
               child: IconButton(
                 style: Theme.of(context).iconButtonTheme.style?.copyWith(
-                      backgroundColor: WidgetStateProperty.all(
-                        isFormValid
-                            ? AppColors.success
-                            : AppColors.disabledWidget,
-                      ),
+                      backgroundColor:
+                          WidgetStateProperty.all(AppColors.success),
                       foregroundColor:
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
-                onPressed: isFormValid
-                    ? () {
-                        provider.addTransaction(
-                          Transaction(
-                            userId:
-                                Supabase.instance.client.auth.currentUser!.id,
-                            date: _date,
-                            amount: _amount,
-                            via: _via,
-                            typeId: _typeId,
-                            title: "$_emoji $_title",
-                            description: _description,
-                          ),
-                        );
-                        context.pop();
-                        provider.fetchTransactions();
-                      }
-                    : null,
+                onPressed: () {
+                  setState(() {
+                    _amountInvalid = _amount <= 0;
+                    _titleInvalid = _title.isEmpty;
+                  });
+
+                  if (!_amountInvalid && !_titleInvalid) {
+                    provider.addTransaction(
+                      Transaction(
+                        userId: Supabase.instance.client.auth.currentUser!.id,
+                        date: _date,
+                        amount: _amount,
+                        via: _via,
+                        typeId: _typeId,
+                        title: "$_emoji $_title",
+                        description: _description,
+                      ),
+                    );
+                    context.pop();
+                    provider.fetchTransactions();
+                  }
+                },
                 icon: const Icon(Icons.done_rounded),
               ),
             ),
@@ -328,36 +331,53 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       height: 120,
                       alignment: Alignment.center,
                       child: TextField(
-                        maxLines: 1,
-                        minLines: 1,
-                        textAlign: TextAlign.right,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                        decoration: InputDecoration(
-                          labelStyle:
-                              Theme.of(context).inputDecorationTheme.labelStyle,
-                          border: Theme.of(context).inputDecorationTheme.border,
-                          focusedBorder: Theme.of(context)
-                              .inputDecorationTheme
-                              .focusedBorder,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 32, horizontal: 8), // Adjust padding
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            try {
-                              double doubleValue = double.parse(value);
-                              _amount = doubleValue;
-                            } catch (e) {
-                              debugPrint("Invalid input: $value");
-                            }
-                          });
-                        },
-                      ),
+                          maxLines: 1,
+                          minLines: 1,
+                          textAlign: TextAlign.right,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                          decoration: InputDecoration(
+                            errorStyle: const TextStyle(
+                              fontSize: 0,
+                            ),
+                            errorText: _amountInvalid ? '' : null,
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: AppColors.danger, width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: AppColors.danger, width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: Theme.of(context)
+                                .inputDecorationTheme
+                                .focusedBorder,
+                            enabledBorder: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder,
+                            border:
+                                Theme.of(context).inputDecorationTheme.border,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 32, horizontal: 8),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              try {
+                                double doubleValue = double.parse(value);
+                                _amount = doubleValue;
+                                _amountInvalid = false;
+                              } catch (e) {
+                                _amount = 0.0;
+                                _amountInvalid = true;
+                              }
+                            });
+                          }),
                     ),
                   )
                 ],
@@ -400,11 +420,34 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         controller: _titleController,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                            focusedBorder: Theme.of(context)
-                                .inputDecorationTheme
-                                .focusedBorder,
-                            border:
-                                Theme.of(context).inputDecorationTheme.border),
+                          errorStyle: const TextStyle(
+                            fontSize: 0,
+                          ),
+                          errorText: _titleInvalid ? '' : null,
+                          errorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: AppColors.danger, width: 2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: AppColors.danger, width: 2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: Theme.of(context)
+                              .inputDecorationTheme
+                              .focusedBorder,
+                          enabledBorder: Theme.of(context)
+                              .inputDecorationTheme
+                              .enabledBorder,
+                          border: Theme.of(context).inputDecorationTheme.border,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _title = value;
+                            _titleInvalid = false;
+                          });
+                        },
                       ),
                     ),
                   ),

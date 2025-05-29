@@ -133,14 +133,28 @@ class HomePage extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [accountCard(balance), const TodayTransactions()],
+        children: [
+          accountCard(balance),
+          const Expanded(child: TodayTransactions())
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
+        //shape: const CircleBorder(),
+        isExtended: true,
         onPressed: () {
           context.push('/addTransaction');
         },
-        child: const Icon(Icons.add),
+        label: Text(
+          'Add Transaction',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+        ),
+        icon: const Icon(Icons.add, size: 24),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 

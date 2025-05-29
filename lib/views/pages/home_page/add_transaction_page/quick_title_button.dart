@@ -4,7 +4,7 @@ import 'package:kept_aom/models/quick_title_model.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 
 class QuickTitleButton extends ConsumerWidget {
-  final ValueChanged<QuickTitle> onTitleSelected; // Callback for selected title
+  final ValueChanged<QuickTitle> onTitleSelected;
 
   const QuickTitleButton({
     super.key,
@@ -13,6 +13,8 @@ class QuickTitleButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.read(quickTitlesProvider);
+    provider.fetchQuickTitles();
     return IconButton(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       onPressed: () => _showQuickTitleSheet(context, ref),
@@ -23,7 +25,6 @@ class QuickTitleButton extends ConsumerWidget {
   void _showQuickTitleSheet(BuildContext context, WidgetRef ref) {
     final provider = ref.read(quickTitlesProvider);
 
-    provider.fetchQuickTitles();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

@@ -41,8 +41,6 @@ class TodayTransactions extends ConsumerWidget {
 
     return Container(
       clipBehavior: Clip.antiAlias,
-      width: double.infinity,
-      height: 300,
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
