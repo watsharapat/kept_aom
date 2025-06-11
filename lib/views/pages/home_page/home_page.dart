@@ -1,6 +1,8 @@
+import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
@@ -8,6 +10,7 @@ import 'package:kept_aom/views/pages/home_page/today_transaction.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase/supabase.dart';
+import 'package:decimal/decimal.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends ConsumerWidget {
@@ -159,7 +162,7 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget accountCard(double balance) {
-    String balanceString = balance.toString();
+    String balanceString = NumberFormat("#,##0.00").format(balance.toDouble());
     return Container(
       clipBehavior: Clip.antiAlias,
       width: double.infinity,
