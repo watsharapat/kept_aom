@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/quick_title_model.dart';
+import 'package:kept_aom/models/transaction_model.dart';
+import 'package:kept_aom/views/pages/edit_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/pages/quick_titles_page.dart';
+import 'package:kept_aom/views/pages/saving_goals_page.dart';
 import 'package:kept_aom/views/pages/setting_page.dart';
 import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
@@ -33,9 +36,32 @@ final router = GoRouter(
           transitionsBuilder: _slideDownTransition),
     ),
     GoRoute(
-      path: '/quick_titles',
-      builder: (context, state) => const QuickTitlePage(),
+      path: '/editTransaction',
+      pageBuilder: (context, state) {
+        final transaction = state.extra as Transaction;
+        return CustomTransitionPage(
+          child: EditTransactionPage(transaction: transaction),
+          transitionsBuilder: _slideFromLeftTransition,
+        );
+      },
     ),
+    GoRoute(
+      path: '/savingGoals',
+      pageBuilder: (context, state) {
+        return const CustomTransitionPage(
+          child: SavingGoalsPage(),
+          transitionsBuilder: _slideDownTransition,
+        );
+      },
+    ),
+    GoRoute(
+        path: '/quick_titles',
+        pageBuilder: (context, state) {
+          return const CustomTransitionPage(
+            child: QuickTitlePage(),
+            transitionsBuilder: _slideDownTransition,
+          );
+        }),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithBottomNavBar(child: child);

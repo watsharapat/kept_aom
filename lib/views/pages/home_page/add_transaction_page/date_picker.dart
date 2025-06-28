@@ -4,10 +4,11 @@ import 'package:kept_aom/views/utils/styles.dart';
 
 class DatepickerWidget extends StatefulWidget {
   final Function(DateTime) onDateChange;
-
+  final DateTime? initialDate;
   const DatepickerWidget({
     Key? key,
     required this.onDateChange,
+    this.initialDate,
   }) : super(key: key);
 
   @override
@@ -15,12 +16,13 @@ class DatepickerWidget extends StatefulWidget {
 }
 
 class _DatepickerWidgetState extends State<DatepickerWidget> {
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
   late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
     _controller = TextEditingController(
       text: DateFormat('yMMMEd').format(_selectedDate),
     );
@@ -55,7 +57,6 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
         },
         child: Container(
           decoration: BoxDecoration(
-            //color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(

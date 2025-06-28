@@ -194,7 +194,7 @@ class SettingPage extends ConsumerWidget {
                     ],
                   ),
                   onPressed: () {
-                    //context.push('/quick_titles');
+                    context.push('/savingGoals');
                   },
                 ),
               ),

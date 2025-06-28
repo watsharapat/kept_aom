@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/viewmodels/login_provider.dart';
+import 'package:kept_aom/views/utils/styles.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -19,8 +20,8 @@ class LoginPage extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).primaryColor.withValues(alpha: 1),
-              Theme.of(context).primaryColor.withValues(alpha: 0.4),
+              AppColors.primary.withValues(alpha: 1),
+              AppColors.primary.withValues(alpha: 0.4),
             ],
           ),
         ),
@@ -41,10 +42,10 @@ class LoginPage extends ConsumerWidget {
                     //       height: 200,
                     //     ),
                     //     ),
-                    SvgPicture.asset(
-                      'lib/assets/images/piggy.svg',
-                      width: 180,
-                      height: 180,
+                    Image.asset(
+                      'lib/assets/images/coin_icon_foreground.png',
+                      width: 300,
+                      height: 300,
                     ),
                     //const SizedBox(height: 32),
 

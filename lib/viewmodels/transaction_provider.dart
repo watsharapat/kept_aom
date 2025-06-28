@@ -65,4 +65,41 @@ class TransactionProvider extends ChangeNotifier {
       // เพิ่มการแจ้งเตือนผู้ใช้ (UI notification) ในกรณีที่เกิดข้อผิดพลาด
     }
   }
+
+  Future<void> deleteTransaction(Transaction transaction) async {
+    try {
+      await _supabase
+          .from('transactions')
+          .delete()
+          .eq('user_id', transaction.userId)
+          .eq('date', transaction.date.toIso8601String())
+          .eq('amount', transaction.amount)
+          .eq('via', transaction.via)
+          .eq('type_id', transaction.typeId)
+          .eq('title', transaction.title)
+          .eq('description', transaction.description);
+      await fetchTransactions();
+    } catch (e) {
+      debugPrint('Error deleting transaction: $e');
+    }
+  }
+
+  Future<void> updateTransaction(
+      Transaction original, Transaction updated) async {
+    try {
+      await _supabase
+          .from('transactions')
+          .update(updated.toJson())
+          .eq('user_id', original.userId)
+          .eq('date', original.date.toIso8601String())
+          .eq('amount', original.amount)
+          .eq('via', original.via)
+          .eq('type_id', original.typeId)
+          .eq('title', original.title)
+          .eq('description', original.description);
+      await fetchTransactions();
+    } catch (e) {
+      debugPrint('Error updating transaction: $e');
+    }
+  }
 }

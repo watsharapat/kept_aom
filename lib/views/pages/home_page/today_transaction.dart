@@ -141,18 +141,18 @@ class TodayTransactions extends ConsumerWidget {
 
                       return ListTile(
                         leading: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.indigo[100],
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          clipBehavior: Clip.antiAlias,
+                          // decoration: BoxDecoration(
+                          //   color: Theme.of(context).canvasColor,
+                          //   borderRadius: BorderRadius.circular(30),
+                          // ),
+                          //clipBehavior: Clip.antiAlias,
                           height: 40,
                           width: 40,
                           child: Center(
                             child: Text(
                               emoji,
                               style: const TextStyle(
-                                  fontFamily: 'NotoEmoji', fontSize: 20),
+                                  fontFamily: 'NotoEmoji', fontSize: 24),
                             ),
                           ),
                         ),

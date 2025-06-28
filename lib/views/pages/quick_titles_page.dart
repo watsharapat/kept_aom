@@ -361,7 +361,11 @@ class _AddOrEditQuickTitleBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
