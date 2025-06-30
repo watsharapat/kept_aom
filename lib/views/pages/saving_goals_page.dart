@@ -1,3 +1,4 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +18,9 @@ class SavingGoalsPage extends ConsumerWidget {
         case 2:
           return 'Completed';
         case 1:
-          return 'In Progress';
+          return 'On going';
         default:
-          return 'Planning';
+          return 'On going';
       }
     }
 
@@ -231,11 +232,27 @@ class SavingGoalsPage extends ConsumerWidget {
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 8),
-                                    title: Text(
-                                      savingGoal.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          savingGoal.name.isNotEmpty
+                                              ? savingGoal.name.characters.first
+                                              : "🎯",
+                                          style: const TextStyle(fontSize: 22),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Text(
+                                            savingGoal.name.characters
+                                                .skip(1)
+                                                .toString()
+                                                .trim(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     subtitle: Row(
                                       children: [
@@ -247,14 +264,7 @@ class SavingGoalsPage extends ConsumerWidget {
                                         ),
                                         const SizedBox(width: 16),
                                         Text(
-                                          'Stored: ${savingGoal.stored}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Text(
-                                          'Target: ${savingGoal.target}',
+                                          '${savingGoal.stored}/${savingGoal.target}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall,
@@ -364,11 +374,22 @@ class _AddOrEditSavingGoalBottomSheetState
   late TextEditingController _nameController;
   late TextEditingController _storedController;
   late TextEditingController _targetController;
+  late String _emoji;
+  bool _showEmojiPicker = false;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialName ?? '');
+    // ถ้ามี emoji นำหน้า initialName ให้แยก emoji ออก
+    String initialName = widget.initialName ?? '';
+    if (initialName.isNotEmpty && initialName.runes.length > 1) {
+      _emoji = initialName.characters.first;
+      _nameController = TextEditingController(
+          text: initialName.substring(_emoji.length).trim());
+    } else {
+      _emoji = "🎯";
+      _nameController = TextEditingController(text: initialName);
+    }
     _storedController =
         TextEditingController(text: widget.initialStored?.toString() ?? '0');
     _targetController =
@@ -385,7 +406,14 @@ class _AddOrEditSavingGoalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
@@ -398,13 +426,86 @@ class _AddOrEditSavingGoalBottomSheetState
           Text(widget.isEdit ? 'Edit Saving Goal' : 'Add Saving Goal',
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              border: OutlineInputBorder(),
-            ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    _showEmojiPicker = !_showEmojiPicker;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor,
+                      width: 1,
+                    ),
+                  ),
+                  height: 56,
+                  width: 56,
+                  child: Center(
+                    child: Text(
+                      _emoji,
+                      style: const TextStyle(fontSize: 28),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    hintText: 'Enter saving goal name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
           ),
+          if (_showEmojiPicker)
+            SizedBox(
+              height: 250,
+              child: EmojiPicker(
+                onEmojiSelected: (category, emoji) {
+                  setState(() {
+                    _emoji = emoji.emoji;
+                    _showEmojiPicker = false;
+                  });
+                },
+                config: Config(
+                  height: 400,
+                  checkPlatformCompatibility: true,
+                  viewOrderConfig: const ViewOrderConfig(
+                    top: EmojiPickerItem.categoryBar,
+                    middle: EmojiPickerItem.emojiView,
+                    bottom: EmojiPickerItem.searchBar,
+                  ),
+                  emojiViewConfig: EmojiViewConfig(
+                    emojiSizeMax: 28,
+                    columns: 8,
+                    verticalSpacing: 8,
+                    horizontalSpacing: 8,
+                    backgroundColor: Theme.of(context).cardColor,
+                  ),
+                  skinToneConfig: const SkinToneConfig(),
+                  categoryViewConfig: CategoryViewConfig(
+                      dividerColor: AppColors.border,
+                      backgroundColor: Theme.of(context).cardColor,
+                      iconColor: Theme.of(context).textTheme.bodySmall?.color ??
+                          AppColors.textPlaceholder,
+                      iconColorSelected: AppColors.primary,
+                      indicatorColor: AppColors.primary),
+                  bottomActionBarConfig:
+                      const BottomActionBarConfig(enabled: false),
+                  searchViewConfig: const SearchViewConfig(),
+                ),
+              ),
+            ),
           const SizedBox(height: 12),
           if (widget.isEdit)
             Row(
@@ -454,15 +555,16 @@ class _AddOrEditSavingGoalBottomSheetState
               ),
               onPressed: () {
                 if (_nameController.text.trim().isNotEmpty) {
+                  String nameToSave = '$_emoji ${_nameController.text.trim()}';
                   if (widget.isEdit) {
                     widget.onSubmit(
-                      _nameController.text.trim(),
+                      nameToSave,
                       int.tryParse(_storedController.text.trim()) ?? 0,
                       int.tryParse(_targetController.text.trim()) ?? 0,
                     );
                   } else {
                     widget.onSubmit(
-                      _nameController.text.trim(),
+                      nameToSave,
                       0,
                       int.tryParse(_targetController.text.trim()) ?? 0,
                     );
