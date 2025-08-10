@@ -13,40 +13,63 @@ import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
 import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+enum AppRoute {
+  home('/home'),
+  login('/login'),
+  transactions('/transactions'),
+  settings('/settings'),
+  addTransaction('/addtransaction'),
+  editTransaction('/editTransaction'),
+  savingGoals('/savingGoals'),
+  quickTitles('/quick_titles');
+  // dashboard('/dashboard'); // ถ้ามีหน้า dashboard
+
+  final String path;
+  const AppRoute(this.path);
+}
+
+// Map path เป็น index ของ BottomNavBar
+final bottomNavIndexMap = {
+  AppRoute.home.path: 0,
+  AppRoute.transactions.path: 1,
+  AppRoute.settings.path: 2,
+};
+
+String? lastRoutePath;
+
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: AppRoute.home.path,
   redirect: (context, state) {
     final user = Supabase.instance.client.auth.currentUser;
-    final isLoggingIn = state.matchedLocation == '/login';
+    final isLoggingIn = state.matchedLocation == AppRoute.login.path;
 
-    if (user == null && !isLoggingIn) return '/login';
-    if (user != null && isLoggingIn) return '/home';
+    if (user == null && !isLoggingIn) return AppRoute.login.path;
+    if (user != null && isLoggingIn) return AppRoute.home.path;
 
     return null;
   },
   routes: [
     GoRoute(
-      path: '/login',
+      path: AppRoute.login.path,
       builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
-      path: '/addtransaction',
+      path: AppRoute.addTransaction.path,
       pageBuilder: (context, state) => const CustomTransitionPage(
-          child: AddTransactionPage(),
-          transitionsBuilder: _slideDownTransition),
+          child: AddTransactionPage(), transitionsBuilder: _slideUpTransition),
     ),
     GoRoute(
-      path: '/editTransaction',
+      path: AppRoute.editTransaction.path,
       pageBuilder: (context, state) {
         final transaction = state.extra as Transaction;
         return CustomTransitionPage(
           child: EditTransactionPage(transaction: transaction),
-          transitionsBuilder: _slideFromLeftTransition,
+          transitionsBuilder: _slideLeftToRightTransition,
         );
       },
     ),
     GoRoute(
-      path: '/savingGoals',
+      path: AppRoute.savingGoals.path,
       pageBuilder: (context, state) {
         return const CustomTransitionPage(
           child: SavingGoalsPage(),
@@ -55,7 +78,7 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-        path: '/quick_titles',
+        path: AppRoute.quickTitles.path,
         pageBuilder: (context, state) {
           return const CustomTransitionPage(
             child: QuickTitlePage(),
@@ -68,23 +91,83 @@ final router = GoRouter(
       },
       routes: [
         GoRoute(
-          path: '/home',
-          builder: (context, state) => const HomePage(),
-        ),
-        GoRoute(
-          path: '/transactions',
-          builder: (context, state) => const TransactionsPage(),
-        ),
-        GoRoute(
-          path: '/settings',
-          builder: (context, state) => const SettingPage(),
-        ),
+          path: AppRoute.home.path,
+          pageBuilder: (context, state) {
+            final prev = lastRoutePath;
+            lastRoutePath = state.fullPath;
 
-        // Add other routes here
+            final prevIndex = bottomNavIndexMap[prev ?? ''] ?? 0;
+            final currentIndex = bottomNavIndexMap[state.fullPath] ?? 0;
+
+            final transition = (currentIndex > prevIndex)
+                ? _slideRightToLeftTransition
+                : _slideLeftToRightTransition;
+
+            return buildTransitionPage(
+              child: const HomePage(),
+              state: state,
+              transitionBuilder: transition,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoute.transactions.path,
+          pageBuilder: (context, state) {
+            final prev = lastRoutePath;
+            lastRoutePath = state.fullPath;
+
+            final prevIndex = bottomNavIndexMap[prev ?? ''] ?? 0;
+            final currentIndex = bottomNavIndexMap[state.fullPath] ?? 0;
+
+            final transition = (currentIndex > prevIndex)
+                ? _slideRightToLeftTransition
+                : _slideLeftToRightTransition;
+
+            return buildTransitionPage(
+              child: const TransactionsPage(),
+              state: state,
+              transitionBuilder: transition,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoute.settings.path,
+          pageBuilder: (context, state) {
+            final prev = lastRoutePath;
+            lastRoutePath = state.fullPath;
+
+            final prevIndex = bottomNavIndexMap[prev ?? ''] ?? 0;
+            final currentIndex = bottomNavIndexMap[state.fullPath] ?? 0;
+
+            final transition = (currentIndex > prevIndex)
+                ? _slideRightToLeftTransition
+                : _slideLeftToRightTransition;
+
+            return buildTransitionPage(
+              child: const SettingPage(),
+              state: state,
+              transitionBuilder: transition,
+            );
+          },
+        ),
       ],
     ),
   ],
 );
+
+CustomTransitionPage<T> buildTransitionPage<T>({
+  required Widget child,
+  required GoRouterState state,
+  required Widget Function(
+          BuildContext, Animation<double>, Animation<double>, Widget)
+      transitionBuilder,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: transitionBuilder,
+  );
+}
 
 // Scaffold ที่มี BottomNavBar
 class ScaffoldWithBottomNavBar extends StatelessWidget {
@@ -104,22 +187,62 @@ class ScaffoldWithBottomNavBar extends StatelessWidget {
   }
 }
 
-//Trastiion ที่ใช้ในการเปลี่ยนหน้า
-Widget _slideFromLeftTransition(
+// Transition ที่ใช้ในการเปลี่ยนหน้า
+// Slide จากซ้ายไปขวา (หน้าใหม่มาทางซ้าย)
+Widget _slideLeftToRightTransition(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child) {
-  const begin = Offset(-1.0, 0.0);
-  const end = Offset.zero;
-  const curve = Curves.easeInOut;
+  // Tween สำหรับหน้าใหม่ (child)
+  final newPageTween = Tween(
+    begin: const Offset(-1.0, 0.0),
+    end: Offset.zero,
+  ).chain(CurveTween(curve: Curves.easeInOut));
+  final newPageAnimation = animation.drive(newPageTween);
 
-  var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-  var offsetAnimation = animation.drive(tween);
+  // Tween สำหรับหน้าเก่า (secondaryAnimation)
+  final oldPageTween = Tween(
+    begin: Offset.zero,
+    end: const Offset(1.0, 0.0), // เลื่อนหน้าเก่าไปทางขวา
+  ).chain(CurveTween(curve: Curves.easeInOut));
+  final oldPageAnimation = secondaryAnimation.drive(oldPageTween);
 
   return SlideTransition(
-    position: offsetAnimation,
-    child: child,
+    position: newPageAnimation, // หน้าใหม่เลื่อนจากซ้ายมา
+    child: SlideTransition(
+      position: oldPageAnimation, // หน้าเก่าเลื่อนไปทางขวา
+      child: child,
+    ),
+  );
+}
+
+// Slide จากขวาไปซ้าย (หน้าใหม่มาทางขวา)
+Widget _slideRightToLeftTransition(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child) {
+  // Tween สำหรับหน้าใหม่ (child)
+  final newPageTween = Tween(
+    begin: const Offset(1.0, 0.0),
+    end: Offset.zero,
+  ).chain(CurveTween(curve: Curves.easeInOut));
+  final newPageAnimation = animation.drive(newPageTween);
+
+  // Tween สำหรับหน้าเก่า (secondaryAnimation)
+  final oldPageTween = Tween(
+    begin: Offset.zero,
+    end: const Offset(-1.0, 0.0), // เลื่อนหน้าเก่าไปทางซ้าย
+  ).chain(CurveTween(curve: Curves.easeInOut));
+  final oldPageAnimation = secondaryAnimation.drive(oldPageTween);
+
+  return SlideTransition(
+    position: newPageAnimation, // หน้าใหม่เลื่อนจากขวามา
+    child: SlideTransition(
+      position: oldPageAnimation, // หน้าเก่าเลื่อนไปทางซ้าย
+      child: child,
+    ),
   );
 }
 

@@ -54,6 +54,8 @@ dependencies:
   decimal: ^3.0.2
   flutter_slidable: ^4.0.0
   flutter_launcher_icons: ^0.14.4
+  page_transition: ^2.2.1
+  animations: ^2.0.11
 
 
 

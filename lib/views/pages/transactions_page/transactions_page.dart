@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
@@ -105,11 +106,11 @@ class TransactionsPage extends ConsumerWidget {
                       dividerColor: Colors.transparent,
                       tabs: <Widget>[
                         Tab(
-                          icon: Icon(Icons.list),
+                          icon: FaIcon(FontAwesomeIcons.list, size: 20),
                           //text: 'List',
                         ),
                         Tab(
-                          icon: Icon(Icons.calendar_month_rounded),
+                          icon: FaIcon(FontAwesomeIcons.calendarDays, size: 20),
                           //text: 'Calendar',
                         ),
                       ],

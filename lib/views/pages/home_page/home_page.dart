@@ -99,7 +99,7 @@ class HomePage extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Hey! $firstName',
+                  '$firstName',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
               )
@@ -143,98 +143,99 @@ class HomePage extends ConsumerWidget {
           accountCard(balance),
           Column(
             children: [
+              //TO DO: Add Saving Goals
               // Text(
               //   'Saving Goals',
               //   style: Theme.of(context).textTheme.displaySmall,
               // ),
-              SizedBox(
-                height: 120,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: sgProvider.savingGoals.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final goal = sgProvider.savingGoals[index];
-                    final emoji = goal.name.characters.first;
-                    final name = goal.name.characters.skip(1).toString().trim();
+              // SizedBox(
+              //   height: 120,
+              //   child: ListView.separated(
+              //     scrollDirection: Axis.horizontal,
+              //     padding: const EdgeInsets.symmetric(horizontal: 16),
+              //     itemCount: sgProvider.savingGoals.length,
+              //     separatorBuilder: (_, __) => const SizedBox(width: 12),
+              //     itemBuilder: (context, index) {
+              //       final goal = sgProvider.savingGoals[index];
+              //       final emoji = goal.name.characters.first;
+              //       final name = goal.name.characters.skip(1).toString().trim();
 
-                    return Container(
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: Opacity(
-                                opacity: 0.33,
-                                child: Text(
-                                  emoji,
-                                  style: const TextStyle(fontSize: 72),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  name,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const Spacer(),
-                                Text(
-                                  '${goal.stored}/${goal.target}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Progress bar ที่ล่างสุด
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                  bottom: Radius.circular(16)),
-                              child: LinearProgressIndicator(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(8)),
-                                value: (goal.target > 0)
-                                    ? (goal.stored / goal.target)
-                                        .clamp(0.0, 1.0)
-                                    : 0.0,
-                                minHeight: 8,
-                                backgroundColor: AppColors.border.withAlpha(50),
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                  AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+              //       return Container(
+              //         width: 120,
+              //         decoration: BoxDecoration(
+              //           color: Theme.of(context).cardColor,
+              //           borderRadius: BorderRadius.circular(16),
+              //           boxShadow: const [
+              //             BoxShadow(
+              //               color: Colors.black12,
+              //               blurRadius: 8,
+              //               offset: Offset(0, 4),
+              //             ),
+              //           ],
+              //         ),
+              //         child: Stack(
+              //           children: [
+              //             Positioned.fill(
+              //               child: Align(
+              //                 alignment: Alignment.bottomRight,
+              //                 child: Opacity(
+              //                   opacity: 0.33,
+              //                   child: Text(
+              //                     emoji,
+              //                     style: const TextStyle(fontSize: 72),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //             Padding(
+              //               padding: const EdgeInsets.all(16),
+              //               child: Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.start,
+              //                 children: [
+              //                   Text(
+              //                     name,
+              //                     style:
+              //                         Theme.of(context).textTheme.titleMedium,
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                   ),
+              //                   const Spacer(),
+              //                   Text(
+              //                     '${goal.stored}/${goal.target}',
+              //                     style: Theme.of(context).textTheme.bodyMedium,
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //             // Progress bar ที่ล่างสุด
+              //             Positioned(
+              //               left: 0,
+              //               right: 0,
+              //               bottom: 0,
+              //               child: ClipRRect(
+              //                 borderRadius: const BorderRadius.vertical(
+              //                     bottom: Radius.circular(16)),
+              //                 child: LinearProgressIndicator(
+              //                   borderRadius:
+              //                       const BorderRadius.all(Radius.circular(8)),
+              //                   value: (goal.target > 0)
+              //                       ? (goal.stored / goal.target)
+              //                           .clamp(0.0, 1.0)
+              //                       : 0.0,
+              //                   minHeight: 8,
+              //                   backgroundColor: AppColors.border.withAlpha(50),
+              //                   valueColor: const AlwaysStoppedAnimation<Color>(
+              //                     AppColors.primary,
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
           const SizedBox(height: 16),
@@ -257,7 +258,6 @@ class HomePage extends ConsumerWidget {
         ),
         icon: const Icon(Icons.add, size: 24),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 

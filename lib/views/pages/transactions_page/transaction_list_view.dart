@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:kept_aom/models/transaction_model.dart';
@@ -82,21 +83,28 @@ class TransactionListView extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 16,
-                            width: 16,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(99),
-                              border: Border.all(
-                                color: AppColors.lightBackground,
-                                width: 1,
-                              ),
-                              color: amoutEachDay >= 0
-                                  ? AppColors.success.withValues(alpha: 0.8)
-                                  : AppColors.danger.withValues(alpha: 0.8),
-                            ),
+                          FaIcon(
+                            FontAwesomeIcons.mapPin,
+                            size: 16,
+                            color: amoutEachDay >= 0
+                                ? AppColors.success.withValues(alpha: 0.8)
+                                : AppColors.danger.withValues(alpha: 0.8),
                           ),
-                          const SizedBox(width: 8),
+                          // Container(
+                          //   height: 16,
+                          //   width: 16,
+                          //   decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(99),
+                          //     border: Border.all(
+                          //       color: AppColors.lightBackground,
+                          //       width: 1,
+                          //     ),
+                          //     color: amoutEachDay >= 0
+                          //         ? AppColors.success.withValues(alpha: 0.8)
+                          //         : AppColors.danger.withValues(alpha: 0.8),
+                          //   ),
+                          // ),
+                          const SizedBox(width: 12),
                           Text(
                             dateStr,
                             style: Theme.of(context).textTheme.bodyMedium,

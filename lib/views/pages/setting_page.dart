@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/views/pages/quick_titles_page.dart';
@@ -89,9 +90,12 @@ class SettingPage extends ConsumerWidget {
                   icon: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(themeMode == ThemeMode.light
-                          ? Icons.light_mode
-                          : Icons.dark_mode),
+                      FaIcon(
+                        themeMode == ThemeMode.light
+                            ? FontAwesomeIcons.solidSun
+                            : FontAwesomeIcons.solidMoon,
+                        size: 72,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                           themeMode == ThemeMode.light
@@ -126,7 +130,7 @@ class SettingPage extends ConsumerWidget {
                   icon: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.language_rounded),
+                      const FaIcon(FontAwesomeIcons.language, size: 72),
                       const SizedBox(height: 8),
                       Text('English',
                           style: Theme.of(context).textTheme.bodyMedium),
@@ -187,7 +191,7 @@ class SettingPage extends ConsumerWidget {
                   icon: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.savings_rounded),
+                      const FaIcon(FontAwesomeIcons.piggyBank, size: 72),
                       const SizedBox(height: 8),
                       Text('Saving Goals',
                           style: Theme.of(context).textTheme.bodyMedium),
