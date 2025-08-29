@@ -47,7 +47,7 @@ class QuickTitlesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addQuickTitle(String emoji, String title, int typeId) async {
+  Future<void> addQuickTitle(QuickTitle quicktitle) async {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
@@ -55,14 +55,11 @@ class QuickTitlesProvider extends ChangeNotifier {
         return;
       }
 
-      String fullTitle = "$emoji $title";
-
       // Insert the new quick title into the database
-      final response = await _supabase.from('quick_titles').insert({
-        'title': fullTitle,
-        'type_id': typeId,
-        'user_id': userId,
-      }).select();
+      final response = await _supabase
+          .from('quick_titles')
+          .insert(quicktitle.toJson())
+          .select();
 
       if (response.isNotEmpty) {
         // Add the new quick title to the local list
@@ -76,8 +73,7 @@ class QuickTitlesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateQuickTitle(
-      String oldTitle, String newTitle, int typeId) async {
+  Future<void> updateQuickTitle(QuickTitle quicktitle) async {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
@@ -88,20 +84,16 @@ class QuickTitlesProvider extends ChangeNotifier {
       // Update the quick title in the database
       final response = await _supabase
           .from('quick_titles')
-          .update({
-            'title': newTitle,
-            'type_id': typeId,
-            'user_id': userId,
-          })
+          .update(quicktitle.toJson())
+          .eq('id', quicktitle.id)
           .eq('user_id', userId)
-          .eq('title', oldTitle)
           .select();
 
       if (response.isNotEmpty) {
         // Update the local list
         final updatedQuickTitle = QuickTitle.fromJson(response.first);
         final index = _quickTitles
-            .indexWhere((qt) => qt.userId == userId && qt.title == oldTitle);
+            .indexWhere((qt) => qt.userId == userId && qt.id == quicktitle.id);
         if (index != -1) {
           _quickTitles[index] = updatedQuickTitle;
         }
@@ -113,7 +105,7 @@ class QuickTitlesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteQuickTitle(String title) async {
+  Future<void> deleteQuickTitle(QuickTitle quicktitle) async {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
@@ -121,16 +113,15 @@ class QuickTitlesProvider extends ChangeNotifier {
         return;
       }
 
-      // Delete the quick title from the database
       await _supabase
           .from('quick_titles')
           .delete()
           .eq('user_id', userId)
-          .eq('title', title);
+          .eq('id', quicktitle.id);
 
       // Remove the quick title from the local list
       _quickTitles
-          .removeWhere((qt) => qt.userId == userId && qt.title == title);
+          .removeWhere((qt) => qt.userId == userId && qt.id == quicktitle.id);
       notifyListeners(); // Notify listeners about the change
     } catch (e) {
       debugPrint('Error deleting quick title: $e');

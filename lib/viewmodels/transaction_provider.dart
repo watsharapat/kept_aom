@@ -68,35 +68,34 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<void> deleteTransaction(Transaction transaction) async {
     try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) {
+        debugPrint('No user logged in');
+        return;
+      }
       await _supabase
           .from('transactions')
           .delete()
-          .eq('user_id', transaction.userId)
-          .eq('date', transaction.date.toIso8601String())
-          .eq('amount', transaction.amount)
-          .eq('via', transaction.via)
-          .eq('type_id', transaction.typeId)
-          .eq('title', transaction.title)
-          .eq('description', transaction.description);
+          .eq('user_id', userId)
+          .eq('id', transaction.id!);
       await fetchTransactions();
     } catch (e) {
       debugPrint('Error deleting transaction: $e');
     }
   }
 
-  Future<void> updateTransaction(
-      Transaction original, Transaction updated) async {
+  Future<void> updateTransaction(Transaction updated) async {
     try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) {
+        debugPrint('No user logged in');
+        return;
+      }
       await _supabase
           .from('transactions')
           .update(updated.toJson())
-          .eq('user_id', original.userId)
-          .eq('date', original.date.toIso8601String())
-          .eq('amount', original.amount)
-          .eq('via', original.via)
-          .eq('type_id', original.typeId)
-          .eq('title', original.title)
-          .eq('description', original.description);
+          .eq('user_id', userId)
+          .eq('id', updated.id!);
       await fetchTransactions();
     } catch (e) {
       debugPrint('Error updating transaction: $e');

@@ -1,24 +1,31 @@
 class Transaction {
+  final String? id;
   final String userId;
   final DateTime date;
   final double amount;
-  final String via;
+  final int paymentType;
   final int typeId;
+  final String icon;
   final String title;
+  final int categoryId;
   final String description;
 
   Transaction({
+    required this.id,
     required this.userId,
     required this.date,
     required this.amount,
-    required this.via,
+    required this.paymentType,
     required this.typeId,
+    required this.icon,
     required this.title,
+    required this.categoryId,
     required this.description,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
+      id: json['id'].toString(),
       userId: json['user_id'].toString(),
       date: DateTime.parse(json['date'].toString()),
       amount: json['amount'] is String
@@ -26,10 +33,10 @@ class Transaction {
           : json['amount'] is int
               ? (json['amount'] as int).toDouble()
               : json['amount'] as double,
-      via: json['via'].toString(),
-      typeId: json['type_id'] is String
-          ? int.tryParse(json['type_id']) ?? 1
-          : json['type_id'] as int,
+      paymentType: int.parse(json['payment_type']),
+      icon: json['icon'].toString(),
+      typeId: int.parse(json['type_id']),
+      categoryId: int.parse(json['payment_type']),
       title: json['title'].toString(),
       description: json['description'].toString(),
     );
@@ -37,11 +44,14 @@ class Transaction {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'user_id': userId,
       'date': date.toIso8601String(),
       'amount': typeId == 1 ? -amount.abs() : amount.abs(),
-      'via': via,
+      'payment_type': paymentType,
       'type_id': typeId,
+      'category_id': categoryId,
+      'icon': icon,
       'title': title,
       'description': description,
     };

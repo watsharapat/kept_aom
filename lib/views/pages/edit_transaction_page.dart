@@ -28,7 +28,8 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   late ThemeMode themeMode;
   bool _amountInvalid = false;
   bool _titleInvalid = false;
-  late String _via;
+  late int _paymentType;
+  late int _categoryId;
   late DateTime _date;
   late int _typeId;
   late String _title;
@@ -39,15 +40,14 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   @override
   void initState() {
     super.initState();
-    // แยก emoji กับ title
-    final fullTitle = widget.transaction.title.split(' ');
-    _emoji = fullTitle.isNotEmpty ? fullTitle[0] : "😊";
-    _title = fullTitle.length > 1 ? fullTitle.sublist(1).join(' ') : "";
+    _emoji = widget.transaction.icon;
+    _title = widget.transaction.title;
+    _categoryId = widget.transaction.categoryId;
     _titleController = TextEditingController(text: _title);
     _description = widget.transaction.description;
     _descriptionController = TextEditingController(text: _description);
     _amount = widget.transaction.amount.abs();
-    _via = widget.transaction.via;
+    _paymentType = widget.transaction.paymentType;
     _date = widget.transaction.date;
     _typeId = widget.transaction.typeId;
   }
@@ -158,16 +158,18 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
 
                   if (!_amountInvalid && !_titleInvalid) {
                     final updatedTransaction = Transaction(
+                      id: widget.transaction.id,
                       userId: widget.transaction.userId,
                       date: _date,
                       amount: _amount,
-                      via: _via,
+                      paymentType: widget.transaction.paymentType,
                       typeId: _typeId,
+                      icon: widget.transaction.icon,
                       title: "$_emoji $_title",
+                      categoryId: widget.transaction.categoryId,
                       description: _description,
                     );
-                    provider.updateTransaction(
-                        widget.transaction, updatedTransaction);
+                    provider.updateTransaction(updatedTransaction);
                     context.pop();
                   }
                 },
@@ -234,11 +236,11 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                       children: [
                         Flexible(
                           child: CustomToggleButton(
-                            selectedIndex: _via == "Cash" ? 0 : 1,
+                            selectedIndex: _paymentType - 1,
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
                               setState(() {
-                                _via = value == 0 ? 'Cash' : 'Credit Card';
+                                _paymentType = value + 1;
                               });
                             },
                             icons: const [

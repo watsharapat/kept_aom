@@ -27,7 +27,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   late ThemeMode themeMode;
   bool _amountInvalid = false;
   bool _titleInvalid = false;
-  String _via = 'Cash';
+  int _paymentType = 1;
+  late int _categoryId;
   DateTime _date = DateTime.now();
   int _typeId = 1;
   String _title = '';
@@ -209,13 +210,16 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   if (!_amountInvalid && !_titleInvalid) {
                     provider.addTransaction(
                       Transaction(
+                        id: null,
                         userId: Supabase.instance.client.auth.currentUser!.id,
                         date: _date,
                         amount: _amount,
-                        via: _via,
                         typeId: _typeId,
                         title: "$_emoji $_title",
                         description: _description,
+                        paymentType: _paymentType,
+                        icon: '',
+                        categoryId: _categoryId,
                       ),
                     );
                     context.pop();
@@ -288,16 +292,16 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           // height: 48,
                           // width: 100,
                           child: CustomToggleButton(
-                            selectedIndex: _via == "Cash" ? 0 : 1,
+                            selectedIndex: _paymentType + 1,
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
                               setState(() {
-                                _via = value == 0 ? 'Cash' : 'Credit Card';
+                                _paymentType = value - 1;
                               });
                             },
                             icons: const [
                               FaIcon(FontAwesomeIcons.moneyBill, size: 16),
-                              Icon(Icons.credit_card_rounded, size: 24)
+                              FaIcon(FontAwesomeIcons.creditCard, size: 16),
                             ],
                           ),
                         ),
