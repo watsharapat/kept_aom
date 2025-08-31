@@ -1,24 +1,24 @@
 class QuickTitle {
-  final int id;
+  final int? id;
   final String icon;
-  final String userId;
+  final String? userId;
   final String title;
   final int typeId;
 
   QuickTitle({
-    required this.id,
+    this.id,
     required this.icon,
-    required this.userId,
+    this.userId,
     required this.typeId,
     required this.title,
   });
   factory QuickTitle.fromJson(Map<String, dynamic> json) {
     return QuickTitle(
-      id: int.parse(json['id']),
-      icon: json['icon'].toString(),
-      userId: json['user_id'].toString(),
-      typeId: int.parse(json['type_id']),
-      title: json['title'].toString(),
+      id: json['id'] as int?,
+      icon: json['icon'] as String,
+      userId: json['user_id'] as String?,
+      typeId: json['type_id'] as int,
+      title: json['title'] as String,
     );
   }
 

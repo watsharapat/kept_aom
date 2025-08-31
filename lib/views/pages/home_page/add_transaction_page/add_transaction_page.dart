@@ -18,6 +18,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   const AddTransactionPage({super.key});
+
   @override
   ConsumerState<AddTransactionPage> createState() => _AddTransactionPageState();
 }
@@ -25,6 +26,7 @@ class AddTransactionPage extends ConsumerStatefulWidget {
 class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   final TextEditingController _titleController = TextEditingController();
   late ThemeMode themeMode;
+  final SupabaseClient _supabase = Supabase.instance.client;
   bool _amountInvalid = false;
   bool _titleInvalid = false;
   int _paymentType = 1;
@@ -202,6 +204,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
                 onPressed: () {
+                  final userId = _supabase.auth.currentUser?.id;
                   setState(() {
                     _amountInvalid = _amount <= 0;
                     _titleInvalid = _title.isEmpty;
@@ -211,7 +214,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     provider.addTransaction(
                       Transaction(
                         id: null,
-                        userId: Supabase.instance.client.auth.currentUser!.id,
+                        userId: userId!,
                         date: _date,
                         amount: _amount,
                         typeId: _typeId,
@@ -462,13 +465,11 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     child: QuickTitleButton(
                       onTitleSelected: (selectedTitle) {
                         final title = selectedTitle.title;
-                        String emojiFromTitle = title.split(' ')[0];
-                        String titleWithoutEmoji =
-                            title.split(' ').sublist(1).join(' ');
+
                         setState(() {
-                          _titleController.text = titleWithoutEmoji;
-                          _title = titleWithoutEmoji;
-                          _emoji = emojiFromTitle;
+                          _titleController.text = selectedTitle.title;
+                          _title = selectedTitle.title;
+                          _emoji = selectedTitle.icon;
                           _typeId = selectedTitle.typeId;
                         });
                       },

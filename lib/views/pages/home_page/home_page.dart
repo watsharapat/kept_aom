@@ -31,7 +31,11 @@ class HomePage extends ConsumerWidget {
 
     final balance = provider.transactions.fold<double>(
       0,
-      (sum, transaction) => sum + transaction.amount,
+      (sum, transaction) =>
+          sum +
+          (transaction.typeId == 1
+              ? -transaction.amount.abs()
+              : transaction.amount.abs()),
     );
 
     return Scaffold(

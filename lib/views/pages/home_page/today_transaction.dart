@@ -44,11 +44,11 @@ class TodayTransactions extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: AppColors.overlay.withAlpha(50),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -135,9 +135,6 @@ class TodayTransactions extends ConsumerWidget {
                           ? index
                           : todayTransactions.length - 1 - index;
                       final transaction = todayTransactions[actualIndex];
-                      final fullTitle = transaction.title.split(' ');
-                      final emoji = fullTitle[0];
-                      final title = fullTitle.sublist(1).join(' ');
 
                       return ListTile(
                         leading: Container(
@@ -150,13 +147,14 @@ class TodayTransactions extends ConsumerWidget {
                           width: 40,
                           child: Center(
                             child: Text(
-                              emoji,
+                              transaction.icon,
                               style: const TextStyle(
                                   fontFamily: 'NotoEmoji', fontSize: 24),
                             ),
                           ),
                         ),
-                        title: Text(title),
+                        title: Text(transaction.title,
+                            style: Theme.of(context).textTheme.bodyMedium),
                         subtitle: Text(
                           DateFormat('EEE, M/d/y').format(transaction.date),
                           style: const TextStyle(fontSize: 12),

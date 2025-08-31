@@ -51,7 +51,11 @@ class TransactionListView extends ConsumerWidget {
           final transactionsOnDate = transactionsByDate[dateStr]!;
           double amoutEachDay = 0.0;
           for (var transaction in transactionsOnDate) {
-            amoutEachDay += transaction.amount;
+            if (transaction.typeId == 1) {
+              amoutEachDay -= transaction.amount.abs();
+            } else {
+              amoutEachDay += transaction.amount.abs();
+            }
           }
           String amoutEachDayString =
               NumberFormat("#,##0.00").format(amoutEachDay);
@@ -141,12 +145,9 @@ class TransactionListView extends ConsumerWidget {
                 itemCount: transactionsOnDate.length,
                 itemBuilder: (context, index) {
                   final transaction = transactionsOnDate[index];
-                  final fullTitle = transaction.title.split(' ');
-                  final emoji = fullTitle[0];
-                  final title = fullTitle.sublist(1).join(' ');
                   return Slidable(
-                      key: ValueKey(
-                          '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.via}_${transaction.typeId}_${transaction.title}_${transaction.description}'),
+                      //key: ValueKey(
+                      //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
                       endActionPane: ActionPane(
                         motion: const DrawerMotion(),
                         children: [
@@ -181,16 +182,17 @@ class TransactionListView extends ConsumerWidget {
                           width: 40,
                           child: Center(
                             child: Text(
-                              emoji,
+                              transaction.icon,
                               style: const TextStyle(
                                   fontFamily: 'NotoEmoji', fontSize: 24),
                             ),
                           ),
                         ),
-                        title: Text(title),
+                        title: Text(transaction.title,
+                            style: Theme.of(context).textTheme.bodyMedium),
                         subtitle: Text(
                           DateFormat('EEE, M/d/y').format(transaction.date),
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         trailing: Container(
                           height: 40,

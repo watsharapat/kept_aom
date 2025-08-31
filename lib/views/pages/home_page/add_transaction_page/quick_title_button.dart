@@ -44,16 +44,16 @@ class QuickTitleButton extends ConsumerWidget {
             physics: const BouncingScrollPhysics(),
             itemCount: provider.quickTitle.length,
             itemBuilder: (context, index) {
-              final title = provider.quickTitle[index].title ?? '💸 Untitled';
+              final title = provider.quickTitle[index].title ?? 'Untitled';
+              final icon = provider.quickTitle[index].icon ?? '❓';
               final quickTitle = provider.quickTitle[index];
               return ListTile(
                 visualDensity: const VisualDensity(vertical: -2),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                leading: Text(title.split(' ')[0],
-                    style: const TextStyle(fontSize: 24)),
+                leading: Text(icon, style: const TextStyle(fontSize: 24)),
                 title: Text(
-                  title.split(' ').sublist(1).join(' '),
+                  title,
                   style: TextTheme.of(context).bodyMedium,
                 ),
                 trailing: Text(

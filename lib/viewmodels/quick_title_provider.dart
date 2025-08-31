@@ -31,7 +31,7 @@ class QuickTitlesProvider extends ChangeNotifier {
       }
 
       final response = await _supabase
-          .from('quick_titles')
+          .from('quick_title')
           .select()
           .or('user_id.eq.$userId,user_id.is.null')
           .order('type_id', ascending: false);
@@ -57,7 +57,7 @@ class QuickTitlesProvider extends ChangeNotifier {
 
       // Insert the new quick title into the database
       final response = await _supabase
-          .from('quick_titles')
+          .from('quick_title')
           .insert(quicktitle.toJson())
           .select();
 
@@ -83,9 +83,9 @@ class QuickTitlesProvider extends ChangeNotifier {
 
       // Update the quick title in the database
       final response = await _supabase
-          .from('quick_titles')
+          .from('quick_title')
           .update(quicktitle.toJson())
-          .eq('id', quicktitle.id)
+          .eq('id', quicktitle.id!)
           .eq('user_id', userId)
           .select();
 
@@ -114,10 +114,10 @@ class QuickTitlesProvider extends ChangeNotifier {
       }
 
       await _supabase
-          .from('quick_titles')
+          .from('quick_title')
           .delete()
           .eq('user_id', userId)
-          .eq('id', quicktitle.id);
+          .eq('id', quicktitle.id!);
 
       // Remove the quick title from the local list
       _quickTitles

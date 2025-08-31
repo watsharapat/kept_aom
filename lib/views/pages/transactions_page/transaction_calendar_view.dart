@@ -207,13 +207,10 @@ class _TransactionCalendarViewState
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
-        final fullTitle = transaction.title.split(' ');
-        final emoji = fullTitle[0];
-        final title = fullTitle.sublist(1).join(' ');
 
         return Slidable(
-          key: ValueKey(
-              '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.via}_${transaction.typeId}_${transaction.title}_${transaction.description}'),
+          //key: ValueKey(
+          //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
             children: [
@@ -247,12 +244,13 @@ class _TransactionCalendarViewState
               width: 40,
               child: Center(
                 child: Text(
-                  emoji,
+                  transaction.icon,
                   style: const TextStyle(fontFamily: 'NotoEmoji', fontSize: 20),
                 ),
               ),
             ),
-            title: Text(title),
+            title: Text(transaction.title,
+                style: Theme.of(context).textTheme.bodyMedium),
             subtitle: Text(
               DateFormat('EEE, M/d/y').format(transaction.date),
               style: const TextStyle(fontSize: 12),

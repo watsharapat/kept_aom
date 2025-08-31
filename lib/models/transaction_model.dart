@@ -1,5 +1,5 @@
 class Transaction {
-  final String? id;
+  final int? id;
   final String userId;
   final DateTime date;
   final double amount;
@@ -25,20 +25,16 @@ class Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
-      id: json['id'].toString(),
-      userId: json['user_id'].toString(),
+      id: json['id'] as int?,
+      userId: json['user_id'] as String,
       date: DateTime.parse(json['date'].toString()),
-      amount: json['amount'] is String
-          ? double.tryParse(json['amount']) ?? 0.0
-          : json['amount'] is int
-              ? (json['amount'] as int).toDouble()
-              : json['amount'] as double,
-      paymentType: int.parse(json['payment_type']),
-      icon: json['icon'].toString(),
-      typeId: int.parse(json['type_id']),
-      categoryId: int.parse(json['payment_type']),
-      title: json['title'].toString(),
-      description: json['description'].toString(),
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      paymentType: json['payment_type'] as int? ?? 0,
+      icon: json['icon']?.toString() ?? '',
+      typeId: json['type_id'] as int? ?? 0,
+      categoryId: json['category_id'] as int? ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
     );
   }
 
