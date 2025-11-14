@@ -53,7 +53,7 @@ class TransactionProvider extends ChangeNotifier {
       // หากข้อมูลผ่านการตรวจสอบแล้ว ดำเนินการส่งข้อมูล
       final response = await _supabase
           .from('transactions')
-          .insert(transaction.toJson())
+          .insert(transaction.toJsonWithoutId())
           .single();
 
       final insertedTransaction = Transaction.fromJson(response);
@@ -93,7 +93,7 @@ class TransactionProvider extends ChangeNotifier {
       }
       await _supabase
           .from('transactions')
-          .update(updated.toJson())
+          .update(updated.toJsonWithoutId())
           .eq('user_id', userId)
           .eq('id', updated.id!);
       await fetchTransactions();

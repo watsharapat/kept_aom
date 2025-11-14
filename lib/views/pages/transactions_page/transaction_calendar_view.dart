@@ -209,64 +209,84 @@ class _TransactionCalendarViewState
         final transaction = transactions[index];
 
         return Slidable(
-          //key: ValueKey(
-          //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
-          endActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (context) {
-                  context.push('/editTransaction', extra: transaction);
-                },
-                backgroundColor: AppColors.caution,
-                foregroundColor: AppColors.textPrimaryOnDark,
-                icon: Icons.edit,
-              ),
-              SlidableAction(
-                onPressed: (context) {
-                  provider.deleteTransaction(transaction);
-                  provider.fetchTransactions();
-                },
-                backgroundColor: AppColors.danger,
-                foregroundColor: AppColors.textPrimaryOnDark,
-                icon: Icons.delete,
-              ),
-            ],
-          ),
-          child: ListTile(
-            leading: Container(
-              decoration: BoxDecoration(
-                color: Colors.indigo[100],
-                borderRadius: BorderRadius.circular(30),
-              ),
-              clipBehavior: Clip.antiAlias,
-              height: 40,
-              width: 40,
-              child: Center(
-                child: Text(
-                  transaction.icon,
-                  style: const TextStyle(fontFamily: 'NotoEmoji', fontSize: 20),
+            //key: ValueKey(
+            //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
+            endActionPane: ActionPane(
+              motion: const DrawerMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (context) {
+                    context.push('/editTransaction', extra: transaction);
+                  },
+                  backgroundColor: AppColors.caution,
+                  foregroundColor: AppColors.textPrimaryOnDark,
+                  icon: Icons.edit,
                 ),
-              ),
+                SlidableAction(
+                  onPressed: (context) {
+                    provider.deleteTransaction(transaction);
+                    provider.fetchTransactions();
+                  },
+                  backgroundColor: AppColors.danger,
+                  foregroundColor: AppColors.textPrimaryOnDark,
+                  icon: Icons.delete,
+                ),
+              ],
             ),
-            title: Text(transaction.title,
-                style: Theme.of(context).textTheme.bodyMedium),
-            subtitle: Text(
-              DateFormat('EEE, M/d/y').format(transaction.date),
-              style: const TextStyle(fontSize: 12),
-            ),
-            trailing: Text(
-              transaction.amount.toString(),
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: transaction.typeId == 1
-                    ? AppColors.danger
-                    : AppColors.success,
-              ),
-            ),
-          ),
-        );
+            child: ListTile(
+                leading: Container(
+                  height: 40,
+                  width: 40,
+                  child: Center(
+                    child: Text(
+                      transaction.icon,
+                      style: const TextStyle(
+                          fontFamily: 'NotoEmoji', fontSize: 24),
+                    ),
+                  ),
+                ),
+                title: Text(transaction.title,
+                    style: Theme.of(context).textTheme.bodyMedium),
+                subtitle: Text(
+                    transaction.description == ""
+                        ? 'ไม่มีรายละเอียด'
+                        : transaction.description,
+                    style: Theme.of(context).textTheme.bodySmall),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 80,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          transaction.amount.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: transaction.typeId == 1
+                                  ? AppColors.danger
+                                  : AppColors.success),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 80,
+                      height: 24,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('hh:mm a').format(transaction.date),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                )));
       },
     );
   }

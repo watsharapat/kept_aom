@@ -18,7 +18,10 @@ class QuickTitleButton extends ConsumerWidget {
     return IconButton(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       onPressed: () => _showQuickTitleSheet(context, ref),
-      icon: const Icon(Icons.arrow_drop_down_circle_rounded),
+      icon: const Icon(
+        Icons.quickreply_rounded,
+        size: 24,
+      ),
     );
   }
 

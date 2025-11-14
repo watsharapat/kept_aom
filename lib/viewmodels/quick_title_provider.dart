@@ -58,7 +58,7 @@ class QuickTitlesProvider extends ChangeNotifier {
       // Insert the new quick title into the database
       final response = await _supabase
           .from('quick_title')
-          .insert(quicktitle.toJson())
+          .insert(quicktitle.toJsonWithoutId())
           .select();
 
       if (response.isNotEmpty) {
@@ -84,7 +84,7 @@ class QuickTitlesProvider extends ChangeNotifier {
       // Update the quick title in the database
       final response = await _supabase
           .from('quick_title')
-          .update(quicktitle.toJson())
+          .update(quicktitle.toJsonWithoutId())
           .eq('id', quicktitle.id!)
           .eq('user_id', userId)
           .select();

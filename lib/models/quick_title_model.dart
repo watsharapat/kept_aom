@@ -31,4 +31,13 @@ class QuickTitle {
       'title': title,
     };
   }
+
+  Map<String, dynamic> toJsonWithoutId() {
+    return {
+      'icon': icon,
+      'user_id': userId,
+      'type_id': typeId,
+      'title': title,
+    };
+  }
 }

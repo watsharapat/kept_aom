@@ -172,45 +172,60 @@ class TransactionListView extends ConsumerWidget {
                         ],
                       ),
                       child: ListTile(
-                        leading: Container(
-                          // decoration: BoxDecoration(
-                          //   color: Colors.indigo[100],
-                          //   borderRadius: BorderRadius.circular(30),
-                          // ),
-                          // clipBehavior: Clip.antiAlias,
-                          height: 40,
-                          width: 40,
-                          child: Center(
-                            child: Text(
-                              transaction.icon,
-                              style: const TextStyle(
-                                  fontFamily: 'NotoEmoji', fontSize: 24),
+                          leading: Container(
+                            height: 40,
+                            width: 40,
+                            child: Center(
+                              child: Text(
+                                transaction.icon,
+                                style: const TextStyle(
+                                    fontFamily: 'NotoEmoji', fontSize: 24),
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(transaction.title,
-                            style: Theme.of(context).textTheme.bodyMedium),
-                        subtitle: Text(
-                          DateFormat('EEE, M/d/y').format(transaction.date),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        trailing: Container(
-                          height: 40,
-                          width: 80,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              transaction.amount.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: transaction.typeId == 1
-                                      ? AppColors.danger
-                                      : AppColors.success),
-                            ),
-                          ),
-                        ),
-                      ));
+                          title: Text(transaction.title,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          subtitle: Text(
+                              transaction.description == ""
+                                  ? 'No details'
+                                  : transaction.description,
+                              style: Theme.of(context).textTheme.bodySmall),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 80,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    transaction.amount.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: transaction.typeId == 1
+                                            ? AppColors.danger
+                                            : AppColors.success),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 80,
+                                height: 24,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    DateFormat('hh:mm a')
+                                        .format(transaction.date),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(fontSize: 12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )));
                 },
               ),
             ],

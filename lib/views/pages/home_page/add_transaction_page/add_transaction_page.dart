@@ -30,7 +30,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   bool _amountInvalid = false;
   bool _titleInvalid = false;
   int _paymentType = 1;
-  late int _categoryId;
+  int? _categoryId = null;
   DateTime _date = DateTime.now();
   int _typeId = 1;
   String _title = '';
@@ -218,10 +218,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         date: _date,
                         amount: _amount,
                         typeId: _typeId,
-                        title: "$_emoji $_title",
+                        title: _title,
                         description: _description,
                         paymentType: _paymentType,
-                        icon: '',
+                        icon: _emoji,
                         categoryId: _categoryId,
                       ),
                     );
@@ -295,11 +295,11 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           // height: 48,
                           // width: 100,
                           child: CustomToggleButton(
-                            selectedIndex: _paymentType + 1,
+                            selectedIndex: _paymentType - 1,
                             colors: [Theme.of(context).primaryColor],
                             onSelectionChanged: (int value) {
                               setState(() {
-                                _paymentType = value - 1;
+                                _paymentType = value + 1;
                               });
                             },
                             icons: const [
@@ -405,8 +405,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         ]
                       : []),
               padding:
-                  const EdgeInsets.only(left: 12, bottom: 4, top: 4, right: 8),
-              height: 80,
+                  const EdgeInsets.only(left: 12, bottom: 4, top: 8, right: 8),
+              height: 88,
               child: Row(
                 children: [
                   Container(

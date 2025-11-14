@@ -25,11 +25,12 @@ class EditTransactionPage extends ConsumerStatefulWidget {
 class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  late TextEditingController _amountController;
   late ThemeMode themeMode;
   bool _amountInvalid = false;
   bool _titleInvalid = false;
   late int _paymentType;
-  late int _categoryId;
+  late int? _categoryId;
   late DateTime _date;
   late int _typeId;
   late String _title;
@@ -47,6 +48,8 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
     _description = widget.transaction.description;
     _descriptionController = TextEditingController(text: _description);
     _amount = widget.transaction.amount.abs();
+    _amountController =
+        TextEditingController(text: _amount == 0 ? '' : _amount.toString());
     _paymentType = widget.transaction.paymentType;
     _date = widget.transaction.date;
     _typeId = widget.transaction.typeId;
@@ -165,7 +168,7 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                       paymentType: widget.transaction.paymentType,
                       typeId: _typeId,
                       icon: widget.transaction.icon,
-                      title: "$_emoji $_title",
+                      title: _title,
                       categoryId: widget.transaction.categoryId,
                       description: _description,
                     );
@@ -280,8 +283,7 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                         minLines: 1,
                         textAlign: TextAlign.right,
                         keyboardType: TextInputType.number,
-                        controller: TextEditingController(
-                            text: _amount == 0 ? '' : _amount.toString()),
+                        controller: _amountController,
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w500,
@@ -345,8 +347,8 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                         ]
                       : []),
               padding:
-                  const EdgeInsets.only(left: 12, bottom: 4, top: 4, right: 8),
-              height: 80,
+                  const EdgeInsets.only(left: 12, bottom: 4, top: 8, right: 8),
+              height: 88,
               child: Row(
                 children: [
                   Container(

@@ -7,7 +7,7 @@ class Transaction {
   final int typeId;
   final String icon;
   final String title;
-  final int categoryId;
+  final int? categoryId;
   final String description;
 
   Transaction({
@@ -19,7 +19,7 @@ class Transaction {
     required this.typeId,
     required this.icon,
     required this.title,
-    required this.categoryId,
+    this.categoryId,
     required this.description,
   });
 
@@ -32,7 +32,7 @@ class Transaction {
       paymentType: json['payment_type'] as int? ?? 0,
       icon: json['icon']?.toString() ?? '',
       typeId: json['type_id'] as int? ?? 0,
-      categoryId: json['category_id'] as int? ?? 0,
+      categoryId: json['category_id'] as int? ?? null,
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
     );
@@ -41,6 +41,20 @@ class Transaction {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'user_id': userId,
+      'date': date.toIso8601String(),
+      'amount': typeId == 1 ? -amount.abs() : amount.abs(),
+      'payment_type': paymentType,
+      'type_id': typeId,
+      'category_id': categoryId,
+      'icon': icon,
+      'title': title,
+      'description': description,
+    };
+  }
+
+  Map<String, dynamic> toJsonWithoutId() {
+    return {
       'user_id': userId,
       'date': date.toIso8601String(),
       'amount': typeId == 1 ? -amount.abs() : amount.abs(),
