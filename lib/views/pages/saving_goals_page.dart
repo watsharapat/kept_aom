@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/viewmodels/saving_goals_provider.dart';
 import 'package:kept_aom/views/utils/styles.dart';
+import 'package:kept_aom/utils/format_utils.dart';
 
 class SavingGoalsPage extends ConsumerWidget {
   const SavingGoalsPage({super.key});
@@ -264,7 +265,7 @@ class SavingGoalsPage extends ConsumerWidget {
                                         ),
                                         const SizedBox(width: 16),
                                         Text(
-                                          '${savingGoal.stored}/${savingGoal.target}',
+                                          '${FormatUtils.formatNumber(savingGoal.stored.toDouble())}/${FormatUtils.formatNumber(savingGoal.target.toDouble())}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall,

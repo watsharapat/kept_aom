@@ -2,7 +2,6 @@ import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:kept_aom/viewmodels/saving_goals_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
@@ -14,6 +13,7 @@ import 'package:kept_aom/views/widgets/bottom_nav.dart';
 import 'package:supabase/supabase.dart';
 import 'package:decimal/decimal.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kept_aom/utils/format_utils.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -49,6 +49,10 @@ class HomePage extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12, // สีของเงา
@@ -118,6 +122,10 @@ class HomePage extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(99),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12, // สีของเงา
@@ -266,7 +274,7 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget accountCard(double balance) {
-    String balanceString = NumberFormat("#,##0.00").format(balance.toDouble());
+    String balanceString = FormatUtils.formatNumber(balance.toDouble());
     return Container(
       clipBehavior: Clip.antiAlias,
       width: double.infinity,

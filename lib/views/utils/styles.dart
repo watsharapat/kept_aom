@@ -15,7 +15,7 @@ class AppColors {
   //static const Color stroke = Color(0xFF8B91A0);
   //static const Color border = Color.fromARGB(255, 231, 231, 231);
   static const Color border = Color(0xFFb8b9ba);
-  //static const Color borderOnDark = Color(0xFFD9D9D9);
+  static const Color borderOnDark = Color.fromARGB(50, 217, 217, 217);
 
   static const Color lightBackground = Color.fromARGB(255, 243, 243, 243);
   static const Color darkBackground = Color(0xFF000000);

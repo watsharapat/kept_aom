@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/utils/styles.dart';
+import 'package:kept_aom/utils/format_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class TransactionCalendarView extends ConsumerStatefulWidget {
@@ -169,14 +169,14 @@ class _TransactionCalendarViewState
                   )),
               const SizedBox(width: 8),
               Text(
-                DateFormat('yMMMEd').format(selectedDay),
+                FormatUtils.formatDate(selectedDay),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(width: 16),
               Visibility(
                   visible: hasTransactions,
                   child: Text(
-                    totalAmount.toString(),
+                    FormatUtils.formatNumber(totalAmount),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: totalAmount >= 0
                               ? AppColors.success
@@ -252,11 +252,11 @@ class _TransactionCalendarViewState
             title: Text(transaction.title,
                 style: Theme.of(context).textTheme.bodyMedium),
             subtitle: Text(
-              DateFormat('EEE, M/d/y').format(transaction.date),
+              FormatUtils.formatDate(transaction.date),
               style: const TextStyle(fontSize: 12),
             ),
             trailing: Text(
-              transaction.amount.toString(),
+              FormatUtils.formatNumber(transaction.amount),
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,

@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/utils/styles.dart';
+import 'package:kept_aom/utils/format_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TransactionListView extends ConsumerWidget {
@@ -19,7 +19,7 @@ class TransactionListView extends ConsumerWidget {
     // จัดกลุ่มธุรกรรมตามวันที่
     Map<String, List<Transaction>> transactionsByDate = {};
     for (var transaction in transactions) {
-      final dateStr = DateFormat('MMM d, yyyy').format(transaction.date);
+      final dateStr = FormatUtils.formatDate(transaction.date);
       if (transactionsByDate.containsKey(dateStr)) {
         transactionsByDate[dateStr]!.add(transaction);
       } else {
@@ -57,8 +57,7 @@ class TransactionListView extends ConsumerWidget {
               amoutEachDay += transaction.amount.abs();
             }
           }
-          String amoutEachDayString =
-              NumberFormat("#,##0.00").format(amoutEachDay);
+          String amoutEachDayString = FormatUtils.formatNumber(amoutEachDay);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -191,7 +190,7 @@ class TransactionListView extends ConsumerWidget {
                         title: Text(transaction.title,
                             style: Theme.of(context).textTheme.bodyMedium),
                         subtitle: Text(
-                          DateFormat('EEE, M/d/y').format(transaction.date),
+                          FormatUtils.formatDate(transaction.date),
                           style: const TextStyle(fontSize: 12),
                         ),
                         trailing: Container(
@@ -200,7 +199,7 @@ class TransactionListView extends ConsumerWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              transaction.amount.toString(),
+                              FormatUtils.formatNumber(transaction.amount),
                               style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,

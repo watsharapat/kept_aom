@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/utils/styles.dart';
+import 'package:kept_aom/utils/format_utils.dart';
 
 final ascendingProvider = StateProvider<bool>((ref) => false);
 
@@ -44,6 +44,10 @@ class TodayTransactions extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.overlay.withAlpha(50),
@@ -101,7 +105,7 @@ class TodayTransactions extends ConsumerWidget {
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
                           Text(
-                            '(${todaySum.toStringAsFixed(2)})',
+                            '(${FormatUtils.formatNumber(todaySum)})',
                             style: Theme.of(context)
                                 .textTheme
                                 .displaySmall
@@ -156,7 +160,7 @@ class TodayTransactions extends ConsumerWidget {
                         title: Text(transaction.title,
                             style: Theme.of(context).textTheme.bodyMedium),
                         subtitle: Text(
-                          DateFormat('EEE, M/d/y').format(transaction.date),
+                          FormatUtils.formatDate(transaction.date),
                           style: const TextStyle(fontSize: 12),
                         ),
                         trailing: SizedBox(
@@ -165,7 +169,7 @@ class TodayTransactions extends ConsumerWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              transaction.amount.toString(),
+                              FormatUtils.formatNumber(transaction.amount),
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
