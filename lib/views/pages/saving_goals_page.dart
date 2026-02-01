@@ -36,6 +36,10 @@ class SavingGoalsPage extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -221,6 +225,11 @@ class SavingGoalsPage extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
+                                      width: 1,
+                                    ),
                                     boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black12,
@@ -414,6 +423,10 @@ class _AddOrEditSavingGoalBottomSheetState
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
       ),
       padding: EdgeInsets.only(
         left: 16,
@@ -441,7 +454,7 @@ class _AddOrEditSavingGoalBottomSheetState
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Theme.of(context).dividerColor,
+                      color: Theme.of(context).colorScheme.outline,
                       width: 1,
                     ),
                   ),

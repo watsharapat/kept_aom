@@ -23,6 +23,10 @@ class SettingPage extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -75,6 +79,10 @@ class SettingPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
@@ -115,6 +123,10 @@ class SettingPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
@@ -145,6 +157,10 @@ class SettingPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
@@ -176,6 +192,10 @@ class SettingPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,

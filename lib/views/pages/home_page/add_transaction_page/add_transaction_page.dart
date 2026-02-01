@@ -3,18 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/transaction_model.dart';
-import 'package:kept_aom/viewmodels/quick_title_provider.dart';
+import 'package:kept_aom/viewmodels/category_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/date_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/emoji_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/quick_title_button.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
-import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/utils/styles.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   const AddTransactionPage({super.key});
@@ -30,7 +28,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   bool _amountInvalid = false;
   bool _titleInvalid = false;
   int _paymentType = 1;
-  late int _categoryId;
+  int? _categoryId;
   DateTime _date = DateTime.now();
   int _typeId = 1;
   String _title = '';
@@ -80,6 +78,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.netural.withValues(alpha: 0.1),
@@ -184,6 +186,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(99),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline,
+                width: 1,
+              ),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12, // สีของเงา
@@ -222,7 +228,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                         description: _description,
                         paymentType: _paymentType,
                         icon: '',
-                        categoryId: _categoryId,
+                        categoryId: _categoryId ?? 0,
                       ),
                     );
                     context.pop();
@@ -247,6 +253,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: themeMode == ThemeMode.light
                       ? [
                           BoxShadow(
@@ -277,6 +287,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 1,
+                        ),
                         boxShadow: themeMode == ThemeMode.light
                             ? [
                                 BoxShadow(
@@ -395,6 +409,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: themeMode == ThemeMode.light
                       ? [
                           BoxShadow(
@@ -471,6 +489,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           _title = selectedTitle.title;
                           _emoji = selectedTitle.icon;
                           _typeId = selectedTitle.typeId;
+                          _categoryId = selectedTitle.categoryId;
                         });
                       },
                     ),
@@ -479,12 +498,126 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               ),
             ),
             const SizedBox(height: 12),
+            // Category Selection with Choice Chips
+            Consumer(
+              builder: (context, ref, child) {
+                final categoryNotifier = ref.watch(categoryProvider);
+                final categories =
+                    categoryNotifier.getCategoriesByType(_typeId);
+
+                return Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 1,
+                      ),
+                      boxShadow: themeMode == ThemeMode.light
+                          ? [
+                              BoxShadow(
+                                color: AppColors.netural.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              )
+                            ]
+                          : []),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: [
+                            ChoiceChip(
+                              label: const Text('No Category'),
+                              selected: _categoryId == null,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setState(() {
+                                    _categoryId = null;
+                                  });
+                                }
+                              },
+                              selectedColor: Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.2),
+                              labelStyle: TextStyle(
+                                color: _categoryId == null
+                                    ? Theme.of(context).primaryColor
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                fontWeight: _categoryId == null
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+
+                            // Category chips
+                            ...categories.map((category) {
+                              final isSelected =
+                                  _categoryId == category.categoryId;
+
+                              return ChoiceChip(
+                                label: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(category.icon,
+                                        style: const TextStyle(fontSize: 16)),
+                                    const SizedBox(width: 6),
+                                    Text(category.name),
+                                  ],
+                                ),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() {
+                                      _categoryId = category.categoryId;
+                                    });
+                                  }
+                                },
+                                selectedColor: Theme.of(context)
+                                    .primaryColor
+                                    .withValues(alpha: 0.2),
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               height: 84,
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: themeMode == ThemeMode.light
                       ? [
                           BoxShadow(
@@ -509,7 +642,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   });
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

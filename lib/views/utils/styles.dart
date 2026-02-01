@@ -37,6 +37,7 @@ class AppColors {
   // Semantic Color Additions
   static const Color transparent = Color(0x00000000);
   static const Color overlay = Color(0x80000000);
+  static const Color shadow = Colors.black12;
 }
 
 class AppTextStyle {
@@ -83,4 +84,43 @@ class AppTextStyle {
     color: AppColors.textPrimaryOnDark,
     fontWeight: FontWeight.w800,
   );
+}
+
+class AppStyles {
+  static const double cardRadiusValue = 24.0;
+  static const BorderRadius cardBorderRadius =
+      BorderRadius.all(Radius.circular(cardRadiusValue));
+
+  static const List<BoxShadow> cardShadow = [
+    BoxShadow(
+      color: AppColors.shadow,
+      blurRadius: 10,
+      offset: Offset(0, 4),
+    ),
+  ];
+
+  static BoxDecoration cardDecoration(BuildContext context) {
+    return BoxDecoration(
+      color: Theme.of(context).cardColor,
+      borderRadius: cardBorderRadius,
+      border: Border.all(
+        color: Theme.of(context).colorScheme.outline,
+        width: 1,
+      ),
+      boxShadow: cardShadow,
+    );
+  }
+
+  static BoxDecoration pillDecoration(BuildContext context) {
+    return BoxDecoration(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.netural
+          : AppColors.lightBackground,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(
+        color: Theme.of(context).colorScheme.outline,
+        width: 1,
+      ),
+    );
+  }
 }

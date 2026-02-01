@@ -29,7 +29,7 @@ class TransactionsPage extends ConsumerWidget {
         initialIndex: 0,
         length: 2,
         child: Scaffold(
-            extendBodyBehindAppBar: false,
+            extendBodyBehindAppBar: true,
             appBar: AppBar(
               forceMaterialTransparency: true,
               toolbarHeight: 80,
@@ -39,6 +39,10 @@ class TransactionsPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(99),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
@@ -86,6 +90,10 @@ class TransactionsPage extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(99),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 1,
+                      ),
                       boxShadow: const [
                         BoxShadow(
                           color: Colors.black12,

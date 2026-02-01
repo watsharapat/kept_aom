@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/quick_title_model.dart';
+import 'package:kept_aom/viewmodels/category_provider.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/emoji_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
@@ -31,6 +32,10 @@ class QuickTitlePage extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(99),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline,
+                width: 1,
+              ),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
@@ -118,8 +123,10 @@ class QuickTitlePage extends ConsumerWidget {
                                                         quickTitle.typeId,
                                                     initialEmoji:
                                                         quickTitle.icon,
-                                                    onSubmit:
-                                                        (emoji, title, typeId) {
+                                                    initialCategoryId:
+                                                        quickTitle.categoryId,
+                                                    onSubmit: (emoji, title,
+                                                        typeId, categoryId) {
                                                       quickTitlesNotifier
                                                           .updateQuickTitle(
                                                         QuickTitle(
@@ -129,6 +136,8 @@ class QuickTitlePage extends ConsumerWidget {
                                                           icon: emoji,
                                                           title: title,
                                                           typeId: typeId,
+                                                          categoryId:
+                                                              categoryId,
                                                         ),
                                                       );
                                                       Navigator.pop(context);
@@ -160,6 +169,11 @@ class QuickTitlePage extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
+                                      width: 1,
+                                    ),
                                     boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black12,
@@ -242,7 +256,7 @@ class QuickTitlePage extends ConsumerWidget {
                       builder: (context) => SafeArea(
                           child: AddOrEditQuickTitleBottomSheet(
                         isEdit: false,
-                        onSubmit: (emoji, title, typeId) {
+                        onSubmit: (emoji, title, typeId, categoryId) {
                           quickTitlesNotifier.addQuickTitle(QuickTitle(
                             id: null,
                             userId:
@@ -250,6 +264,7 @@ class QuickTitlePage extends ConsumerWidget {
                             icon: emoji,
                             title: title,
                             typeId: typeId,
+                            categoryId: categoryId,
                           ));
                         },
                       )),
@@ -264,10 +279,12 @@ class QuickTitlePage extends ConsumerWidget {
 }
 
 class AddOrEditQuickTitleBottomSheet extends StatefulWidget {
-  final void Function(String emoji, String title, int typeId) onSubmit;
+  final void Function(String emoji, String title, int typeId, int? categoryId)
+      onSubmit;
   final String? initialTitle;
   final int? initialTypeId;
   final String? initialEmoji;
+  final int? initialCategoryId;
   final bool isEdit;
 
   const AddOrEditQuickTitleBottomSheet({
@@ -276,6 +293,7 @@ class AddOrEditQuickTitleBottomSheet extends StatefulWidget {
     this.initialTitle,
     this.initialTypeId,
     this.initialEmoji,
+    this.initialCategoryId,
     this.isEdit = false,
   });
 
@@ -290,6 +308,7 @@ class _AddOrEditQuickTitleBottomSheetState
   late int _typeId;
   late String _emoji;
   late bool _showEmojiPicker;
+  late int? _categoryId;
 
   @override
   void initState() {
@@ -298,6 +317,7 @@ class _AddOrEditQuickTitleBottomSheetState
     _typeId = widget.initialTypeId ?? 1;
     _emoji = widget.initialEmoji ?? "😊";
     _showEmojiPicker = false;
+    _categoryId = widget.initialCategoryId;
   }
 
   @override
@@ -312,6 +332,10 @@ class _AddOrEditQuickTitleBottomSheetState
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
       ),
       padding: EdgeInsets.only(
         left: 16,
@@ -339,7 +363,7 @@ class _AddOrEditQuickTitleBottomSheetState
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.border,
+                      color: Theme.of(context).colorScheme.outline,
                       width: 1,
                     ),
                   ),
@@ -398,6 +422,92 @@ class _AddOrEditQuickTitleBottomSheetState
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // Category Selection with Choice Chips
+          Consumer(
+            builder: (context, ref, child) {
+              final categoryNotifier = ref.watch(categoryProvider);
+              final categories = categoryNotifier.getCategoriesByType(_typeId);
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Category (Optional)',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      // No Category chip
+                      ChoiceChip(
+                        label: const Text('No Category'),
+                        selected: _categoryId == null,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _categoryId = null;
+                            });
+                          }
+                        },
+                        selectedColor: Theme.of(context)
+                            .primaryColor
+                            .withValues(alpha: 0.2),
+                        labelStyle: TextStyle(
+                          color: _categoryId == null
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).textTheme.bodyMedium?.color,
+                          fontWeight: _categoryId == null
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                      // Category chips
+                      ...categories.map((category) {
+                        final isSelected = _categoryId == category.categoryId;
+                        return ChoiceChip(
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                category.icon,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(category.name),
+                            ],
+                          ),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            if (selected) {
+                              setState(() {
+                                _categoryId = category.categoryId;
+                              });
+                            }
+                          },
+                          selectedColor: Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.2),
+                          labelStyle: TextStyle(
+                            color: isSelected
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).textTheme.bodyMedium?.color,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
           if (_showEmojiPicker)
             SizedBox(
               height: 250,
@@ -454,6 +564,7 @@ class _AddOrEditQuickTitleBottomSheetState
                       _emoji,
                       _titleController.text.trim(),
                       _typeId,
+                      _categoryId,
                     );
                     Navigator.pop(context);
                   } else {

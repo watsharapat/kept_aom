@@ -37,6 +37,10 @@ class QuickTitleButton extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
           ),
           height: MediaQuery.of(context).size.height * 0.4,
           child: ListView.builder(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kept_aom/models/quick_title_model.dart';
+
 import 'package:kept_aom/models/transaction_model.dart';
+import 'package:kept_aom/views/pages/dashboard_page/dashboard_page.dart';
 import 'package:kept_aom/views/pages/edit_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
@@ -21,8 +22,8 @@ enum AppRoute {
   addTransaction('/addtransaction'),
   editTransaction('/editTransaction'),
   savingGoals('/savingGoals'),
-  quickTitles('/quick_titles');
-  // dashboard('/dashboard'); // ถ้ามีหน้า dashboard
+  quickTitles('/quick_titles'),
+  dashboard('/dashboard');
 
   final String path;
   const AppRoute(this.path);
@@ -32,7 +33,8 @@ enum AppRoute {
 final bottomNavIndexMap = {
   AppRoute.home.path: 0,
   AppRoute.transactions.path: 1,
-  AppRoute.settings.path: 2,
+  AppRoute.dashboard.path: 2,
+  AppRoute.settings.path: 3,
 };
 
 String? lastRoutePath;
@@ -125,6 +127,26 @@ final router = GoRouter(
 
             return buildTransitionPage(
               child: const TransactionsPage(),
+              state: state,
+              transitionBuilder: transition,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoute.dashboard.path,
+          pageBuilder: (context, state) {
+            final prev = lastRoutePath;
+            lastRoutePath = state.fullPath;
+
+            final prevIndex = bottomNavIndexMap[prev ?? ''] ?? 0;
+            final currentIndex = bottomNavIndexMap[state.fullPath] ?? 0;
+
+            final transition = (currentIndex > prevIndex)
+                ? _slideRightToLeftTransition
+                : _slideLeftToRightTransition;
+
+            return buildTransitionPage(
+              child: const DashboardPage(),
               state: state,
               transitionBuilder: transition,
             );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/transaction_model.dart';
+import 'package:kept_aom/viewmodels/category_provider.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
@@ -162,11 +163,11 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                       userId: widget.transaction.userId,
                       date: _date,
                       amount: _amount,
-                      paymentType: widget.transaction.paymentType,
+                      paymentType: _paymentType,
                       typeId: _typeId,
                       icon: widget.transaction.icon,
                       title: "$_emoji $_title",
-                      categoryId: widget.transaction.categoryId,
+                      categoryId: _categoryId,
                       description: _description,
                     );
                     provider.updateTransaction(updatedTransaction);
@@ -414,6 +415,7 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                           _title = titleWithoutEmoji;
                           _emoji = emojiFromTitle;
                           _typeId = selectedTitle.typeId;
+                          _categoryId = selectedTitle.categoryId ?? _categoryId;
                         });
                       },
                     ),
@@ -453,7 +455,113 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                   });
                 },
               ),
-            )
+            ),
+            const SizedBox(height: 12),
+            // Category Selection with Choice Chips
+            Consumer(
+              builder: (context, ref, child) {
+                final categoryNotifier = ref.watch(categoryProvider);
+                final categories =
+                    categoryNotifier.getCategoriesByType(_typeId);
+
+                return Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: themeMode == ThemeMode.light
+                          ? [
+                              BoxShadow(
+                                color: AppColors.netural.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              )
+                            ]
+                          : []),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: [
+                            ChoiceChip(
+                              label: const Text('No Category'),
+                              selected: _categoryId == 0,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setState(() {
+                                    _categoryId = 0;
+                                  });
+                                }
+                              },
+                              selectedColor: Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.2),
+                              labelStyle: TextStyle(
+                                color: _categoryId == 0
+                                    ? Theme.of(context).primaryColor
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                fontWeight: _categoryId == 0
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+
+                            // Category chips
+                            ...categories.map((category) {
+                              final isSelected =
+                                  _categoryId == category.categoryId;
+
+                              return ChoiceChip(
+                                label: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(category.icon,
+                                        style: const TextStyle(fontSize: 16)),
+                                    const SizedBox(width: 6),
+                                    Text(category.name),
+                                  ],
+                                ),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() {
+                                      _categoryId = category.categoryId;
+                                    });
+                                  }
+                                },
+                                selectedColor: Theme.of(context)
+                                    .primaryColor
+                                    .withValues(alpha: 0.2),
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

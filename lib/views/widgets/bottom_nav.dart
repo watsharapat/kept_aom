@@ -23,9 +23,9 @@ class BottomNavBar extends ConsumerWidget {
       case 1:
         context.go('/transactions');
         break;
-      // case 2:
-      //   context.go('/dashboard');
-      //   break;
+      case 2:
+        context.go('/dashboard');
+        break;
       case 3:
         context.go('/settings');
         break;
@@ -38,10 +38,18 @@ class BottomNavBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(bottomNavIndexProvider);
     const double iconSize = 24;
+    const double iconContainerSize = 30;
+    const double activeIconContainerSize = 48;
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.outline,
+            width: 1,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.overlay.withAlpha(50),
@@ -53,8 +61,8 @@ class BottomNavBar extends ConsumerWidget {
       child: Theme(
         data: Theme.of(context).copyWith(
           splashFactory: NoSplash.splashFactory,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+          highlightColor: AppColors.transparent,
+          splashColor: AppColors.transparent,
         ),
         child: BottomNavigationBar(
           showSelectedLabels: false,
@@ -66,44 +74,95 @@ class BottomNavBar extends ConsumerWidget {
           unselectedItemColor: Theme.of(context).disabledColor,
           backgroundColor: Theme.of(context).cardTheme.color,
           iconSize: 30,
-          items: const <BottomNavigationBarItem>[
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: Center(
-                    child: FaIcon(FontAwesomeIcons.house, size: iconSize),
-                  ),
+              icon: const SizedBox(
+                width: iconContainerSize,
+                height: iconContainerSize,
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.house, size: iconSize),
                 ),
-                label: 'Home'),
+              ),
+              activeIcon: Container(
+                width: activeIconContainerSize,
+                height: activeIconContainerSize,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.house,
+                      size: iconSize, color: Theme.of(context).primaryColor),
+                ),
+              ),
+              label: 'Home',
+            ),
             BottomNavigationBarItem(
-                icon: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: Center(
-                    child:
-                        FaIcon(FontAwesomeIcons.calendarDays, size: iconSize),
-                  ),
+              icon: SizedBox(
+                width: iconContainerSize,
+                height: iconContainerSize,
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.calendarDays, size: iconSize),
                 ),
-                label: 'Transaction'),
+              ),
+              activeIcon: Container(
+                width: activeIconContainerSize,
+                height: activeIconContainerSize,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.calendarDays,
+                      size: iconSize, color: Theme.of(context).primaryColor),
+                ),
+              ),
+              label: 'Transaction',
+            ),
             BottomNavigationBarItem(
-                icon: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: Center(
-                    child: FaIcon(FontAwesomeIcons.chartPie, size: iconSize),
-                  ),
+              icon: SizedBox(
+                width: iconContainerSize,
+                height: iconContainerSize,
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.chartPie, size: iconSize),
                 ),
-                label: 'Dashboard'),
+              ),
+              activeIcon: Container(
+                width: activeIconContainerSize,
+                height: activeIconContainerSize,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.chartPie,
+                      size: iconSize, color: Theme.of(context).primaryColor),
+                ),
+              ),
+              label: 'Dashboard',
+            ),
             BottomNavigationBarItem(
-                icon: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: Center(
-                    child: FaIcon(FontAwesomeIcons.gear, size: iconSize),
-                  ),
+              icon: SizedBox(
+                width: iconContainerSize,
+                height: iconContainerSize,
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.gear, size: iconSize),
                 ),
-                label: 'Setting'),
+              ),
+              activeIcon: Container(
+                width: activeIconContainerSize,
+                height: activeIconContainerSize,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: FaIcon(FontAwesomeIcons.gear,
+                      size: iconSize, color: Theme.of(context).primaryColor),
+                ),
+              ),
+              label: 'Setting',
+            ),
           ],
         ),
       ),

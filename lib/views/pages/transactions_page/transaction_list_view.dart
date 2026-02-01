@@ -27,43 +27,31 @@ class TransactionListView extends ConsumerWidget {
       }
     }
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.only(left: 16, right: 16),
-      child: ListView.builder(
-        itemCount: transactionsByDate.length,
-        itemBuilder: (context, index) {
-          final dateStr = transactionsByDate.keys.toList()[index];
-          final transactionsOnDate = transactionsByDate[dateStr]!;
-          double amoutEachDay = 0.0;
-          for (var transaction in transactionsOnDate) {
-            if (transaction.typeId == 1) {
-              amoutEachDay -= transaction.amount.abs();
-            } else {
-              amoutEachDay += transaction.amount.abs();
-            }
+    return ListView.builder(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      itemCount: transactionsByDate.length,
+      itemBuilder: (context, index) {
+        final dateStr = transactionsByDate.keys.toList()[index];
+        final transactionsOnDate = transactionsByDate[dateStr]!;
+        double amoutEachDay = 0.0;
+        for (var transaction in transactionsOnDate) {
+          if (transaction.typeId == 1) {
+            amoutEachDay -= transaction.amount.abs();
+          } else {
+            amoutEachDay += transaction.amount.abs();
           }
-          String amoutEachDayString = FormatUtils.formatNumber(amoutEachDay);
-          return Column(
+        }
+        String amoutEachDayString = FormatUtils.formatNumber(amoutEachDay);
+
+        return Container(
+          clipBehavior: Clip.antiAlias,
+          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          decoration: AppStyles.cardDecoration(context),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: double.infinity,
-                //color: AppColors.primary,
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Row(
                   children: [
@@ -75,12 +63,7 @@ class TransactionListView extends ConsumerWidget {
                       ),
                     ),
                     Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.netural
-                            : AppColors.lightBackground,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      decoration: AppStyles.pillDecoration(context),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       child: Row(
@@ -93,20 +76,6 @@ class TransactionListView extends ConsumerWidget {
                                 ? AppColors.success.withValues(alpha: 0.8)
                                 : AppColors.danger.withValues(alpha: 0.8),
                           ),
-                          // Container(
-                          //   height: 16,
-                          //   width: 16,
-                          //   decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(99),
-                          //     border: Border.all(
-                          //       color: AppColors.lightBackground,
-                          //       width: 1,
-                          //     ),
-                          //     color: amoutEachDay >= 0
-                          //         ? AppColors.success.withValues(alpha: 0.8)
-                          //         : AppColors.danger.withValues(alpha: 0.8),
-                          //   ),
-                          // ),
                           const SizedBox(width: 12),
                           Text(
                             dateStr,
@@ -145,8 +114,6 @@ class TransactionListView extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final transaction = transactionsOnDate[index];
                   return Slidable(
-                      //key: ValueKey(
-                      //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
                       endActionPane: ActionPane(
                         motion: const DrawerMotion(),
                         children: [
@@ -172,11 +139,6 @@ class TransactionListView extends ConsumerWidget {
                       ),
                       child: ListTile(
                         leading: Container(
-                          // decoration: BoxDecoration(
-                          //   color: Colors.indigo[100],
-                          //   borderRadius: BorderRadius.circular(30),
-                          // ),
-                          // clipBehavior: Clip.antiAlias,
                           height: 40,
                           width: 40,
                           child: Center(
@@ -189,10 +151,12 @@ class TransactionListView extends ConsumerWidget {
                         ),
                         title: Text(transaction.title,
                             style: Theme.of(context).textTheme.bodyMedium),
-                        subtitle: Text(
-                          FormatUtils.formatDate(transaction.date),
-                          style: const TextStyle(fontSize: 12),
-                        ),
+                        subtitle: transaction.description != ""
+                            ? Text(
+                                transaction.description,
+                                style: const TextStyle(fontSize: 12),
+                              )
+                            : null,
                         trailing: Container(
                           height: 40,
                           width: 80,
@@ -213,9 +177,9 @@ class TransactionListView extends ConsumerWidget {
                 },
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

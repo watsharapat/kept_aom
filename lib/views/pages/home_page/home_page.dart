@@ -1,19 +1,19 @@
-import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/viewmodels/saving_goals_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
-import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
 import 'package:kept_aom/views/pages/home_page/today_transaction.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
-import 'package:kept_aom/views/utils/styles.dart';
-import 'package:kept_aom/views/widgets/bottom_nav.dart';
-import 'package:supabase/supabase.dart';
-import 'package:decimal/decimal.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:kept_aom/utils/constants.dart';
 import 'package:kept_aom/utils/format_utils.dart';
+
+final isMonthlyBalanceProvider = StateProvider.autoDispose<bool>(
+    (ref) => false); // Use autoDispose if not needed globally, or change.
+// const int startDayOfMonth = 25; // Removed
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -21,6 +21,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(transactionProvider);
+    final isMonthly = ref.watch(isMonthlyBalanceProvider);
     final sgProvider = ref.watch(savingGoalsProvider);
     final themeNotifier = ref.read(themeProvider.notifier);
     final themeMode = ref.watch(themeProvider);
@@ -29,14 +30,49 @@ class HomePage extends ConsumerWidget {
     final fullName = user?.userMetadata?['full_name'];
     final firstName = fullName.split(' ')[0];
 
-    final balance = provider.transactions.fold<double>(
-      0,
-      (sum, transaction) =>
-          sum +
-          (transaction.typeId == 1
-              ? -transaction.amount.abs()
-              : transaction.amount.abs()),
-    );
+    final double balance;
+    if (isMonthly) {
+      final now = DateTime.now();
+      final DateTime cycleStartDate;
+      final DateTime cycleEndDate;
+
+      if (now.day >= AppConstants.startDayOfMonth) {
+        cycleStartDate =
+            DateTime(now.year, now.month, AppConstants.startDayOfMonth);
+        // Next month, start day
+        cycleEndDate =
+            DateTime(now.year, now.month + 1, AppConstants.startDayOfMonth);
+      } else {
+        cycleStartDate =
+            DateTime(now.year, now.month - 1, AppConstants.startDayOfMonth);
+        cycleEndDate =
+            DateTime(now.year, now.month, AppConstants.startDayOfMonth);
+      }
+
+      final monthlyTransactions = provider.transactions.where((t) {
+        return t.date
+                .isAfter(cycleStartDate.subtract(const Duration(seconds: 1))) &&
+            t.date.isBefore(cycleEndDate);
+      });
+
+      balance = monthlyTransactions.fold<double>(
+        0,
+        (sum, transaction) =>
+            sum +
+            (transaction.typeId == 1
+                ? -transaction.amount.abs()
+                : transaction.amount.abs()),
+      );
+    } else {
+      balance = provider.transactions.fold<double>(
+        0,
+        (sum, transaction) =>
+            sum +
+            (transaction.typeId == 1
+                ? -transaction.amount.abs()
+                : transaction.amount.abs()),
+      );
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -152,7 +188,9 @@ class HomePage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          accountCard(balance),
+          accountCard(context, balance, isMonthly, () {
+            ref.read(isMonthlyBalanceProvider.notifier).state = !isMonthly;
+          }),
           Column(
             children: [
               //TO DO: Add Saving Goals
@@ -273,7 +311,8 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget accountCard(double balance) {
+  Widget accountCard(BuildContext context, double balance, bool isMonthly,
+      VoidCallback onToggle) {
     String balanceString = FormatUtils.formatNumber(balance.toDouble());
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -288,8 +327,10 @@ class HomePage extends ConsumerWidget {
             Colors.black87,
           ],
         ),
-
-        //color: Colors.indigo,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
@@ -301,26 +342,39 @@ class HomePage extends ConsumerWidget {
       ),
       margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Current Account',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500),
-              )
+              ),
+              // Display cycle label if monthly? Optional but good for UX.
+              if (isMonthly) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text('This Month',
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                )
+              ]
             ],
           ),
           Align(
             alignment: Alignment.bottomRight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 const Text(
                   'Balance',
@@ -337,6 +391,18 @@ class HomePage extends ConsumerWidget {
                       fontWeight: FontWeight.w500),
                 )
               ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: IconButton(
+              onPressed: onToggle,
+              icon: Icon(
+                isMonthly ? Icons.calendar_month : Icons.account_balance_wallet,
+                color: Colors.white.withOpacity(0.8),
+              ),
+              tooltip:
+                  isMonthly ? 'Show All Time Balance' : 'Show Monthly Balance',
             ),
           )
         ],

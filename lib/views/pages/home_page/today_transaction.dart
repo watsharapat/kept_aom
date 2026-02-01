@@ -41,21 +41,7 @@ class TodayTransactions extends ConsumerWidget {
 
     return Container(
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.overlay.withAlpha(50),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: AppStyles.cardDecoration(context),
       margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       child: todayTransactions.isEmpty
           ? Column(
@@ -104,14 +90,23 @@ class TodayTransactions extends ConsumerWidget {
                             'Today Transactions ',
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
-                          Text(
-                            '(${FormatUtils.formatNumber(todaySum)})',
-                            style: Theme.of(context)
-                                .textTheme
-                                .displaySmall
-                                ?.copyWith(
-                                    color: AppColors.textSecondary,
-                                    fontWeight: FontWeight.w400),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                  opacity: animation, child: child);
+                            },
+                            child: Text(
+                              '(${FormatUtils.formatNumber(todaySum)})',
+                              key: ValueKey<double>(todaySum),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displaySmall
+                                  ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ],
                       ),
@@ -159,10 +154,12 @@ class TodayTransactions extends ConsumerWidget {
                         ),
                         title: Text(transaction.title,
                             style: Theme.of(context).textTheme.bodyMedium),
-                        subtitle: Text(
-                          FormatUtils.formatDate(transaction.date),
-                          style: const TextStyle(fontSize: 12),
-                        ),
+                        subtitle: transaction.description != ""
+                            ? Text(
+                                transaction.description,
+                                style: const TextStyle(fontSize: 12),
+                              )
+                            : null,
                         trailing: SizedBox(
                           height: 40,
                           width: 80,
@@ -174,8 +171,8 @@ class TodayTransactions extends ConsumerWidget {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                                 color: transaction.typeId == 1
-                                    ? Colors.red[600]
-                                    : Colors.green[600],
+                                    ? AppColors.danger
+                                    : AppColors.success,
                               ),
                             ),
                           ),
