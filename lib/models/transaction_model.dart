@@ -39,8 +39,7 @@ class Transaction {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = {
       'user_id': userId,
       'date': date.toIso8601String(),
       'amount': typeId == 1 ? -amount.abs() : amount.abs(),
@@ -51,5 +50,9 @@ class Transaction {
       'title': title,
       'description': description,
     };
+    if (id != null) {
+      map['id'] = id as Object;
+    }
+    return map;
   }
 }

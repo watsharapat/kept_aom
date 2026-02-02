@@ -35,6 +35,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   String _description = '';
   double _amount = 0.0;
   String _emoji = "😊"; // อีโมจิเริ่มต้น
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -209,33 +210,66 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       foregroundColor:
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
-                onPressed: () {
-                  final userId = _supabase.auth.currentUser?.id;
-                  setState(() {
-                    _amountInvalid = _amount <= 0;
-                    _titleInvalid = _title.isEmpty;
-                  });
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        final userId = _supabase.auth.currentUser?.id;
+                        setState(() {
+                          _amountInvalid = _amount <= 0;
+                          _titleInvalid = _title.isEmpty;
+                        });
 
-                  if (!_amountInvalid && !_titleInvalid) {
-                    provider.addTransaction(
-                      Transaction(
-                        id: null,
-                        userId: userId!,
-                        date: _date,
-                        amount: _amount,
-                        typeId: _typeId,
-                        title: "$_emoji $_title",
-                        description: _description,
-                        paymentType: _paymentType,
-                        icon: '',
-                        categoryId: _categoryId ?? 0,
-                      ),
-                    );
-                    context.pop();
-                    provider.fetchTransactions();
-                  }
-                },
-                icon: const Icon(Icons.done_rounded),
+                        if (!_amountInvalid && !_titleInvalid) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          try {
+                            await provider.addTransaction(
+                              Transaction(
+                                id: null,
+                                userId: userId!,
+                                date: _date,
+                                amount: _amount,
+                                typeId: _typeId,
+                                title: _title,
+                                description: _description,
+                                paymentType: _paymentType,
+                                icon: _emoji,
+                                categoryId: _categoryId ?? 0,
+                              ),
+                            );
+                            if (mounted) {
+                              context.pop();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Failed to add transaction: $e'),
+                                  backgroundColor: AppColors.danger,
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          }
+                        }
+                      },
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.lightSurface,
+                        ),
+                      )
+                    : const Icon(Icons.done_rounded),
               ),
             ),
           )
@@ -482,8 +516,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     width: 40,
                     child: QuickTitleButton(
                       onTitleSelected: (selectedTitle) {
-                        final title = selectedTitle.title;
-
                         setState(() {
                           _titleController.text = selectedTitle.title;
                           _title = selectedTitle.title;

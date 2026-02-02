@@ -37,6 +37,7 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   late String _description;
   late double _amount;
   late String _emoji;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -151,30 +152,65 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                       foregroundColor:
                           WidgetStateProperty.all(AppColors.lightSurface),
                     ),
-                onPressed: () {
-                  setState(() {
-                    _amountInvalid = _amount <= 0;
-                    _titleInvalid = _title.isEmpty;
-                  });
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _amountInvalid = _amount <= 0;
+                          _titleInvalid = _title.isEmpty;
+                        });
 
-                  if (!_amountInvalid && !_titleInvalid) {
-                    final updatedTransaction = Transaction(
-                      id: widget.transaction.id,
-                      userId: widget.transaction.userId,
-                      date: _date,
-                      amount: _amount,
-                      paymentType: _paymentType,
-                      typeId: _typeId,
-                      icon: widget.transaction.icon,
-                      title: "$_emoji $_title",
-                      categoryId: _categoryId,
-                      description: _description,
-                    );
-                    provider.updateTransaction(updatedTransaction);
-                    context.pop();
-                  }
-                },
-                icon: const Icon(Icons.done_rounded),
+                        if (!_amountInvalid && !_titleInvalid) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          try {
+                            final updatedTransaction = Transaction(
+                              id: widget.transaction.id,
+                              userId: widget.transaction.userId,
+                              date: _date,
+                              amount: _amount,
+                              paymentType: _paymentType,
+                              typeId: _typeId,
+                              icon: _emoji,
+                              title: _title,
+                              categoryId: _categoryId,
+                              description: _description,
+                            );
+                            await provider
+                                .updateTransaction(updatedTransaction);
+                            if (mounted) {
+                              context.pop();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Failed to update transaction: $e'),
+                                  backgroundColor: AppColors.danger,
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          }
+                        }
+                      },
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.lightSurface,
+                        ),
+                      )
+                    : const Icon(Icons.done_rounded),
               ),
             ),
           )
@@ -406,14 +442,10 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                     width: 40,
                     child: QuickTitleButton(
                       onTitleSelected: (selectedTitle) {
-                        final title = selectedTitle.title;
-                        String emojiFromTitle = title.split(' ')[0];
-                        String titleWithoutEmoji =
-                            title.split(' ').sublist(1).join(' ');
                         setState(() {
-                          _titleController.text = titleWithoutEmoji;
-                          _title = titleWithoutEmoji;
-                          _emoji = emojiFromTitle;
+                          _titleController.text = selectedTitle.title;
+                          _title = selectedTitle.title;
+                          _emoji = selectedTitle.icon;
                           _typeId = selectedTitle.typeId;
                           _categoryId = selectedTitle.categoryId ?? _categoryId;
                         });

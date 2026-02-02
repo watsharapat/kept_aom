@@ -21,7 +21,7 @@ class QuickTitle {
       userId: json['user_id'] as String?,
       typeId: json['type_id'] as int,
       title: json['title'] as String,
-      categoryId: json['cateogry_id'] as int?,
+      categoryId: json['category_id'] as int?,
     );
   }
 
@@ -32,7 +32,7 @@ class QuickTitle {
       'user_id': userId,
       'type_id': typeId,
       'title': title,
-      'cateogry_id': categoryId,
+      'category_id': categoryId,
     };
   }
 }
