@@ -111,10 +111,13 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-       - family: NotoEmoji
-         fonts:
-          - asset: lib/assets/fonts/NotoColorEmoji.ttf
-            weight: 400
+    - family: GoogleSans
+      fonts:
+        - asset: lib/assets/fonts/GoogleSans.ttf
+    - family: NotoEmoji
+      fonts:
+        - asset: lib/assets/fonts/NotoColorEmoji.ttf
+          weight: 400
   # fonts:
   #   - family: Schyler
   #     fonts:

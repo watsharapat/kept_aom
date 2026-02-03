@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kept_aom/router/router.dart';
-import 'package:kept_aom/viewmodels/login_provider.dart';
 import 'package:kept_aom/viewmodels/theme_provider.dart';
-import 'package:kept_aom/views/pages/home_page/home_page.dart';
-import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/utils/theme.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -24,7 +20,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
-    final loginState = ref.watch(loginProvider);
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -32,10 +27,6 @@ class MyApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeMode,
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-      //   useMaterial3: true,
-      // ),
     );
   }
 }

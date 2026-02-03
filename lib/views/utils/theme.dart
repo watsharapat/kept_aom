@@ -4,6 +4,8 @@ import 'package:kept_aom/views/utils/styles.dart';
 final lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: AppColors.primary,
+  fontFamily: 'GoogleSans',
+  fontFamilyFallback: const ['NotoEmoji'],
   cardColor: AppColors.lightSurface,
   colorScheme: const ColorScheme.light(
     primary: AppColors.primary,
@@ -143,11 +145,28 @@ final lightTheme = ThemeData(
     rangePickerHeaderBackgroundColor: AppColors.primary,
     rangePickerBackgroundColor: AppColors.primary,
   ),
+  chipTheme: ChipThemeData(
+    backgroundColor: AppColors.lightSurface,
+    disabledColor: AppColors.disabledWidget,
+    selectedColor: AppColors.primary.withAlpha(51),
+    secondarySelectedColor: AppColors.primary,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+    secondaryLabelStyle:
+        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
+    brightness: Brightness.light,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: const BorderSide(color: AppColors.border, width: 1),
+    ),
+  ),
 );
 
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: AppColors.primary,
+  fontFamily: 'GoogleSans',
+  fontFamilyFallback: const ['NotoEmoji'],
   cardColor: AppColors.darkSurface,
   scaffoldBackgroundColor: AppColors.darkBackground,
   colorScheme: const ColorScheme.dark(
@@ -281,5 +300,22 @@ final darkTheme = ThemeData(
     ),
     rangePickerHeaderBackgroundColor: AppColors.primary,
     rangePickerBackgroundColor: AppColors.primary,
+  ),
+  chipTheme: ChipThemeData(
+    backgroundColor: AppColors.darkSurface,
+    disabledColor: AppColors.disabledWidget,
+    selectedColor: AppColors.primary.withAlpha(51),
+    secondarySelectedColor: AppColors.primary,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    labelStyle:
+        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
+    secondaryLabelStyle:
+        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
+    brightness: Brightness.dark,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side:
+          const BorderSide(color: Color.fromARGB(50, 217, 217, 217), width: 1),
+    ),
   ),
 );

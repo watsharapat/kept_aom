@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kept_aom/viewmodels/saving_goals_provider.dart';
-import 'package:kept_aom/viewmodels/theme_provider.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
 import 'package:kept_aom/views/pages/home_page/today_transaction.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
@@ -11,9 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kept_aom/utils/constants.dart';
 import 'package:kept_aom/utils/format_utils.dart';
 
-final isMonthlyBalanceProvider = StateProvider.autoDispose<bool>(
-    (ref) => false); // Use autoDispose if not needed globally, or change.
-// const int startDayOfMonth = 25; // Removed
+final isMonthlyBalanceProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -22,9 +19,6 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(transactionProvider);
     final isMonthly = ref.watch(isMonthlyBalanceProvider);
-    final sgProvider = ref.watch(savingGoalsProvider);
-    final themeNotifier = ref.read(themeProvider.notifier);
-    final themeMode = ref.watch(themeProvider);
     final user = Supabase.instance.client.auth.currentUser;
     final profileImageUrl = user?.userMetadata?['avatar_url'];
     final fullName = user?.userMetadata?['full_name'];

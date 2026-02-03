@@ -6,6 +6,9 @@ import 'package:kept_aom/viewmodels/category_provider.dart';
 import 'package:kept_aom/viewmodels/dashboard_provider.dart';
 import 'package:kept_aom/views/utils/styles.dart';
 
+final dashboardTabProvider =
+    StateProvider.autoDispose<int>((ref) => 0); // 0: Expense, 1: Income
+
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -13,13 +16,14 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardState = ref.watch(dashboardProvider);
     final categoryNotifier = ref.watch(categoryProvider);
+    final selectedTab = ref.watch(dashboardTabProvider);
 
-    // Debug print expense by category values
-    for (var summary in dashboardState.categorySummaries) {
-      debugPrint('Category ${summary.categoryId}: ${summary.totalAmount}');
-    }
+    final currentSummaries = selectedTab == 0
+        ? dashboardState.expenseSummaries
+        : dashboardState.incomeSummaries;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         forceMaterialTransparency: true,
         toolbarHeight: 80,
@@ -59,152 +63,209 @@ class DashboardPage extends ConsumerWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 80,
             left: 16,
             right: 16,
             bottom: 100 + MediaQuery.of(context).padding.bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 8, bottom: 16),
-              child: Text(
-                '${FormatUtils.formatSimpleDate(dashboardState.cycleStartDate)} - ${FormatUtils.formatSimpleDate(dashboardState.cycleEndDate.subtract(const Duration(days: 1)))}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 8, bottom: 16),
+            //   child: Center(
+            //     child: Text(
+            //       '${FormatUtils.formatSimpleDate(dashboardState.cycleStartDate)} - ${FormatUtils.formatSimpleDate(dashboardState.cycleEndDate.subtract(const Duration(days: 1)))}',
+            //       style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            //             color: AppColors.textSecondary,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //     ),
+            //   ),
+            // ),
             // Balance Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: AppStyles.cardDecoration(context).copyWith(
-                color: Theme.of(context).primaryColor,
-                image: const DecorationImage(
-                  image: AssetImage('lib/assets/images/noise.png'),
-                  fit: BoxFit.cover,
-                  opacity: 0.1,
-                ),
-              ),
+                  //color: Theme.of(context).,
+                  ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('Total Balance',
+                      style: Theme.of(context).textTheme.titleLarge),
                   Text(
-                    'Total Balance',
-                    style: TextStyle(
-                      color: AppColors.textPrimaryOnDark.withValues(alpha: 0.8),
-                      fontSize: 14,
-                    ),
-                  ),
+                      '${FormatUtils.formatSimpleDate(dashboardState.cycleStartDate)} - ${FormatUtils.formatSimpleDate(dashboardState.cycleEndDate.subtract(const Duration(days: 1)))}',
+                      style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 8),
-                  Text(
-                    FormatUtils.formatNumber(dashboardState.totalBalance),
-                    style: const TextStyle(
-                      color: AppColors.textPrimaryOnDark,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                        FormatUtils.formatNumber(dashboardState.totalBalance),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontSize: 32)),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            // Income / Expense Row
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryCard(
-                    context,
-                    'Income',
-                    dashboardState.totalIncome,
-                    AppColors.success,
-                    FontAwesomeIcons.arrowUp,
-                  ),
+            // Tab Selector
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSummaryCard(
-                    context,
-                    'Expense',
-                    dashboardState.totalExpense,
-                    AppColors.danger,
-                    FontAwesomeIcons.arrowDown,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildTab(
+                      context,
+                      ref,
+                      index: 0,
+                      label: 'Expense',
+                      icon: FontAwesomeIcons.arrowDown,
+                      color: AppColors.danger,
+                      isSelected: selectedTab == 0,
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: _buildTab(
+                      context,
+                      ref,
+                      index: 1,
+                      label: 'Income',
+                      icon: FontAwesomeIcons.arrowUp,
+                      color: AppColors.success,
+                      isSelected: selectedTab == 1,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Expense by Category',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            // const SizedBox(height: 24),
+            // Text(
+            //   selectedTab == 0 ? 'Expense by Category' : 'Income by Category',
+            //   style: Theme.of(context).textTheme.headlineSmall,
+            // ),
             const SizedBox(height: 16),
             // Category List
-            dashboardState.categorySummaries.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text(
-                        'No expense data',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: dashboardState.categorySummaries.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final summary = dashboardState.categorySummaries[index];
-                      final category =
-                          categoryNotifier.getCategoryById(summary.categoryId);
-                      final categoryName = category?.name ?? 'No Category';
-                      final categoryIcon = category?.icon ?? '📦';
-
-                      return Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: AppStyles.cardDecoration(context),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.0, 0.02),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                );
+              },
+              child: currentSummaries.isEmpty
+                  ? Center(
+                      key: ValueKey('empty_$selectedTab'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text(
+                          selectedTab == 0
+                              ? 'No expense data'
+                              : 'No income data',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      categoryIcon,
-                                      style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    )
+                  : ListView.separated(
+                      key: ValueKey('list_$selectedTab'),
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: currentSummaries.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final summary = currentSummaries[index];
+                        final category = categoryNotifier
+                            .getCategoryById(summary.categoryId);
+                        final categoryName = category?.name ?? 'No Category';
+                        final categoryIcon = category?.icon ?? '📦';
+
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: AppStyles.cardDecoration(context),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: (selectedTab == 0
+                                              ? AppColors.danger
+                                              : AppColors.success)
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        categoryIcon,
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          categoryName,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '${summary.transactionCount} transactions',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                  color:
+                                                      AppColors.textSecondary),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        categoryName,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                                fontWeight: FontWeight.bold),
+                                        FormatUtils.formatNumber(
+                                            summary.totalAmount),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: selectedTab == 0
+                                              ? AppColors.danger
+                                              : AppColors.success,
+                                        ),
                                       ),
                                       Text(
-                                        '${summary.transactionCount} transactions',
+                                        '${summary.percentage.toStringAsFixed(1)}%',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall
@@ -213,95 +274,59 @@ class DashboardPage extends ConsumerWidget {
                                       ),
                                     ],
                                   ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      FormatUtils.formatNumber(
-                                          summary.totalAmount),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.color,
-                                      ),
-                                    ),
-                                    // Text(
-                                    //   '${summary.percentage.toStringAsFixed(1)}%',
-                                    //   style: Theme.of(context)
-                                    //       .textTheme
-                                    //       .bodySmall
-                                    //       ?.copyWith(
-                                    //           color: AppColors.textSecondary),
-                                    // ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            // const SizedBox(height: 12),
-                            // ClipRRect(
-                            //   borderRadius: BorderRadius.circular(4),
-                            //   child: LinearProgressIndicator(
-                            //     value: summary.percentage / 100,
-                            //     backgroundColor: Theme.of(context)
-                            //         .disabledColor
-                            //         .withValues(alpha: 0.2),
-                            //     valueColor: AlwaysStoppedAnimation<Color>(
-                            //         Theme.of(context).primaryColor),
-                            //     minHeight: 6,
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, String title, double amount,
-      Color color, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: AppStyles.cardDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color, size: 16),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            FormatUtils.formatNumber(amount),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
+  Widget _buildTab(
+    BuildContext context,
+    WidgetRef ref, {
+    required int index,
+    required String label,
+    required IconData icon,
+    required Color color,
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        ref.read(dashboardTabProvider.notifier).state = index;
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isSelected ? color : AppColors.textSecondary,
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? color : AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
