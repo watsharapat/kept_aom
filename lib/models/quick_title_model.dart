@@ -5,6 +5,7 @@ class QuickTitle {
   final String title;
   final int typeId;
   final int? categoryId;
+  final int? displayOrder;
 
   QuickTitle({
     this.id,
@@ -13,6 +14,7 @@ class QuickTitle {
     required this.typeId,
     required this.title,
     this.categoryId,
+    this.displayOrder,
   });
   factory QuickTitle.fromJson(Map<String, dynamic> json) {
     return QuickTitle(
@@ -22,6 +24,7 @@ class QuickTitle {
       typeId: json['type_id'] as int,
       title: json['title'] as String,
       categoryId: json['category_id'] as int?,
+      displayOrder: json['display_order'] as int?,
     );
   }
 
@@ -33,6 +36,7 @@ class QuickTitle {
       'type_id': typeId,
       'title': title,
       'category_id': categoryId,
+      'display_order': displayOrder,
     };
   }
 }

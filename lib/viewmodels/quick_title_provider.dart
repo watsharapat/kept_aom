@@ -34,7 +34,7 @@ class QuickTitlesProvider extends ChangeNotifier {
           .from('quick_title')
           .select()
           .or('user_id.eq.$userId,user_id.is.null')
-          .order('type_id', ascending: false);
+          .order('display_order', ascending: true);
 
       debugPrint('Response: $response');
       _quickTitles = response.map((e) => QuickTitle.fromJson(e)).toList();
@@ -55,11 +55,20 @@ class QuickTitlesProvider extends ChangeNotifier {
         return;
       }
 
+      // Set display order to max + 1
+      final nextOrder = _quickTitles.isEmpty
+          ? 0
+          : _quickTitles
+                  .map((e) => e.displayOrder ?? 0)
+                  .reduce((a, b) => a > b ? a : b) +
+              1;
+
+      final titleData = quicktitle.toJson();
+      titleData['display_order'] = nextOrder;
+
       // Insert the new quick title into the database
-      final response = await _supabase
-          .from('quick_title')
-          .insert(quicktitle.toJson())
-          .select();
+      final response =
+          await _supabase.from('quick_title').insert(titleData).select();
 
       if (response.isNotEmpty) {
         // Add the new quick title to the local list
@@ -102,6 +111,42 @@ class QuickTitlesProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error updating quick title: $e');
+    }
+  }
+
+  Future<void> updateQuickTitlesOrder(List<QuickTitle> titles) async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      // Update local state first for responsiveness
+      _quickTitles = titles;
+      notifyListeners();
+
+      // Perform batch update in Supabase
+      // Note: Supabase doesn't have a direct "batch update different rows with different values" in a single call easily without RPC
+      // but we can loop or use a single upsert if we have IDs.
+      final updates = titles.asMap().entries.map((entry) {
+        final index = entry.key;
+        final title = entry.value;
+        return {
+          'id': title.id,
+          'display_order': index,
+          'user_id': title.userId ??
+              userId, // Keep original user_id or current if null
+          'icon': title.icon,
+          'title': title.title,
+          'type_id': title.typeId,
+          'category_id': title.categoryId,
+        };
+      }).toList();
+
+      await _supabase.from('quick_title').upsert(updates);
+      debugPrint('Updated quick titles order in Supabase');
+    } catch (e) {
+      debugPrint('Error updating quick titles order: $e');
+      // If it fails, we might want to refetch to sync back
+      fetchQuickTitles();
     }
   }
 

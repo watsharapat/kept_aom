@@ -6,275 +6,366 @@ import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/quick_title_model.dart';
 import 'package:kept_aom/viewmodels/category_provider.dart';
 import 'package:kept_aom/viewmodels/quick_title_provider.dart';
-import 'package:kept_aom/views/pages/home_page/add_transaction_page/emoji_picker.dart';
 import 'package:kept_aom/views/pages/home_page/add_transaction_page/toggle_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kept_aom/views/utils/styles.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class QuickTitlePage extends ConsumerWidget {
+class QuickTitlePage extends ConsumerStatefulWidget {
   const QuickTitlePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuickTitlePage> createState() => _QuickTitlePageState();
+}
+
+class _QuickTitlePageState extends ConsumerState<QuickTitlePage> {
+  List<QuickTitle>? _localQuickTitles;
+  bool _hasChanges = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize local list after the first build or when data is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncWithProvider();
+    });
+  }
+
+  void _syncWithProvider() {
+    final providerTitles = ref.read(quickTitlesProvider).quickTitle;
+    setState(() {
+      _localQuickTitles = List.from(providerTitles);
+      _hasChanges = false;
+    });
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    if (_localQuickTitles == null) return;
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final QuickTitle item = _localQuickTitles!.removeAt(oldIndex);
+      _localQuickTitles!.insert(newIndex, item);
+      _hasChanges = true;
+    });
+  }
+
+  Future<void> _saveOrder() async {
+    if (_localQuickTitles == null || !_hasChanges) return;
+    await ref
+        .read(quickTitlesProvider.notifier)
+        .updateQuickTitlesOrder(_localQuickTitles!);
+    setState(() {
+      _hasChanges = false;
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order saved successfully')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final quickTitlesNotifier = ref.watch(quickTitlesProvider.notifier);
-    final quickTitles = ref.watch(quickTitlesProvider).quickTitle;
+    final providerTitles = ref.watch(quickTitlesProvider).quickTitle;
+
+    // If local list is null (first load) or if provider titles changed externally (e.g. after add/delete/fetch)
+    // we might need to decide if we sync. However, usually we want to keep local state if there are changes.
+    // For simplicity, if provider length changed (add/delete), we sync.
+    if (_localQuickTitles == null ||
+        (_localQuickTitles!.length != providerTitles.length && !_hasChanges)) {
+      _localQuickTitles = List.from(providerTitles);
+    }
+
     final userId = Supabase.instance.client.auth.currentUser!.id;
+    final displayTitles = _localQuickTitles ?? providerTitles;
 
     return Scaffold(
-        extendBodyBehindAppBar: false,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          toolbarHeight: 80,
-          leadingWidth: 240,
-          leading: Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(99),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline,
-                width: 1,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        toolbarHeight: 80,
+        leadingWidth: double.infinity,
+        leading: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1,
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 10,
+                offset: Offset(0, 4),
               ),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
+            ],
+          ),
+          margin:
+              const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+          child: Row(
+            children: [
+              Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(99))),
+                    height: 40,
+                    width: 40,
+                    child: IconButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        icon: Icon(
+                          color: TextTheme.of(context).bodyMedium?.color,
+                          Icons.arrow_back_rounded,
+                          size: 24,
+                        )),
+                  )),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Quick Titles',
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
-              ],
-            ),
-            margin:
-                const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-            child: Row(
-              children: [
+              ),
+              if (_hasChanges)
                 Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(99))),
-                      height: 40,
-                      width: 40,
-                      child: IconButton(
-                          onPressed: () {
-                            context.pop();
-                          },
-                          icon: Icon(
-                            color: TextTheme.of(context).bodyMedium?.color,
-                            Icons.arrow_back_rounded,
-                            size: 24,
-                          )),
-                    )),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Quick Titles',
-                    style: Theme.of(context).textTheme.displaySmall,
+                  padding: const EdgeInsets.only(right: 8),
+                  child: TextButton.icon(
+                    onPressed: _saveOrder,
+                    icon: const Icon(Icons.save_rounded, size: 20),
+                    label: const Text('Save'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
                   ),
-                )
-              ],
-            ),
+                ),
+            ],
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-            child: Column(
-              children: [
-                Expanded(
-                    child: quickTitles.isEmpty
-                        ? const Center(
-                            child: Text('No quick titles available'),
-                          )
-                        : ListView.builder(
-                            itemCount: quickTitles.length,
-                            itemBuilder: (context, index) {
-                              final quickTitle = quickTitles[index];
-                              return Slidable(
-                                key: ValueKey(
-                                    '${quickTitle.id}_${quickTitle.userId}_${quickTitle.title}_${quickTitle.typeId}'),
-                                endActionPane: quickTitle.userId != 'null' &&
-                                        quickTitle.userId != null
-                                    ? ActionPane(
-                                        motion: const DrawerMotion(),
-                                        children: [
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.vertical(
-                                                          top: Radius.circular(
-                                                              16)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: Column(
+          children: [
+            Expanded(
+                child: displayTitles.isEmpty
+                    ? const Center(
+                        child: Text('No quick titles available'),
+                      )
+                    : ReorderableListView.builder(
+                        padding: const EdgeInsets.only(top: 100, bottom: 80),
+                        onReorder: _onReorder,
+                        itemCount: displayTitles.length,
+                        itemBuilder: (context, index) {
+                          final quickTitle = displayTitles[index];
+                          return Padding(
+                            key: ValueKey(
+                                'qt_${quickTitle.id}_${quickTitle.userId}'),
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Slidable(
+                              endActionPane: quickTitle.userId != 'null' &&
+                                      quickTitle.userId != null
+                                  ? ActionPane(
+                                      motion: const DrawerMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                            16)),
+                                              ),
+                                              builder: (context) => SafeArea(
+                                                child:
+                                                    AddOrEditQuickTitleBottomSheet(
+                                                  isEdit: true,
+                                                  initialTitle:
+                                                      quickTitle.title,
+                                                  initialTypeId:
+                                                      quickTitle.typeId,
+                                                  initialEmoji: quickTitle.icon,
+                                                  initialCategoryId:
+                                                      quickTitle.categoryId,
+                                                  onSubmit: (emoji, title,
+                                                      typeId, categoryId) {
+                                                    quickTitlesNotifier
+                                                        .updateQuickTitle(
+                                                      QuickTitle(
+                                                        id: quickTitle.id,
+                                                        userId:
+                                                            quickTitle.userId,
+                                                        icon: emoji,
+                                                        title: title,
+                                                        typeId: typeId,
+                                                        categoryId: categoryId,
+                                                      ),
+                                                    );
+                                                    Navigator.pop(context);
+                                                  },
                                                 ),
-                                                builder: (context) => SafeArea(
-                                                  child:
-                                                      AddOrEditQuickTitleBottomSheet(
-                                                    isEdit: true,
-                                                    initialTitle:
-                                                        quickTitle.title,
-                                                    initialTypeId:
-                                                        quickTitle.typeId,
-                                                    initialEmoji:
-                                                        quickTitle.icon,
-                                                    initialCategoryId:
-                                                        quickTitle.categoryId,
-                                                    onSubmit: (emoji, title,
-                                                        typeId, categoryId) {
-                                                      quickTitlesNotifier
-                                                          .updateQuickTitle(
-                                                        QuickTitle(
-                                                          id: quickTitle.id,
-                                                          userId:
-                                                              quickTitle.userId,
-                                                          icon: emoji,
-                                                          title: title,
-                                                          typeId: typeId,
-                                                          categoryId:
-                                                              categoryId,
-                                                        ),
-                                                      );
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            backgroundColor: AppColors.caution,
-                                            foregroundColor:
-                                                AppColors.textPrimaryOnDark,
-                                            icon: Icons.edit,
-                                          ),
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              quickTitlesNotifier
-                                                  .deleteQuickTitle(quickTitle);
-                                            },
-                                            backgroundColor: AppColors.danger,
-                                            foregroundColor:
-                                                AppColors.textPrimaryOnDark,
-                                            icon: Icons.delete,
-                                          ),
-                                        ],
-                                      )
-                                    : null, // ถ้า userId == null หรือ empty ไม่ให้ slide
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).cardColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color:
-                                          Theme.of(context).colorScheme.outline,
-                                      width: 1,
+                                              ),
+                                            );
+                                          },
+                                          backgroundColor: AppColors.caution,
+                                          foregroundColor:
+                                              AppColors.textPrimaryOnDark,
+                                          icon: Icons.edit,
+                                        ),
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            quickTitlesNotifier
+                                                .deleteQuickTitle(quickTitle);
+                                          },
+                                          backgroundColor: AppColors.danger,
+                                          foregroundColor:
+                                              AppColors.textPrimaryOnDark,
+                                          icon: Icons.delete,
+                                        ),
+                                      ],
+                                    )
+                                  : null, // ถ้า userId == null หรือ empty ไม่ให้ slide
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
+                                    width: 1,
+                                  ),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 4),
                                     ),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 4),
+                                  ],
+                                ),
+                                height: 80,
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 4),
+                                  leading: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ReorderableDragStartListener(
+                                        index: index,
+                                        child: Icon(
+                                          Icons.drag_indicator_rounded,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .outline,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                        child: Center(
+                                          child: Text(
+                                            quickTitle.icon,
+                                            style:
+                                                const TextStyle(fontSize: 30),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  height: 80,
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 4),
-                                    leading: SizedBox(
-                                      width: 60,
-                                      height: 60,
-                                      child: Text(
-                                        quickTitle.icon,
-                                        style: const TextStyle(fontSize: 30),
-                                      ),
-                                    ),
-                                    title: Text(
-                                      quickTitle.title,
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    subtitle: Text(
-                                      quickTitle.userId == null ||
-                                              quickTitle.userId == 'null'
-                                          ? 'Default'
-                                          : '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                              color: AppColors.textSecondary),
-                                    ),
-                                    style: ListTileStyle.drawer,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    trailing: Container(
-                                      width: 80,
-                                      height: 32,
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
+                                  title: Text(
+                                    quickTitle.title,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  subtitle: Text(
+                                    quickTitle.userId == null ||
+                                            quickTitle.userId == 'null'
+                                        ? 'Default'
+                                        : '',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                            color: AppColors.textSecondary),
+                                  ),
+                                  style: ListTileStyle.drawer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  trailing: Container(
+                                    width: 80,
+                                    height: 32,
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: quickTitle.typeId == 1
+                                          ? AppColors.danger.withAlpha(50)
+                                          : AppColors.success.withAlpha(50),
+                                      border: Border.all(
                                         color: quickTitle.typeId == 1
-                                            ? AppColors.danger.withAlpha(50)
-                                            : AppColors.success.withAlpha(50),
-                                        border: Border.all(
-                                          color: quickTitle.typeId == 1
-                                              ? AppColors.danger
-                                              : AppColors.success,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
+                                            ? AppColors.danger
+                                            : AppColors.success,
                                       ),
-                                      child: Text(
-                                        quickTitle.typeId == 1
-                                            ? 'Outcome'
-                                            : 'Income',
-                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      quickTitle.typeId == 1
+                                          ? 'Outcome'
+                                          : 'Income',
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          )),
-                FloatingActionButton.extended(
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Quick Title'),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16)),
-                      ),
-                      builder: (context) => SafeArea(
-                          child: AddOrEditQuickTitleBottomSheet(
-                        isEdit: false,
-                        onSubmit: (emoji, title, typeId, categoryId) {
-                          quickTitlesNotifier.addQuickTitle(QuickTitle(
-                            id: null,
-                            userId:
-                                userId, // Supabase will auto-assign the user ID
-                            icon: emoji,
-                            title: title,
-                            typeId: typeId,
-                            categoryId: categoryId,
-                          ));
+                              ),
+                            ),
+                          );
                         },
                       )),
-                    );
-                  },
-                ),
-              ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text('Add Quick Title'),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
-          ),
-        ));
+            builder: (context) => SafeArea(
+                child: AddOrEditQuickTitleBottomSheet(
+              isEdit: false,
+              onSubmit: (emoji, title, typeId, categoryId) {
+                quickTitlesNotifier.addQuickTitle(QuickTitle(
+                  id: null,
+                  userId: userId, // Supabase will auto-assign the user ID
+                  icon: emoji,
+                  title: title,
+                  typeId: typeId,
+                  categoryId: categoryId,
+                ));
+              },
+            )),
+          );
+        },
+      ),
+    );
   }
 }
 
