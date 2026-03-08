@@ -165,9 +165,13 @@ class _QuickTitlePageState extends ConsumerState<QuickTitlePage> {
                     : ReorderableListView.builder(
                         padding: const EdgeInsets.only(top: 100, bottom: 80),
                         onReorder: _onReorder,
+                        buildDefaultDragHandles:
+                            false, // Custom drag handle used
                         itemCount: displayTitles.length,
                         itemBuilder: (context, index) {
                           final quickTitle = displayTitles[index];
+                          var isDefault = quickTitle.userId == null ||
+                              quickTitle.userId == 'null';
                           return Padding(
                             key: ValueKey(
                                 'qt_${quickTitle.id}_${quickTitle.userId}'),
@@ -256,10 +260,11 @@ class _QuickTitlePageState extends ConsumerState<QuickTitlePage> {
                                     ),
                                   ],
                                 ),
-                                height: 80,
+                                //height: 80,
                                 child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: isDefault ? 2 : 8),
                                   leading: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -291,17 +296,17 @@ class _QuickTitlePageState extends ConsumerState<QuickTitlePage> {
                                     style:
                                         Theme.of(context).textTheme.bodyLarge,
                                   ),
-                                  subtitle: Text(
-                                    quickTitle.userId == null ||
-                                            quickTitle.userId == 'null'
-                                        ? 'Default'
-                                        : '',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                            color: AppColors.textSecondary),
-                                  ),
+                                  subtitle: isDefault
+                                      ? Text(
+                                          'Default',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                  color:
+                                                      AppColors.textSecondary),
+                                        )
+                                      : null,
                                   style: ListTileStyle.drawer,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),

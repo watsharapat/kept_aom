@@ -120,33 +120,33 @@ class QuickTitlesProvider extends ChangeNotifier {
       if (userId == null) return;
 
       // Update local state first for responsiveness
-      _quickTitles = titles;
+      _quickTitles = List.from(titles);
       notifyListeners();
 
       // Perform batch update in Supabase
-      // Note: Supabase doesn't have a direct "batch update different rows with different values" in a single call easily without RPC
-      // but we can loop or use a single upsert if we have IDs.
       final updates = titles.asMap().entries.map((entry) {
         final index = entry.key;
         final title = entry.value;
         return {
           'id': title.id,
           'display_order': index,
-          'user_id': title.userId ??
-              userId, // Keep original user_id or current if null
-          'icon': title.icon,
-          'title': title.title,
-          'type_id': title.typeId,
-          'category_id': title.categoryId,
+          'user_id': userId, // Ensure we use the current user_id
         };
       }).toList();
 
-      await _supabase.from('quick_title').upsert(updates);
-      debugPrint('Updated quick titles order in Supabase');
+      debugPrint('Updating quick titles order in Supabase: $updates');
+      
+      // Explicitly upsert using 'id' as the on_conflict column
+      final response = await _supabase
+          .from('quick_title')
+          .upsert(updates, onConflict: 'id')
+          .select();
+          
+      debugPrint('Supabase response for order update: $response');
     } catch (e) {
       debugPrint('Error updating quick titles order: $e');
-      // If it fails, we might want to refetch to sync back
-      fetchQuickTitles();
+      // If it fails, sync back from DB to avoid inconsistent state
+      await fetchQuickTitles();
     }
   }
 
