@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kept_aom/views/utils/styles.dart';
 
 final lightTheme = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.light,
   primaryColor: AppColors.primary,
   fontFamily: 'GoogleSans',
@@ -30,25 +31,43 @@ final lightTheme = ThemeData(
   ),
   scaffoldBackgroundColor: AppColors.lightBackground,
   appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.lightBackground,
-    titleTextStyle: AppTextStyle.subtitleOnLight,
+    backgroundColor: AppColors.lightSurface,
+    foregroundColor: AppColors.textPrimary,
+    surfaceTintColor: AppColors.lightSurface,
+    elevation: 0,
+    scrolledUnderElevation: 3,
+    centerTitle: true,
+    toolbarHeight: 60,
+    titleSpacing: 16,
+    titleTextStyle: TextStyle(
+      fontFamily: 'GoogleSans',
+      fontFamilyFallback: ['NotoEmoji'],
+      fontSize: 20,
+      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w800,
+    ),
     iconTheme: IconThemeData(color: AppColors.textPrimary),
+    actionsIconTheme: IconThemeData(color: AppColors.textPrimary),
+    shape: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
   ),
 
   //Text Theme
   textTheme: const TextTheme(
     displayLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimaryOnDark),
+      fontSize: 32,
+      fontWeight: FontWeight.bold,
+      color: AppColors.textPrimaryOnDark,
+    ),
     displayMedium: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimaryOnDark),
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textPrimaryOnDark,
+    ),
     displaySmall: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary),
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textPrimary,
+    ),
     bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimary),
     bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
     bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimary),
@@ -101,38 +120,39 @@ final lightTheme = ThemeData(
     backgroundColor: AppColors.primary,
     foregroundColor: AppColors.lightSurface,
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     color: AppColors.lightSurface,
     shadowColor: AppColors.netural.withAlpha(50),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   ),
   datePickerTheme: DatePickerThemeData(
     backgroundColor: AppColors.lightSurface,
     headerBackgroundColor: AppColors.primary,
     headerForegroundColor: AppColors.textPrimaryOnDark,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>((
+      Set<WidgetState> states,
+    ) {
+      if (states.contains(WidgetState.selected)) {
+        return AppColors
+            .primary; // à¸ªà¸µà¸žà¸·à¹‰à¸™à¸«à¸¥à¸±à¸‡à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸
+      }
+      return AppColors
+          .lightSurface; // à¸ªà¸µà¸žà¸·à¹‰à¸™à¸«à¸¥à¸±à¸‡à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸à¸•à¸´
+    }),
+    dayForegroundColor: WidgetStateProperty.resolveWith<Color>((
+      Set<WidgetState> states,
+    ) {
+      if (states.contains(WidgetState.selected)) {
+        return AppColors
+            .textPrimaryOnDark; // à¸ªà¸µà¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸
+      }
+      return AppColors
+          .textPrimary; // à¸ªà¸µà¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸à¸•à¸´
+    }),
+    todayBackgroundColor: WidgetStateProperty.all(
+      AppColors.primary.withAlpha(2),
     ),
-    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>(
-      (Set<WidgetState> states) {
-        if (states.contains(WidgetState.selected)) {
-          return AppColors.primary; // สีพื้นหลังของวันที่เลือก
-        }
-        return AppColors.lightSurface; // สีพื้นหลังของวันที่ปกติ
-      },
-    ),
-    dayForegroundColor: WidgetStateProperty.resolveWith<Color>(
-      (Set<WidgetState> states) {
-        if (states.contains(WidgetState.selected)) {
-          return AppColors.textPrimaryOnDark; // สีตัวอักษรของวันที่เลือก
-        }
-        return AppColors.textPrimary; // สีตัวอักษรของวันที่ปกติ
-      },
-    ),
-    todayBackgroundColor:
-        WidgetStateProperty.all(AppColors.primary.withAlpha(2)),
     todayForegroundColor: WidgetStateProperty.all(AppColors.primary),
     cancelButtonStyle: TextButton.styleFrom(
       textStyle: AppTextStyle.bodyOnLight,
@@ -152,8 +172,10 @@ final lightTheme = ThemeData(
     secondarySelectedColor: AppColors.primary,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-    secondaryLabelStyle:
-        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
+    secondaryLabelStyle: const TextStyle(
+      color: AppColors.textPrimaryOnDark,
+      fontSize: 14,
+    ),
     brightness: Brightness.light,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
@@ -163,6 +185,7 @@ final lightTheme = ThemeData(
 );
 
 final darkTheme = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.dark,
   primaryColor: AppColors.primary,
   fontFamily: 'GoogleSans',
@@ -191,25 +214,43 @@ final darkTheme = ThemeData(
     surfaceTint: AppColors.primary,
   ),
   appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.darkBackground,
-    titleTextStyle: AppTextStyle.subtitleOnDark,
+    backgroundColor: AppColors.darkSurface,
+    foregroundColor: AppColors.textPrimaryOnDark,
+    surfaceTintColor: AppColors.darkSurface,
+    elevation: 0,
+    scrolledUnderElevation: 3,
+    centerTitle: true,
+    toolbarHeight: 60,
+    titleSpacing: 16,
+    titleTextStyle: TextStyle(
+      fontFamily: 'GoogleSans',
+      fontFamilyFallback: ['NotoEmoji'],
+      fontSize: 20,
+      color: AppColors.textPrimaryOnDark,
+      fontWeight: FontWeight.w800,
+    ),
     iconTheme: IconThemeData(color: AppColors.textPrimaryOnDark),
+    actionsIconTheme: IconThemeData(color: AppColors.textPrimaryOnDark),
+    shape: Border(bottom: BorderSide(color: AppColors.borderOnDark, width: 1)),
   ),
 
   //Text Theme
   textTheme: const TextTheme(
     displayLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimaryOnDark),
+      fontSize: 32,
+      fontWeight: FontWeight.bold,
+      color: AppColors.textPrimaryOnDark,
+    ),
     displayMedium: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimaryOnDark),
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textPrimaryOnDark,
+    ),
     displaySmall: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimaryOnDark),
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textPrimaryOnDark,
+    ),
     bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimaryOnDark),
     bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimaryOnDark),
     bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimaryOnDark),
@@ -256,7 +297,7 @@ final darkTheme = ThemeData(
     backgroundColor: AppColors.primary,
     foregroundColor: AppColors.textPrimaryOnDark,
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     color: AppColors.darkSurface,
     elevation: 4,
     shape: RoundedRectangleBorder(
@@ -268,27 +309,30 @@ final darkTheme = ThemeData(
     backgroundColor: AppColors.darkSurface,
     headerBackgroundColor: AppColors.primary,
     headerForegroundColor: AppColors.textPrimaryOnDark,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>((
+      Set<WidgetState> states,
+    ) {
+      if (states.contains(WidgetState.selected)) {
+        return AppColors
+            .primary; // à¸ªà¸µà¸žà¸·à¹‰à¸™à¸«à¸¥à¸±à¸‡à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸
+      }
+      return AppColors
+          .darkSurface; // à¸ªà¸µà¸žà¸·à¹‰à¸™à¸«à¸¥à¸±à¸‡à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸à¸•à¸´
+    }),
+    dayForegroundColor: WidgetStateProperty.resolveWith<Color>((
+      Set<WidgetState> states,
+    ) {
+      if (states.contains(WidgetState.selected)) {
+        return AppColors
+            .textPrimaryOnDark; // à¸ªà¸µà¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸
+      }
+      return AppColors
+          .textSecondaryOnDark; // à¸ªà¸µà¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£à¸‚à¸­à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸à¸•à¸´
+    }),
+    todayBackgroundColor: WidgetStateProperty.all(
+      AppColors.primary.withAlpha(2),
     ),
-    dayBackgroundColor: WidgetStateProperty.resolveWith<Color>(
-      (Set<WidgetState> states) {
-        if (states.contains(WidgetState.selected)) {
-          return AppColors.primary; // สีพื้นหลังของวันที่เลือก
-        }
-        return AppColors.darkSurface; // สีพื้นหลังของวันที่ปกติ
-      },
-    ),
-    dayForegroundColor: WidgetStateProperty.resolveWith<Color>(
-      (Set<WidgetState> states) {
-        if (states.contains(WidgetState.selected)) {
-          return AppColors.textPrimaryOnDark; // สีตัวอักษรของวันที่เลือก
-        }
-        return AppColors.textSecondaryOnDark; // สีตัวอักษรของวันที่ปกติ
-      },
-    ),
-    todayBackgroundColor:
-        WidgetStateProperty.all(AppColors.primary.withAlpha(2)),
     todayForegroundColor: WidgetStateProperty.all(AppColors.primary),
     cancelButtonStyle: TextButton.styleFrom(
       textStyle: AppTextStyle.bodyOnDark,
@@ -307,15 +351,21 @@ final darkTheme = ThemeData(
     selectedColor: AppColors.primary.withAlpha(51),
     secondarySelectedColor: AppColors.primary,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    labelStyle:
-        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
-    secondaryLabelStyle:
-        const TextStyle(color: AppColors.textPrimaryOnDark, fontSize: 14),
+    labelStyle: const TextStyle(
+      color: AppColors.textPrimaryOnDark,
+      fontSize: 14,
+    ),
+    secondaryLabelStyle: const TextStyle(
+      color: AppColors.textPrimaryOnDark,
+      fontSize: 14,
+    ),
     brightness: Brightness.dark,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
-      side:
-          const BorderSide(color: Color.fromARGB(50, 217, 217, 217), width: 1),
+      side: const BorderSide(
+        color: Color.fromARGB(50, 217, 217, 217),
+        width: 1,
+      ),
     ),
   ),
 );

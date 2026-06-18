@@ -39,10 +39,10 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(12),
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         onTap: () async {
           final DateTime? pickedDate = await showDatePicker(
             context: context,
@@ -57,7 +57,7 @@ class _DatepickerWidgetState extends State<DatepickerWidget> {
         },
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
             child: Text(

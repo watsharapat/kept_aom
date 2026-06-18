@@ -8,6 +8,7 @@ import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transact
 import 'package:kept_aom/views/pages/home_page/home_page.dart';
 import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/pages/quick_titles_page.dart';
+import 'package:kept_aom/views/pages/dashboard_page/category_transactions_page.dart';
 import 'package:kept_aom/views/pages/saving_goals_page.dart';
 import 'package:kept_aom/views/pages/setting_page.dart';
 import 'package:kept_aom/views/pages/transactions_page/transactions_page.dart';
@@ -23,7 +24,8 @@ enum AppRoute {
   editTransaction('/editTransaction'),
   savingGoals('/savingGoals'),
   quickTitles('/quick_titles'),
-  dashboard('/dashboard');
+  dashboard('/dashboard'),
+  categoryTransactions('/categoryTransactions');
 
   final String path;
   const AppRoute(this.path);
@@ -87,6 +89,24 @@ final router = GoRouter(
             transitionsBuilder: _slideDownTransition,
           );
         }),
+    GoRoute(
+      path: AppRoute.categoryTransactions.path,
+      pageBuilder: (context, state) {
+        final Map<String, dynamic> extras = state.extra as Map<String, dynamic>;
+        return CustomTransitionPage(
+          child: CategoryTransactionsPage(
+            categoryId: extras['categoryId'] as int,
+            categoryName: extras['categoryName'] as String,
+            categoryIcon: extras['categoryIcon'] as String,
+            startDate: extras['startDate'] as DateTime?,
+            endDate: extras['endDate'] as DateTime?,
+            typeId: extras['typeId'] as int?,
+            dateRangeLabel: extras['dateRangeLabel'] as String?,
+          ),
+          transitionsBuilder: _slideLeftToRightTransition,
+        );
+      },
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithBottomNavBar(child: child);

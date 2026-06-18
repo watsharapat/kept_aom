@@ -15,215 +15,172 @@ class SettingPage extends ConsumerWidget {
     final themeNotifier = ref.read(themeProvider.notifier);
     return Scaffold(
       appBar: AppBar(
-        forceMaterialTransparency: true,
-        toolbarHeight: 80,
-        leadingWidth: 160,
-        leading: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(99),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline,
-              width: 1,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          margin:
-              const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          child: Row(
-            children: [
-              // Padding(
-              //     padding: const EdgeInsets.all(4),
-              //     child: Container(
-              //       decoration: BoxDecoration(
-              //           color: AppColors.primary,
-              //           borderRadius:
-              //               const BorderRadius.all(Radius.circular(99))),
-              //       height: 40,
-              //       width: 40,
-              //       child: Icon(
-              //         color: AppColors.lightBackground,
-              //         Icons.settings,
-              //         size: 24,
-              //       ),
-              //     )),
-              // ส่วนแสดงข้อความ
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Settings',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-              )
-            ],
-          ),
-        ),
+        flexibleSpace: const AppBarGradientBackground(),
+        title: const Text('Settings'),
       ),
       body: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(16),
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+        child: GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+                ],
+              ),
+              child: IconButton(
+                padding: const EdgeInsets.all(8),
+                iconSize: 80,
+                color: AppColors.caution,
+                icon: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FaIcon(
+                      themeMode == ThemeMode.light
+                          ? FontAwesomeIcons.solidSun
+                          : FontAwesomeIcons.solidMoon,
+                      size: 72,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      themeMode == ThemeMode.light ? 'Light mode' : 'Dark mode',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
-                child: IconButton(
-                  padding: const EdgeInsets.all(8),
-                  iconSize: 80,
-                  color: AppColors.caution,
-                  icon: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(
-                        themeMode == ThemeMode.light
-                            ? FontAwesomeIcons.solidSun
-                            : FontAwesomeIcons.solidMoon,
-                        size: 72,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                          themeMode == ThemeMode.light
-                              ? 'Light mode'
-                              : 'Dark mode',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ],
-                  ),
-                  onPressed: () {
-                    themeNotifier.toggleTheme();
-                  },
-                ),
+                onPressed: () {
+                  themeNotifier.toggleTheme();
+                },
               ),
+            ),
 
-              // Quick Title Button
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
+            // Quick Title Button
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+                ],
+              ),
+              child: IconButton(
+                padding: const EdgeInsets.all(8),
+                iconSize: 80,
+                color: AppColors.primary,
+                icon: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const FaIcon(FontAwesomeIcons.language, size: 72),
+                    const SizedBox(height: 8),
+                    Text(
+                      'English',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
-                child: IconButton(
-                  padding: const EdgeInsets.all(8),
-                  iconSize: 80,
-                  color: AppColors.primary,
-                  icon: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const FaIcon(FontAwesomeIcons.language, size: 72),
-                      const SizedBox(height: 8),
-                      Text('English',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ],
-                  ),
-                  onPressed: () {},
-                ),
+                onPressed: () {},
               ),
+            ),
 
-              // Placeholder for additional buttons
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
+            // Placeholder for additional buttons
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+                ],
+              ),
+              child: IconButton(
+                padding: const EdgeInsets.all(8),
+                iconSize: 80,
+                color: Colors.cyan,
+                icon: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.quickreply_rounded),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Quick Titles',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
-                child: IconButton(
-                  padding: const EdgeInsets.all(8),
-                  iconSize: 80,
-                  color: Colors.cyan,
-                  icon: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.quickreply_rounded),
-                      const SizedBox(height: 8),
-                      Text('Quick Titles',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ],
-                  ),
-                  onPressed: () {
-                    context.push('/quick_titles');
-                  },
-                ),
+                onPressed: () {
+                  context.push('/quick_titles');
+                },
               ),
+            ),
 
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+                ],
+              ),
+              child: IconButton(
+                padding: const EdgeInsets.all(8),
+                iconSize: 80,
+                color: Colors.redAccent,
+                icon: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const FaIcon(FontAwesomeIcons.piggyBank, size: 72),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Saving Goals',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
-                child: IconButton(
-                  padding: const EdgeInsets.all(8),
-                  iconSize: 80,
-                  color: Colors.redAccent,
-                  icon: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const FaIcon(FontAwesomeIcons.piggyBank, size: 72),
-                      const SizedBox(height: 8),
-                      Text('Saving Goals',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ],
-                  ),
-                  onPressed: () {
-                    context.push('/savingGoals');
-                  },
-                ),
+                onPressed: () {
+                  context.push('/savingGoals');
+                },
               ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

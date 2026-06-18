@@ -91,7 +91,7 @@ class _QuickTitleBottomSheetContent extends ConsumerWidget {
                       return ListTile(
                         visualDensity: const VisualDensity(vertical: -2),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        leading: Text(iconStr, style: const TextStyle(fontSize: 24)),
+                        leading: Text(iconStr, style: const TextStyle(fontFamily: 'NotoEmoji', fontSize: 24)),
                         title: Text(
                           titleStr,
                           style: Theme.of(context).textTheme.bodyMedium,

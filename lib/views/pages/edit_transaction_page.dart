@@ -26,6 +26,7 @@ class EditTransactionPage extends ConsumerStatefulWidget {
 class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  late TextEditingController _amountController;
   late ThemeMode themeMode;
   bool _amountInvalid = false;
   bool _titleInvalid = false;
@@ -49,6 +50,11 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
     _description = widget.transaction.description;
     _descriptionController = TextEditingController(text: _description);
     _amount = widget.transaction.amount.abs();
+    _amountController = TextEditingController(
+      text: _amount == 0
+          ? ''
+          : _amount.toStringAsFixed(2).replaceAll('.00', ''),
+    );
     _paymentType = widget.transaction.paymentType;
     _date = widget.transaction.date;
     _typeId = widget.transaction.typeId;
@@ -58,6 +64,7 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _amountController.dispose();
     super.dispose();
   }
 
@@ -74,157 +81,96 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        forceMaterialTransparency: true,
-        toolbarHeight: 80,
-        leadingWidth: 250,
-        leading: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(99),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.netural.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          margin:
-              const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                child: IconButton(
-                  style: Theme.of(context).iconButtonTheme.style?.copyWith(
-                        backgroundColor:
-                            WidgetStateProperty.all(AppColors.danger),
-                        foregroundColor:
-                            WidgetStateProperty.all(AppColors.lightSurface),
-                      ),
-                  onPressed: () {
-                    context.pop();
-                  },
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Expanded(
-                child: Text(
-                  'Edit transaction',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              )
-            ],
-          ),
+        flexibleSpace: const AppBarGradientBackground(),
+        leading: IconButton(
+          tooltip: 'Close',
+          onPressed: () {
+            context.pop();
+          },
+          icon: const Icon(Icons.close_rounded),
         ),
+        title: const Text('Edit transaction'),
         actions: [
-          Container(
-            height: 60,
-            width: 60,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(99),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            margin: const EdgeInsets.only(right: 16, top: 4, bottom: 16),
-            child: Container(
-              width: 36,
-              height: 36,
-              child: IconButton(
-                style: Theme.of(context).iconButtonTheme.style?.copyWith(
-                      backgroundColor:
-                          WidgetStateProperty.all(AppColors.success),
-                      foregroundColor:
-                          WidgetStateProperty.all(AppColors.lightSurface),
-                    ),
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        setState(() {
-                          _amountInvalid = _amount <= 0;
-                          _titleInvalid = _title.isEmpty;
-                        });
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton.filled(
+              tooltip: 'Save transaction',
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        _amountInvalid = _amount <= 0;
+                        _titleInvalid = _title.isEmpty;
+                      });
 
-                        if (!_amountInvalid && !_titleInvalid) {
-                          setState(() {
-                            _isLoading = true;
-                          });
-                          try {
-                            final updatedTransaction = Transaction(
-                              id: widget.transaction.id,
-                              userId: widget.transaction.userId,
-                              date: _date,
-                              amount: _amount,
-                              paymentType: _paymentType,
-                              typeId: _typeId,
-                              icon: _emoji,
-                              title: _title,
-                              categoryId: _categoryId,
-                              description: _description,
-                            );
-                            await provider
-                                .updateTransaction(updatedTransaction);
-                            if (mounted) {
-                              context.pop();
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text('Failed to update transaction: $e'),
-                                  backgroundColor: AppColors.danger,
+                      if (!_amountInvalid && !_titleInvalid) {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        try {
+                          final updatedTransaction = Transaction(
+                            id: widget.transaction.id,
+                            userId: widget.transaction.userId,
+                            date: _date,
+                            amount: _amount,
+                            paymentType: _paymentType,
+                            typeId: _typeId,
+                            icon: _emoji,
+                            title: _title,
+                            categoryId: _categoryId,
+                            description: _description,
+                          );
+                          await provider.updateTransaction(updatedTransaction);
+                          if (mounted) {
+                            context.pop();
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Failed to update transaction: $e',
                                 ),
-                              );
-                            }
-                          } finally {
-                            if (mounted) {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                            }
+                                backgroundColor: AppColors.danger,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isLoading = false;
+                            });
                           }
                         }
-                      },
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.lightSurface,
-                        ),
-                      )
-                    : const Icon(Icons.done_rounded),
-              ),
+                      }
+                    },
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.done_rounded),
             ),
-          )
+          ),
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: themeMode == ThemeMode.light
@@ -233,143 +179,153 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                             color: AppColors.netural.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ]
-                      : []),
-              height: 60,
-              child: DatepickerWidget(
-                initialDate: _date,
-                onDateChange: (dateTime) {
-                  setState(() {
-                    _date = dateTime;
-                  });
-                },
+                      : [],
+                ),
+                height: 60,
+                child: DatepickerWidget(
+                  initialDate: _date,
+                  onDateChange: (dateTime) {
+                    setState(() {
+                      _date = dateTime;
+                    });
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              height: 120,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 120,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: themeMode == ThemeMode.light
                             ? [
                                 BoxShadow(
-                                  color:
-                                      AppColors.netural.withValues(alpha: 0.1),
+                                  color: AppColors.netural.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
-                                )
+                                ),
                               ]
-                            : []),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: CustomToggleButton(
-                            selectedIndex: _paymentType - 1,
-                            colors: [Theme.of(context).primaryColor],
-                            onSelectionChanged: (int value) {
-                              setState(() {
-                                _paymentType = value + 1;
-                              });
-                            },
-                            icons: const [
-                              FaIcon(FontAwesomeIcons.moneyBill, size: 16),
-                              Icon(Icons.credit_card_rounded, size: 24)
-                            ],
+                            : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: CustomToggleButton(
+                              selectedIndex: _paymentType - 1,
+                              colors: [Theme.of(context).primaryColor],
+                              onSelectionChanged: (int value) {
+                                setState(() {
+                                  _paymentType = value + 1;
+                                });
+                              },
+                              icons: const [
+                                FaIcon(FontAwesomeIcons.moneyBill, size: 16),
+                                Icon(Icons.credit_card_rounded, size: 24),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Flexible(
-                          child: CustomToggleButton(
-                            selectedIndex: _typeId == 1 ? 0 : 1,
-                            colors: [Theme.of(context).primaryColor],
-                            onSelectionChanged: (int value) {
-                              setState(() {
-                                _typeId = value == 0 ? 1 : 2;
-                              });
-                            },
-                            icons: const [
-                              Icon(Icons.file_upload_outlined),
-                              Icon(Icons.file_download_outlined)
-                            ],
+                          const SizedBox(height: 6),
+                          Flexible(
+                            child: CustomToggleButton(
+                              selectedIndex: _typeId == 1 ? 0 : 1,
+                              colors: [Theme.of(context).primaryColor],
+                              onSelectionChanged: (int value) {
+                                setState(() {
+                                  _typeId = value == 0 ? 1 : 2;
+                                });
+                              },
+                              icons: const [
+                                Icon(Icons.file_upload_outlined),
+                                Icon(Icons.file_download_outlined),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    height: 120,
-                    width: 240,
-                    child: Container(
-                      height: 120,
-                      alignment: Alignment.center,
-                      child: TextField(
-                        maxLines: 1,
-                        minLines: 1,
-                        textAlign: TextAlign.right,
-                        keyboardType: TextInputType.number,
-                        controller: TextEditingController(
-                            text: _amount == 0 ? '' : _amount.toString()),
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                        decoration: InputDecoration(
-                          errorStyle: const TextStyle(
-                            fontSize: 0,
-                          ),
-                          errorText: _amountInvalid ? '' : null,
-                          errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.danger, width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.danger, width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedBorder: Theme.of(context)
-                              .inputDecorationTheme
-                              .focusedBorder,
-                          enabledBorder: Theme.of(context)
-                              .inputDecorationTheme
-                              .enabledBorder,
-                          border: Theme.of(context).inputDecorationTheme.border,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 32, horizontal: 8),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            try {
-                              double doubleValue = double.parse(value);
-                              _amount = doubleValue;
-                              _amountInvalid = false;
-                            } catch (e) {
-                              _amount = 0.0;
-                              _amountInvalid = true;
-                            }
-                          });
-                        },
+                        ],
                       ),
                     ),
-                  )
-                ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 120,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: TextField(
+                            maxLines: 1,
+                            minLines: 1,
+                            textAlign: TextAlign.right,
+                            keyboardType: TextInputType.number,
+                            controller: _amountController,
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color,
+                            ),
+                            decoration: InputDecoration(
+                              errorStyle: const TextStyle(fontSize: 0),
+                              errorText: _amountInvalid ? '' : null,
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: AppColors.danger,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: AppColors.danger,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedBorder: Theme.of(
+                                context,
+                              ).inputDecorationTheme.focusedBorder,
+                              enabledBorder: Theme.of(
+                                context,
+                              ).inputDecorationTheme.enabledBorder,
+                              border: Theme.of(
+                                context,
+                              ).inputDecorationTheme.border,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 32,
+                                horizontal: 8,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                try {
+                                  double doubleValue = double.parse(value);
+                                  _amount = doubleValue;
+                                  _amountInvalid = false;
+                                } catch (e) {
+                                  _amount = 0.0;
+                                  _amountInvalid = true;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: themeMode == ThemeMode.light
@@ -378,88 +334,99 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                             color: AppColors.netural.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ]
-                      : []),
-              padding:
-                  const EdgeInsets.only(left: 12, bottom: 4, top: 4, right: 8),
-              height: 80,
-              child: Row(
-                children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    child: EmojiPickerButton(
+                      : [],
+                ),
+                padding: const EdgeInsets.only(
+                  left: 12,
+                  bottom: 4,
+                  top: 4,
+                  right: 8,
+                ),
+                height: 80,
+                child: Row(
+                  children: [
+                    Container(
+                      height: 60,
+                      width: 60,
+                      child: EmojiPickerButton(
                         selectedEmoji: _emoji,
                         onEmojiSelected: (String value) {
                           setState(() {
                             _emoji = value;
                           });
-                        }),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 60,
-                      child: TextField(
-                        controller: _titleController,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          errorStyle: const TextStyle(
-                            fontSize: 0,
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 60,
+                        child: TextField(
+                          controller: _titleController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            errorStyle: const TextStyle(fontSize: 0),
+                            errorText: _titleInvalid ? '' : null,
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: AppColors.danger,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: AppColors.danger,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: Theme.of(
+                              context,
+                            ).inputDecorationTheme.focusedBorder,
+                            enabledBorder: Theme.of(
+                              context,
+                            ).inputDecorationTheme.enabledBorder,
+                            border: Theme.of(
+                              context,
+                            ).inputDecorationTheme.border,
                           ),
-                          errorText: _titleInvalid ? '' : null,
-                          errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.danger, width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.danger, width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedBorder: Theme.of(context)
-                              .inputDecorationTheme
-                              .focusedBorder,
-                          enabledBorder: Theme.of(context)
-                              .inputDecorationTheme
-                              .enabledBorder,
-                          border: Theme.of(context).inputDecorationTheme.border,
+                          onChanged: (value) {
+                            setState(() {
+                              _title = value;
+                              _titleInvalid = false;
+                            });
+                          },
                         ),
-                        onChanged: (value) {
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      height: 60,
+                      width: 40,
+                      child: QuickTitleButton(
+                        onTitleSelected: (selectedTitle) {
                           setState(() {
-                            _title = value;
-                            _titleInvalid = false;
+                            _titleController.text = selectedTitle.title;
+                            _title = selectedTitle.title;
+                            _emoji = selectedTitle.icon;
+                            _typeId = selectedTitle.typeId;
+                            _categoryId =
+                                selectedTitle.categoryId ?? _categoryId;
                           });
                         },
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    height: 60,
-                    width: 40,
-                    child: QuickTitleButton(
-                      onTitleSelected: (selectedTitle) {
-                        setState(() {
-                          _titleController.text = selectedTitle.title;
-                          _title = selectedTitle.title;
-                          _emoji = selectedTitle.icon;
-                          _typeId = selectedTitle.typeId;
-                          _categoryId = selectedTitle.categoryId ?? _categoryId;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              height: 84,
-              decoration: BoxDecoration(
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                height: 84,
+                decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: themeMode == ThemeMode.light
@@ -468,39 +435,45 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                             color: AppColors.netural.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ]
-                      : []),
-              child: TextField(
-                controller: _descriptionController,
-                expands: true,
-                minLines: null,
-                maxLines: null,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                    focusedBorder:
-                        Theme.of(context).inputDecorationTheme.focusedBorder,
-                    border: Theme.of(context).inputDecorationTheme.border),
-                onChanged: (value) {
-                  setState(() {
-                    _description = value;
-                  });
-                },
+                      : [],
+                ),
+                child: TextField(
+                  controller: _descriptionController,
+                  expands: true,
+                  minLines: null,
+                  maxLines: null,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    focusedBorder: Theme.of(
+                      context,
+                    ).inputDecorationTheme.focusedBorder,
+                    border: Theme.of(context).inputDecorationTheme.border,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _description = value;
+                    });
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            // Category Selection with Choice Chips
-            Consumer(
-              builder: (context, ref, child) {
-                final categoryNotifier = ref.watch(categoryProvider);
-                final categories =
-                    categoryNotifier.getCategoriesByType(_typeId);
+              const SizedBox(height: 12),
+              // Category Selection with Choice Chips
+              Consumer(
+                builder: (context, ref, child) {
+                  final categoryNotifier = ref.watch(categoryProvider);
+                  final categories = categoryNotifier.getCategoriesByType(
+                    _typeId,
+                  );
 
-                return Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: themeMode == ThemeMode.light
@@ -509,92 +482,97 @@ class _EditTransactionPageState extends ConsumerState<EditTransactionPage> {
                                 color: AppColors.netural.withValues(alpha: 0.1),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
-                              )
-                            ]
-                          : []),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('No Category'),
-                              selected: _categoryId == 0,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  setState(() {
-                                    _categoryId = 0;
-                                  });
-                                }
-                              },
-                              selectedColor: Theme.of(context)
-                                  .primaryColor
-                                  .withValues(alpha: 0.2),
-                              labelStyle: TextStyle(
-                                color: _categoryId == 0
-                                    ? Theme.of(context).primaryColor
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.color,
-                                fontWeight: _categoryId == 0
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
                               ),
-                            ),
-
-                            // Category chips
-                            ...categories.map((category) {
-                              final isSelected =
-                                  _categoryId == category.categoryId;
-
-                              return ChoiceChip(
-                                label: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(category.icon,
-                                        style: const TextStyle(fontSize: 16)),
-                                    const SizedBox(width: 6),
-                                    Text(category.name),
-                                  ],
-                                ),
-                                selected: isSelected,
+                            ]
+                          : [],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children: [
+                              ChoiceChip(
+                                label: const Text('No Category'),
+                                selected: _categoryId == 0,
                                 onSelected: (selected) {
                                   if (selected) {
                                     setState(() {
-                                      _categoryId = category.categoryId;
+                                      _categoryId = 0;
                                     });
                                   }
                                 },
-                                selectedColor: Theme.of(context)
-                                    .primaryColor
-                                    .withValues(alpha: 0.2),
+                                selectedColor: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.2),
                                 labelStyle: TextStyle(
-                                  color: isSelected
+                                  color: _categoryId == 0
                                       ? Theme.of(context).primaryColor
-                                      : Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.color,
-                                  fontWeight: isSelected
+                                      : Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.color,
+                                  fontWeight: _categoryId == 0
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                 ),
-                              );
-                            }),
-                          ],
+                              ),
+
+                              // Category chips
+                              ...categories.map((category) {
+                                final isSelected =
+                                    _categoryId == category.categoryId;
+
+                                return ChoiceChip(
+                                  label: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        category.icon,
+                                        style: const TextStyle(
+                                          fontFamily: 'NotoEmoji',
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(category.name),
+                                    ],
+                                  ),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        _categoryId = category.categoryId;
+                                      });
+                                    }
+                                  },
+                                  selectedColor: Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.2),
+                                  labelStyle: TextStyle(
+                                    color: isSelected
+                                        ? Theme.of(context).primaryColor
+                                        : Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium?.color,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

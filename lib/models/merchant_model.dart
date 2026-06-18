@@ -18,7 +18,7 @@ class Merchant {
     return Merchant(
       id: json['id'] as int?,
       name: json['name'] as String,
-      normalizedName: json['normalizedName'] as String?,
+      normalizedName: json['normalized_name'] as String?,
       titleName: json['title_name'] as String,
       titleIcon: json['title_icon'] as String,
       categoryId: json['category_id'] as int?,
@@ -29,8 +29,8 @@ class Merchant {
     return {
       'id': id,
       'name': name,
-      'normalizedName': normalizedName,
-      'titleName': titleName,
+      'normalized_name': normalizedName,
+      'title_name': titleName,
       'titleIcon': titleIcon,
       'categoryId': categoryId,
     };

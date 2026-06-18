@@ -123,26 +123,22 @@ class QuickTitlesProvider extends ChangeNotifier {
       _quickTitles = List.from(titles);
       notifyListeners();
 
-      // Perform batch update in Supabase
-      final updates = titles.asMap().entries.map((entry) {
-        final index = entry.key;
-        final title = entry.value;
-        return {
-          'id': title.id,
-          'display_order': index,
-          'user_id': userId, // Ensure we use the current user_id
-        };
-      }).toList();
-
-      debugPrint('Updating quick titles order in Supabase: $updates');
-      
-      // Explicitly upsert using 'id' as the on_conflict column
-      final response = await _supabase
-          .from('quick_title')
-          .upsert(updates, onConflict: 'id')
-          .select();
-          
-      debugPrint('Supabase response for order update: $response');
+      // Perform batch update in Supabase using individual updates
+      // This is safer than upsert because it only modifies the display_order column
+      for (var i = 0; i < titles.length; i++) {
+        final title = titles[i];
+        if (title.id != null) {
+          try {
+            await _supabase
+                .from('quick_title')
+                .update({'display_order': i})
+                .eq('id', title.id!);
+          } catch (e) {
+            debugPrint('Failed to update order for item ${title.id}: $e');
+          }
+        }
+      }
+      debugPrint('Successfully updated all display_order values.');
     } catch (e) {
       debugPrint('Error updating quick titles order: $e');
       // If it fails, sync back from DB to avoid inconsistent state

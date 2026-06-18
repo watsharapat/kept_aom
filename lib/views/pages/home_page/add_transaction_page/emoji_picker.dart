@@ -66,16 +66,15 @@ class _EmojiPickerButtonState extends State<EmojiPickerButton> {
     return TextButton(
       onPressed: () => _showEmojiPicker(context),
       style: TextButton.styleFrom(
-        //padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: AppColors.border),
           borderRadius: BorderRadius.circular(16),
         ),
       ),
       child: Center(
         child: Text(
           widget.selectedEmoji,
-          style: const TextStyle(fontSize: 24),
+          style: const TextStyle(fontFamily: 'NotoEmoji', fontSize: 24),
         ),
       ),
     );

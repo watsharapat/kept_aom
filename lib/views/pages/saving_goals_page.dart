@@ -28,73 +28,29 @@ class SavingGoalsPage extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        forceMaterialTransparency: true,
-        toolbarHeight: 80,
-        leadingWidth: 240,
-        leading: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(99),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline,
-              width: 1,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          margin:
-              const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(4),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: const BorderRadius.all(Radius.circular(99)),
-                  ),
-                  height: 40,
-                  width: 40,
-                  child: IconButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    icon: Icon(
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      Icons.arrow_back_rounded,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Saving Goals',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-              )
-            ],
-          ),
+        flexibleSpace: const AppBarGradientBackground(),
+        leading: IconButton(
+          tooltip: 'Back',
+          onPressed: () {
+            context.pop();
+          },
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
+        title: const Text('Saving Goals'),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          padding: const EdgeInsets.only(
+            left: 20,
+            top: 12,
+            right: 20,
+            bottom: 16,
+          ),
           child: Column(
             children: [
               Expanded(
                 child: savingGoals.isEmpty
-                    ? const Center(
-                        child: Text('No saving goals available'),
-                      )
+                    ? const Center(child: Text('No saving goals available'))
                     : ListView.builder(
                         itemCount: savingGoals.length,
                         itemBuilder: (context, index) {
@@ -103,19 +59,25 @@ class SavingGoalsPage extends ConsumerWidget {
                             builder: (tileContext) {
                               return GestureDetector(
                                 onLongPress: () async {
-                                  final RenderBox overlay = Overlay.of(context)
-                                      .context
-                                      .findRenderObject() as RenderBox;
-                                  final RenderBox tileBox = tileContext
-                                      .findRenderObject() as RenderBox;
-                                  final Offset tilePosition =
-                                      tileBox.localToGlobal(Offset.zero,
-                                          ancestor: overlay);
+                                  final RenderBox overlay =
+                                      Overlay.of(
+                                            context,
+                                          ).context.findRenderObject()
+                                          as RenderBox;
+                                  final RenderBox tileBox =
+                                      tileContext.findRenderObject()
+                                          as RenderBox;
+                                  final Offset tilePosition = tileBox
+                                      .localToGlobal(
+                                        Offset.zero,
+                                        ancestor: overlay,
+                                      );
 
                                   if (savingGoal.userId.isNotEmpty) {
                                     await showMenu(
-                                      surfaceTintColor:
-                                          Theme.of(context).canvasColor,
+                                      surfaceTintColor: Theme.of(
+                                        context,
+                                      ).canvasColor,
                                       color: Theme.of(context).cardColor,
                                       shadowColor: AppColors.netural,
                                       constraints: const BoxConstraints.expand(
@@ -140,7 +102,8 @@ class SavingGoalsPage extends ConsumerWidget {
                                                 ListTileTitleAlignment.center,
                                             contentPadding:
                                                 const EdgeInsets.symmetric(
-                                                    horizontal: 16),
+                                                  horizontal: 16,
+                                                ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -156,14 +119,16 @@ class SavingGoalsPage extends ConsumerWidget {
                                                 isScrollControlled: true,
                                                 shape:
                                                     const RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.vertical(
-                                                          top: Radius.circular(
-                                                              16)),
-                                                ),
+                                                      borderRadius:
+                                                          BorderRadius.vertical(
+                                                            top:
+                                                                Radius.circular(
+                                                                  16,
+                                                                ),
+                                                          ),
+                                                    ),
                                                 builder: (context) => SafeArea(
-                                                  child:
-                                                      AddOrEditSavingGoalBottomSheet(
+                                                  child: AddOrEditSavingGoalBottomSheet(
                                                     isEdit: true,
                                                     initialName:
                                                         savingGoal.name,
@@ -173,16 +138,19 @@ class SavingGoalsPage extends ConsumerWidget {
                                                         savingGoal.target,
                                                     onSubmit:
                                                         (name, stored, target) {
-                                                      savingGoalsNotifier
-                                                          .updateSavingGoals(
-                                                        oldName:
-                                                            savingGoal.name,
-                                                        name: name,
-                                                        stored: stored,
-                                                        target: target,
-                                                      );
-                                                      Navigator.pop(context);
-                                                    },
+                                                          savingGoalsNotifier
+                                                              .updateSavingGoals(
+                                                                oldName:
+                                                                    savingGoal
+                                                                        .name,
+                                                                name: name,
+                                                                stored: stored,
+                                                                target: target,
+                                                              );
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                        },
                                                   ),
                                                 ),
                                               );
@@ -191,14 +159,16 @@ class SavingGoalsPage extends ConsumerWidget {
                                         ),
                                         PopupMenuItem(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
+                                            horizontal: 8,
+                                          ),
                                           value: 'delete',
                                           child: ListTile(
                                             titleAlignment:
                                                 ListTileTitleAlignment.center,
                                             contentPadding:
                                                 const EdgeInsets.symmetric(
-                                                    horizontal: 16),
+                                                  horizontal: 16,
+                                                ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -211,7 +181,8 @@ class SavingGoalsPage extends ConsumerWidget {
                                             onTap: () {
                                               savingGoalsNotifier
                                                   .deleteSavingGoals(
-                                                      savingGoal.name);
+                                                    savingGoal.name,
+                                                  );
                                               Navigator.pop(context);
                                             },
                                           ),
@@ -226,8 +197,9 @@ class SavingGoalsPage extends ConsumerWidget {
                                     color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                      color:
-                                          Theme.of(context).colorScheme.outline,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.outline,
                                       width: 1,
                                     ),
                                     boxShadow: const [
@@ -241,14 +213,19 @@ class SavingGoalsPage extends ConsumerWidget {
                                   height: 100,
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
                                     title: Row(
                                       children: [
                                         Text(
                                           savingGoal.name.isNotEmpty
                                               ? savingGoal.name.characters.first
-                                              : "🎯",
-                                          style: const TextStyle(fontSize: 22),
+                                              : "ðŸŽ¯",
+                                          style: const TextStyle(
+                                            fontFamily: 'NotoEmoji',
+                                            fontSize: 22,
+                                          ),
                                         ),
                                         const SizedBox(width: 16),
                                         Expanded(
@@ -257,9 +234,9 @@ class SavingGoalsPage extends ConsumerWidget {
                                                 .skip(1)
                                                 .toString()
                                                 .trim(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.titleMedium,
                                           ),
                                         ),
                                       ],
@@ -268,16 +245,16 @@ class SavingGoalsPage extends ConsumerWidget {
                                       children: [
                                         Text(
                                           'Status: ${statusText(savingGoal.statusId)}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall,
                                         ),
                                         const SizedBox(width: 16),
                                         Text(
                                           '${FormatUtils.formatNumber(savingGoal.stored.toDouble())}/${FormatUtils.formatNumber(savingGoal.target.toDouble())}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall,
                                         ),
                                       ],
                                     ),
@@ -287,7 +264,7 @@ class SavingGoalsPage extends ConsumerWidget {
                                     ),
                                     trailing: SizedBox(
                                       width:
-                                          40, // กำหนดความกว้างสูงสุดให้ trailing
+                                          40, // à¸à¸³à¸«à¸™à¸”à¸„à¸§à¸²à¸¡à¸à¸§à¹‰à¸²à¸‡à¸ªà¸¹à¸‡à¸ªà¸¸à¸”à¹ƒà¸«à¹‰ trailing
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -307,7 +284,7 @@ class SavingGoalsPage extends ConsumerWidget {
                                             value: savingGoal.target == 0
                                                 ? 0
                                                 : savingGoal.stored /
-                                                    savingGoal.target,
+                                                      savingGoal.target,
                                             backgroundColor: AppColors.border,
                                             color: AppColors.primary,
                                             minHeight: 6,
@@ -331,8 +308,9 @@ class SavingGoalsPage extends ConsumerWidget {
                     context: context,
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
                     ),
                     builder: (context) => SafeArea(
                       child: AddOrEditSavingGoalBottomSheet(
@@ -390,20 +368,23 @@ class _AddOrEditSavingGoalBottomSheetState
   @override
   void initState() {
     super.initState();
-    // ถ้ามี emoji นำหน้า initialName ให้แยก emoji ออก
+    // à¸–à¹‰à¸²à¸¡à¸µ emoji à¸™à¸³à¸«à¸™à¹‰à¸² initialName à¹ƒà¸«à¹‰à¹à¸¢à¸ emoji à¸­à¸­à¸
     String initialName = widget.initialName ?? '';
     if (initialName.isNotEmpty && initialName.runes.length > 1) {
       _emoji = initialName.characters.first;
       _nameController = TextEditingController(
-          text: initialName.substring(_emoji.length).trim());
+        text: initialName.substring(_emoji.length).trim(),
+      );
     } else {
-      _emoji = "🎯";
+      _emoji = "ðŸŽ¯";
       _nameController = TextEditingController(text: initialName);
     }
-    _storedController =
-        TextEditingController(text: widget.initialStored?.toString() ?? '0');
-    _targetController =
-        TextEditingController(text: widget.initialTarget?.toString() ?? '0');
+    _storedController = TextEditingController(
+      text: widget.initialStored?.toString() ?? '0',
+    );
+    _targetController = TextEditingController(
+      text: widget.initialTarget?.toString() ?? '0',
+    );
   }
 
   @override
@@ -437,8 +418,10 @@ class _AddOrEditSavingGoalBottomSheetState
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(widget.isEdit ? 'Edit Saving Goal' : 'Add Saving Goal',
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            widget.isEdit ? 'Edit Saving Goal' : 'Add Saving Goal',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -463,7 +446,10 @@ class _AddOrEditSavingGoalBottomSheetState
                   child: Center(
                     child: Text(
                       _emoji,
-                      style: const TextStyle(fontSize: 28),
+                      style: const TextStyle(
+                        fontFamily: 'NotoEmoji',
+                        fontSize: 28,
+                      ),
                     ),
                   ),
                 ),
@@ -508,14 +494,17 @@ class _AddOrEditSavingGoalBottomSheetState
                   ),
                   skinToneConfig: const SkinToneConfig(),
                   categoryViewConfig: CategoryViewConfig(
-                      dividerColor: AppColors.border,
-                      backgroundColor: Theme.of(context).cardColor,
-                      iconColor: Theme.of(context).textTheme.bodySmall?.color ??
-                          AppColors.textPlaceholder,
-                      iconColorSelected: AppColors.primary,
-                      indicatorColor: AppColors.primary),
-                  bottomActionBarConfig:
-                      const BottomActionBarConfig(enabled: false),
+                    dividerColor: AppColors.border,
+                    backgroundColor: Theme.of(context).cardColor,
+                    iconColor:
+                        Theme.of(context).textTheme.bodySmall?.color ??
+                        AppColors.textPlaceholder,
+                    iconColorSelected: AppColors.primary,
+                    indicatorColor: AppColors.primary,
+                  ),
+                  bottomActionBarConfig: const BottomActionBarConfig(
+                    enabled: false,
+                  ),
                   searchViewConfig: const SearchViewConfig(),
                 ),
               ),
@@ -590,11 +579,13 @@ class _AddOrEditSavingGoalBottomSheetState
                   );
                 }
               },
-              child: Text(widget.isEdit ? 'Done' : 'Add',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimaryOnDark,
-                      )),
+              child: Text(
+                widget.isEdit ? 'Done' : 'Add',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimaryOnDark,
+                ),
+              ),
             ),
           ),
         ],

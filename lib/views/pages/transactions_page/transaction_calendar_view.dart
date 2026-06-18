@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
 import 'package:kept_aom/models/transaction_model.dart';
 import 'package:kept_aom/viewmodels/transaction_provider.dart';
+import 'package:kept_aom/views/pages/transactions_page/transaction_list_view.dart';
 import 'package:kept_aom/views/utils/styles.dart';
 import 'package:kept_aom/utils/format_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -34,7 +33,8 @@ class _TransactionCalendarViewState
   }
 
   Map<DateTime, List<Transaction>> _groupTransactions(
-      List<Transaction> transactions) {
+    List<Transaction> transactions,
+  ) {
     Map<DateTime, List<Transaction>> groupedTransactions = {};
     for (var transaction in transactions) {
       final date = DateTime(
@@ -56,22 +56,10 @@ class _TransactionCalendarViewState
     return _groupedTransactions[normalizedDay] ?? [];
   }
 
-  double _getTotalAmountForDay(DateTime day) {
-    final txs = _getTransactionsForDay(day);
-    double sum = 0.0;
-    for (var tx in txs) {
-      // สมมติ typeId == 1 คือ outcome, 2 คือ income
-      sum += tx.typeId == 1 ? -tx.amount : tx.amount;
-    }
-    return sum;
-  }
-
   @override
   Widget build(BuildContext context) {
     _updateGroupedTransactions();
     final selectedDay = _selectedDay ?? _focusedDay;
-    final totalAmount = _getTotalAmountForDay(selectedDay);
-    final hasTransactions = _getTransactionsForDay(selectedDay).isNotEmpty;
 
     return ListView(
       //padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
@@ -95,17 +83,12 @@ class _TransactionCalendarViewState
               });
             },
             calendarStyle: CalendarStyle(
-              markerDecoration: const BoxDecoration(
-                shape: BoxShape.circle,
-              ),
+              markerDecoration: const BoxDecoration(shape: BoxShape.circle),
               markersMaxCount: 5,
               markerSize: 8,
               markerMargin: const EdgeInsets.symmetric(horizontal: 0.5),
               todayDecoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColors.primary,
-                  width: 1,
-                ),
+                border: Border.all(color: AppColors.primary, width: 1),
                 shape: BoxShape.circle,
               ),
               selectedDecoration: const BoxDecoration(
@@ -128,7 +111,8 @@ class _TransactionCalendarViewState
                     (idx) {
                       final tx = events[idx] as Transaction;
                       final color = tx.typeId == 1
-                          ? AppColors.danger // outcome
+                          ? AppColors
+                                .danger // outcome
                           : AppColors.success; // income
                       return Container(
                         width: 8,
@@ -147,116 +131,14 @@ class _TransactionCalendarViewState
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          clipBehavior: Clip.antiAlias,
-          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          decoration: AppStyles.cardDecoration(context),
-          child: Column(
-            children: [
-              Container(
-                decoration: AppStyles.pillDecoration(context),
-                margin: const EdgeInsets.only(top: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(
-                  key: ValueKey<String>('$selectedDay$totalAmount'),
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Visibility(
-                        visible: hasTransactions,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(99),
-                            border: Border.all(
-                              color: AppColors.lightBackground,
-                              width: 1,
-                            ),
-                            color: totalAmount >= 0
-                                ? AppColors.success.withValues(alpha: 0.8)
-                                : AppColors.danger.withValues(alpha: 0.8),
-                          ),
-                        )),
-                    const SizedBox(width: 8),
-                    Text(
-                      FormatUtils.formatDate(selectedDay),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(width: 16),
-                    Visibility(
-                        visible: hasTransactions,
-                        child: Text(
-                          FormatUtils.formatNumber(totalAmount),
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: totalAmount >= 0
-                                        ? AppColors.success
-                                        : AppColors.danger,
-                                  ),
-                        )),
-                  ],
-                ),
-                // AnimatedSwitcher(
-                //   duration: const Duration(milliseconds: 300),
-                //   transitionBuilder:
-                //       (Widget child, Animation<double> animation) {
-                //     return ScaleTransition(scale: animation, child: child);
-                //   },
-                //   child: Row(
-                //     key: ValueKey<String>('$selectedDay$totalAmount'),
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       Visibility(
-                //           visible: hasTransactions,
-                //           child: Container(
-                //             height: 16,
-                //             width: 16,
-                //             decoration: BoxDecoration(
-                //               borderRadius: BorderRadius.circular(99),
-                //               border: Border.all(
-                //                 color: AppColors.lightBackground,
-                //                 width: 1,
-                //               ),
-                //               color: totalAmount >= 0
-                //                   ? AppColors.success.withValues(alpha: 0.8)
-                //                   : AppColors.danger.withValues(alpha: 0.8),
-                //             ),
-                //           )),
-                //       const SizedBox(width: 8),
-                //       Text(
-                //         FormatUtils.formatDate(selectedDay),
-                //         style: Theme.of(context).textTheme.bodyMedium,
-                //       ),
-                //       const SizedBox(width: 16),
-                //       Visibility(
-                //           visible: hasTransactions,
-                //           child: Text(
-                //             FormatUtils.formatNumber(totalAmount),
-                //             style:
-                //                 Theme.of(context).textTheme.bodySmall?.copyWith(
-                //                       color: totalAmount >= 0
-                //                           ? AppColors.success
-                //                           : AppColors.danger,
-                //                     ),
-                //           )),
-                //     ],
-                //   ),
-                // ),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                child: KeyedSubtree(
-                  key: ValueKey<String>(selectedDay.toString()),
-                  child: _buildTransactionList(),
-                ),
-              ),
-            ],
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: KeyedSubtree(
+            key: ValueKey<String>(selectedDay.toString()),
+            child: _buildTransactionList(),
           ),
         ),
       ],
@@ -270,78 +152,14 @@ class _TransactionCalendarViewState
     if (transactions.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(32.0),
-        child: Center(
-          child: Text('No transactions for this day'),
-        ),
+        child: Center(child: Text('No transactions for this day')),
       );
     }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: transactions.length,
-      itemBuilder: (context, index) {
-        final transaction = transactions[index];
-
-        return Slidable(
-          //key: ValueKey(
-          //   '${transaction.userId}_${transaction.date}_${transaction.amount}_${transaction.paymentType}_${transaction.typeId}_${transaction.icon}_${transaction.title}_${transaction.description}'),
-          endActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (context) {
-                  context.push('/editTransaction', extra: transaction);
-                },
-                backgroundColor: AppColors.caution,
-                foregroundColor: AppColors.textPrimaryOnDark,
-                icon: Icons.edit,
-              ),
-              SlidableAction(
-                onPressed: (context) {
-                  provider.deleteTransaction(transaction);
-                  provider.fetchTransactions();
-                },
-                backgroundColor: AppColors.danger,
-                foregroundColor: AppColors.textPrimaryOnDark,
-                icon: Icons.delete,
-              ),
-            ],
-          ),
-          child: ListTile(
-            leading: Container(
-              // Removed BoxDecoration
-              //clipBehavior: Clip.antiAlias,
-              height: 40,
-              width: 40,
-              child: Center(
-                child: Text(
-                  transaction.icon,
-                  style: const TextStyle(
-                      fontFamily: 'NotoEmoji',
-                      fontSize: 28), // Changed font size
-                ),
-              ),
-            ),
-            title: Text(transaction.title,
-                style: Theme.of(context).textTheme.bodyMedium),
-            subtitle: Text(
-              FormatUtils.formatDate(transaction.date),
-              style: const TextStyle(fontSize: 12),
-            ),
-            trailing: Text(
-              FormatUtils.formatNumber(transaction.amount),
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: transaction.typeId == 1
-                    ? AppColors.danger
-                    : AppColors.success,
-              ),
-            ),
-          ),
-        );
-      },
+    return TransactionDateGroupCard(
+      dateStr: FormatUtils.formatDate(_selectedDay ?? _focusedDay),
+      transactionsOnDate: transactions,
+      provider: provider,
     );
   }
 }

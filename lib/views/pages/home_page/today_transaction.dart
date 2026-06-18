@@ -65,9 +65,20 @@ class TodayTransactions extends ConsumerWidget {
                   ),
                   Expanded(
                     child: Center(
-                      child: Text(
-                        'No transactions for today',
-                        style: Theme.of(context).textTheme.bodySmall,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No transactions for today',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ),
                     ),
                   )
@@ -135,44 +146,57 @@ class TodayTransactions extends ConsumerWidget {
                           : todayTransactions.length - 1 - index;
                       final transaction = todayTransactions[actualIndex];
 
-                      return ListTile(
-                        leading: Container(
-                          // decoration: BoxDecoration(
-                          //   color: Theme.of(context).canvasColor,
-                          //   borderRadius: BorderRadius.circular(30),
-                          // ),
-                          //clipBehavior: Clip.antiAlias,
-                          height: 40,
-                          width: 40,
-                          child: Center(
-                            child: Text(
-                              transaction.icon,
-                              style: const TextStyle(
-                                  fontFamily: 'NotoEmoji', fontSize: 24),
+                      final isLast = index == todayTransactions.length - 1;
+
+                      return Container(
+                        decoration: isLast
+                            ? null
+                            : BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withValues(alpha: 0.2),
+                                    width: 0.5,
+                                  ),
+                                ),
+                              ),
+                        child: ListTile(
+                          leading: SizedBox(
+                            height: 40,
+                            width: 40,
+                            child: Center(
+                              child: Text(
+                                transaction.icon,
+                                style: const TextStyle(
+                                    fontFamily: 'NotoEmoji', fontSize: 24),
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(transaction.title,
-                            style: Theme.of(context).textTheme.bodyMedium),
-                        subtitle: transaction.description != ""
-                            ? Text(
-                                transaction.description,
-                                style: const TextStyle(fontSize: 12),
-                              )
-                            : null,
-                        trailing: SizedBox(
-                          height: 40,
-                          width: 80,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              FormatUtils.formatNumber(transaction.amount),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: transaction.typeId == 1
-                                    ? AppColors.danger
-                                    : AppColors.success,
+                          title: Text(transaction.title,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          subtitle: transaction.description != ""
+                              ? Text(
+                                  transaction.description,
+                                  style: const TextStyle(fontSize: 12),
+                                )
+                              : null,
+                          trailing: SizedBox(
+                            height: 40,
+                            width: 80,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                FormatUtils.formatNumber(transaction.amount),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color,
+                                ),
                               ),
                             ),
                           ),

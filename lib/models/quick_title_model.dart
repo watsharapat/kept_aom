@@ -29,8 +29,7 @@ class QuickTitle {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = <String, dynamic>{
       'icon': icon,
       'user_id': userId,
       'type_id': typeId,
@@ -38,5 +37,9 @@ class QuickTitle {
       'category_id': categoryId,
       'display_order': displayOrder,
     };
+    if (id != null) {
+      map['id'] = id;
+    }
+    return map;
   }
 }

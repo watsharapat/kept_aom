@@ -88,15 +88,12 @@ class AppTextStyle {
 
 class AppStyles {
   static const double cardRadiusValue = 24.0;
-  static const BorderRadius cardBorderRadius =
-      BorderRadius.all(Radius.circular(cardRadiusValue));
+  static const BorderRadius cardBorderRadius = BorderRadius.all(
+    Radius.circular(cardRadiusValue),
+  );
 
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(
-      color: AppColors.shadow,
-      blurRadius: 10,
-      offset: Offset(0, 4),
-    ),
+    BoxShadow(color: AppColors.shadow, blurRadius: 10, offset: Offset(0, 4)),
   ];
 
   static BoxDecoration cardDecoration(BuildContext context) {
@@ -120,6 +117,28 @@ class AppStyles {
       border: Border.all(
         color: Theme.of(context).colorScheme.outline,
         width: 1,
+      ),
+    );
+  }
+}
+
+class AppBarGradientBackground extends StatelessWidget {
+  const AppBarGradientBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final glowColor = AppColors.primary.withValues(alpha: isDark ? 0.18 : 0.10);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [glowColor, baseColor, baseColor],
+          stops: const [0.0, 0.48, 1.0],
+        ),
       ),
     );
   }

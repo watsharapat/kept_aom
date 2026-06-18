@@ -1,132 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:kept_aom/viewmodels/transaction_provider.dart';
-import 'package:kept_aom/views/pages/home_page/add_transaction_page/add_transaction_page.dart';
-import 'package:kept_aom/views/pages/login_page.dart';
 import 'package:kept_aom/views/pages/transactions_page/transaction_calendar_view.dart';
 import 'package:kept_aom/views/pages/transactions_page/transaction_list_view.dart';
 import 'package:kept_aom/views/utils/styles.dart';
-import 'package:kept_aom/views/widgets/bottom_nav.dart';
-import 'package:supabase/supabase.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:kept_aom/models/transaction_model.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-class TransactionsPage extends ConsumerWidget {
+class TransactionsPage extends StatelessWidget {
   const TransactionsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(transactionProvider);
-    final user = Supabase.instance.client.auth.currentUser;
-    final fullName = user?.userMetadata?['full_name'];
-    final firstName = fullName.split(' ')[0];
-
+  Widget build(BuildContext context) {
     return DefaultTabController(
-        initialIndex: 0,
-        length: 2,
-        child: Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              toolbarHeight: 80,
-              leadingWidth: 200,
-              leading: Container(
-                height: 60,
+      initialIndex: 0,
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: const AppBarGradientBackground(),
+          title: const Text('Transactions'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(42),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+              child: Container(
+                height: 34,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(99),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: 1,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                margin: const EdgeInsets.only(
-                    left: 16, right: 16, top: 4, bottom: 16),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
-                child: Row(
-                  children: [
-                    // Padding(
-                    //     padding: const EdgeInsets.all(4),
-                    //     child: Container(
-                    //       decoration: BoxDecoration(
-                    //           color: AppColors.primary,
-                    //           borderRadius:
-                    //               const BorderRadius.all(Radius.circular(99))),
-                    //       height: 40,
-                    //       width: 40,
-                    //       child: Icon(
-                    //         color: AppColors.lightBackground,
-                    //         Icons.receipt_long_rounded,
-                    //         size: 24,
-                    //       ),
-                    //     )),
-                    // // ส่วนแสดงข้อความ
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Transactions',
-                        style: Theme.of(context).textTheme.displaySmall,
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorPadding: const EdgeInsets.all(3),
+                  splashBorderRadius: BorderRadius.circular(9),
+                  overlayColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.10);
+                    }
+                    if (states.contains(WidgetState.hovered) ||
+                        states.contains(WidgetState.focused)) {
+                      return Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.06);
+                    }
+                    return Colors.transparent;
+                  }),
+                  dividerColor: Colors.transparent,
+                  labelColor: Theme.of(context).colorScheme.primary,
+                  unselectedLabelColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant,
+                  indicator: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(9),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                    )
+                    ],
+                  ),
+                  tabs: const <Widget>[
+                    Tab(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.format_list_bulleted_rounded, size: 16),
+                          SizedBox(width: 6),
+                          Text('List'),
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calendar_month_rounded, size: 16),
+                          SizedBox(width: 6),
+                          Text('Calendar'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              actions: [
-                Container(
-                    height: 60,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(99),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline,
-                        width: 1,
-                      ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    margin: const EdgeInsets.only(
-                        left: 16, right: 16, top: 4, bottom: 16),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-                    child: const TabBar(
-                      labelColor: AppColors.primary,
-                      unselectedLabelColor: AppColors.textSecondary,
-                      indicator: BoxDecoration(),
-                      dividerHeight: 0,
-                      dividerColor: Colors.transparent,
-                      tabs: <Widget>[
-                        Tab(
-                          icon: FaIcon(FontAwesomeIcons.list, size: 20),
-                          //text: 'List',
-                        ),
-                        Tab(
-                          icon: FaIcon(FontAwesomeIcons.calendarDays, size: 20),
-                          //text: 'Calendar',
-                        ),
-                      ],
-                    )),
-              ],
             ),
-            body: const TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [TransactionListView(), TransactionCalendarView()])));
+          ),
+        ),
+        body: const Padding(
+          padding: EdgeInsets.only(top: 6),
+          child: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            children: [TransactionListView(), TransactionCalendarView()],
+          ),
+        ),
+      ),
+    );
   }
 }
