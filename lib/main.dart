@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kept_aom/router/router.dart';
-import 'package:kept_aom/viewmodels/theme_provider.dart';
-import 'package:kept_aom/views/utils/theme.dart';
+import 'package:kept_aom/core/router/router.dart';
+import 'package:kept_aom/core/theme/theme_provider.dart';
+import 'package:kept_aom/core/theme/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
-    url: 'https://emnwnqgvnxwbskdyiizj.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtbnducWd2bnh3YnNrZHlpaXpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA1NjQ5NzIsImV4cCI6MjA0NjE0MDk3Mn0.YCtH2DYN1XKOe6V_o2uS0nMEKrLk9FWdSYDVafQZro4',
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
   );
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -19,7 +21,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    final themeMode = ref.watch(themeViewModelProvider);
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
