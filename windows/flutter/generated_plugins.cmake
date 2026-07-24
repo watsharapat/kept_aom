@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   emoji_picker_flutter
   file_selector_windows
-  passkeys_windows
   url_launcher_windows
 )
 
