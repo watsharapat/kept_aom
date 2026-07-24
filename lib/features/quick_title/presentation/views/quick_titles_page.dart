@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kept_aom/features/quick_title/domain/entities/quick_title_entity.dart';
+import 'package:kept_aom/features/category/domain/entities/category_entity.dart';
 import 'package:kept_aom/features/category/presentation/viewmodels/category_viewmodel.dart';
 import 'package:kept_aom/features/quick_title/presentation/viewmodels/quick_title_viewmodel.dart';
 import 'package:kept_aom/core/widgets/custom_toggle_button.dart';
@@ -542,77 +543,130 @@ class _AddOrEditQuickTitleBottomSheetState
             builder: (context, ref, child) {
               final categories = ref.watch(categoriesByTypeProvider(_typeId));
 
+              CategoryEntity? selectedCategory;
+              if (_categoryId != null && _categoryId != 0) {
+                for (final cat in categories) {
+                  if (cat.categoryId == _categoryId) {
+                    selectedCategory = cat;
+                    break;
+                  }
+                }
+              }
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Category (Optional)',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ChoiceChip(
-                        label: const Text('No Category'),
-                        selected: _categoryId == null,
-                        onSelected: (selected) {
-                          if (selected) {
+                      Text(
+                        'Category (Optional)',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (selectedCategory != null)
+                        Text(
+                          '${selectedCategory.icon} ${selectedCategory.name}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      else
+                        Text(
+                          'No Category',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      Tooltip(
+                        message: 'No Category',
+                        child: GestureDetector(
+                          onTap: () {
                             setState(() {
                               _categoryId = null;
                             });
-                          }
-                        },
-                        selectedColor: Theme.of(
-                          context,
-                        ).primaryColor.withValues(alpha: 0.2),
-                        labelStyle: TextStyle(
-                          color: _categoryId == null
-                              ? Theme.of(context).primaryColor
-                              : Theme.of(context).textTheme.bodyMedium?.color,
-                          fontWeight: _categoryId == null
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 46,
+                            height: 46,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: _categoryId == null || _categoryId == 0
+                                  ? Theme.of(context)
+                                      .primaryColor
+                                      .withValues(alpha: 0.15)
+                                  : Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _categoryId == null || _categoryId == 0
+                                    ? Theme.of(context).primaryColor
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withValues(alpha: 0.3),
+                                width: _categoryId == null || _categoryId == 0 ? 2 : 1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.block_rounded,
+                              size: 20,
+                              color: _categoryId == null || _categoryId == 0
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
                         ),
                       ),
                       ...categories.map((category) {
                         final isSelected = _categoryId == category.categoryId;
-                        return ChoiceChip(
-                          label: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                category.icon,
-                                style: const TextStyle(
-                                  fontFamily: 'NotoEmoji',
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(category.name),
-                            ],
-                          ),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            if (selected) {
+
+                        return Tooltip(
+                          message: category.name,
+                          child: GestureDetector(
+                            onTap: () {
                               setState(() {
                                 _categoryId = category.categoryId;
                               });
-                            }
-                          },
-                          selectedColor: Theme.of(
-                            context,
-                          ).primaryColor.withValues(alpha: 0.2),
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? Theme.of(context).primaryColor
-                                : Theme.of(context).textTheme.bodyMedium?.color,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 46,
+                              height: 46,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Theme.of(context)
+                                        .primaryColor
+                                        .withValues(alpha: 0.15)
+                                    : Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .outline
+                                          .withValues(alpha: 0.3),
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Text(
+                                category.icon,
+                                style: const TextStyle(
+                                  fontFamily: 'NotoEmoji',
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ),
                           ),
                         );
                       }),

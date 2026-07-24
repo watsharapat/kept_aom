@@ -41,6 +41,36 @@ class DashboardDateRange {
   const DashboardDateRange({required this.startDate, required this.endDate});
 }
 
+class MonthlyCategorySpend {
+  final DateTime cycleStartDate;
+  final DateTime cycleEndDate;
+  final String monthLabel;
+  final Map<int, double> categoryTotals;
+  final double totalAmount;
+
+  MonthlyCategorySpend({
+    required this.cycleStartDate,
+    required this.cycleEndDate,
+    required this.monthLabel,
+    required this.categoryTotals,
+    required this.totalAmount,
+  });
+}
+
+class SixMonthCategoryComparisonData {
+  final List<MonthlyCategorySpend> monthlyData;
+  final List<int> topCategoryIds;
+  final Map<int, double> categoryTotal6Months;
+  final double overallTotal6Months;
+
+  SixMonthCategoryComparisonData({
+    required this.monthlyData,
+    required this.topCategoryIds,
+    required this.categoryTotal6Months,
+    required this.overallTotal6Months,
+  });
+}
+
 class DashboardState {
   final double totalBalance;
   final double totalIncome;
@@ -299,3 +329,96 @@ DashboardDateRange _monthlyCycleFor(DateTime anchorDate) {
     endDate: cycleStartThisMonth,
   );
 }
+
+@riverpod
+SixMonthCategoryComparisonData sixMonthCategoryComparison(
+  SixMonthCategoryComparisonRef ref,
+  bool isExpense,
+) {
+  final transactionsAsync = ref.watch(transactionViewModelProvider);
+  final transactions = transactionsAsync.value ?? [];
+  final anchorDate = ref.watch(dashboardAnchorDateStateProvider);
+
+  final cycles = _getPast6MonthlyCycles(anchorDate);
+  final targetTypeId = isExpense ? 1 : 2;
+
+  const thaiShortMonths = [
+    'ม.ค.',
+    'ก.พ.',
+    'มี.ค.',
+    'เม.ย.',
+    'พ.ค.',
+    'มิ.ย.',
+    'ก.ค.',
+    'ส.ค.',
+    'ก.ย.',
+    'ต.ค.',
+    'พ.ย.',
+    'ธ.ค.',
+  ];
+
+  final List<MonthlyCategorySpend> monthlyData = [];
+  final Map<int, double> categoryTotal6Months = {};
+  double overallTotal6Months = 0.0;
+
+  for (final cycle in cycles) {
+    final sampleDate = cycle.endDate.subtract(const Duration(days: 10));
+    final monthLabel = thaiShortMonths[sampleDate.month - 1];
+
+    final Map<int, double> catTotals = {};
+    double monthTotal = 0.0;
+
+    for (final transaction in transactions) {
+      if (transaction.typeId != targetTypeId) continue;
+      final date = transaction.date;
+      if (!date.isBefore(cycle.startDate) && date.isBefore(cycle.endDate)) {
+        final amt = transaction.amount.abs();
+        catTotals[transaction.categoryId] =
+            (catTotals[transaction.categoryId] ?? 0.0) + amt;
+        monthTotal += amt;
+
+        categoryTotal6Months[transaction.categoryId] =
+            (categoryTotal6Months[transaction.categoryId] ?? 0.0) + amt;
+        overallTotal6Months += amt;
+      }
+    }
+
+    monthlyData.add(
+      MonthlyCategorySpend(
+        cycleStartDate: cycle.startDate,
+        cycleEndDate: cycle.endDate,
+        monthLabel: monthLabel,
+        categoryTotals: catTotals,
+        totalAmount: monthTotal,
+      ),
+    );
+  }
+
+  final sortedCategories = categoryTotal6Months.keys.toList()
+    ..sort(
+      (a, b) =>
+          (categoryTotal6Months[b] ?? 0).compareTo(categoryTotal6Months[a] ?? 0),
+    );
+
+  return SixMonthCategoryComparisonData(
+    monthlyData: monthlyData,
+    topCategoryIds: sortedCategories,
+    categoryTotal6Months: categoryTotal6Months,
+    overallTotal6Months: overallTotal6Months,
+  );
+}
+
+List<DashboardDateRange> _getPast6MonthlyCycles(DateTime anchorDate) {
+  final List<DashboardDateRange> cycles = [];
+  DashboardDateRange current = _monthlyCycleFor(anchorDate);
+  cycles.add(current);
+
+  for (int i = 0; i < 5; i++) {
+    final prevDate = current.startDate.subtract(const Duration(days: 10));
+    current = _monthlyCycleFor(prevDate);
+    cycles.add(current);
+  }
+
+  return cycles.reversed.toList();
+}
+

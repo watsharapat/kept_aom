@@ -8,6 +8,7 @@ import 'package:kept_aom/utils/format_utils.dart';
 import 'package:kept_aom/features/category/domain/entities/category_entity.dart';
 import 'package:kept_aom/features/category/presentation/viewmodels/category_viewmodel.dart';
 import 'package:kept_aom/features/dashboard/presentation/viewmodels/dashboard_provider.dart';
+import 'package:kept_aom/features/dashboard/presentation/views/widgets/six_month_category_bar_chart.dart';
 import 'package:kept_aom/core/theme/styles.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
@@ -876,6 +877,11 @@ class _SummaryTabView extends StatelessWidget {
               ),
             );
           }),
+          const SizedBox(height: 24),
+          SixMonthCategoryBarChartWidget(
+            isExpense: isExpense,
+            categories: categories,
+          ),
           const SizedBox(height: 24),
           ...summaries.map((summary) {
             final category = getCategory(summary.categoryId);
